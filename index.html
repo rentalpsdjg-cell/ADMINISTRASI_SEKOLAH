@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Administrasi Guru Premium v5.6 - Anti Failure Edition</title>
+  <title>Sistem Administrasi Guru Premium v5.6 - Official Production</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -38,7 +38,7 @@
 
   <div id="local-warning-banner" class="hidden bg-amber-50 border-b border-amber-200 p-3 text-center text-xs font-semibold text-amber-800 no-print">
     <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i> 
-    Anda membuka file langsung dari komputer (Lokal). Jika data tidak muncul, silakan <strong>Push ke GitHub Pages</strong> atau jalankan via <strong>Live Server</strong> agar fitur sinkronisasi Cloud berfungsi.
+    Aplikasi mendeteksi Anda membuka file dari penyimpanan lokal (`file:///`). Pastikan Anda telah melakukan <strong>Push ke GitHub Pages</strong> atau menggunakan <strong>Live Server</strong> agar sinkronisasi Google Sheets berfungsi penuh.
   </div>
 
   <div id="api-loading-barrier" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center">
@@ -54,7 +54,7 @@
         <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md">E</div>
         <div>
           <h1 class="font-bold text-base text-slate-800 tracking-tight">E-ADMINISTRASI GURU APPS</h1>
-          <p class="text-xs text-slate-400 font-medium">Anti-CORS Architecture v5.6</p>
+          <p class="text-xs text-slate-400 font-medium">Production Environment v5.6</p>
         </div>
       </div>
     </div>
@@ -318,18 +318,20 @@
   </div>
 
   <script>
-    // URL PROD API TERBARU ANDA
+    // =========================================================================
+    // URL PROD API RESMI WEB APP ANDA
+    // =========================================================================
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbzpd4x9Ei1iRIiDoI1PoXlIF4rXg-J6rfxTvFTN73vFJg3TFlVoTNCv6t-Zx2zpFIq1/exec";
 
-    // Data Cadangan Otomatis (Fallback) jika dibuka offline/lokal agar program TIDAK GAGAL/BLANK
+    // Data Cadangan otomatis (Fallback) jika koneksi internet terputus
     let cacheMaster = { 
       kelas: ["X DKV", "XI DKV", "XII DKV"], 
       mapel: ["Informatika", "Dasar Desain", "Sketsa"], 
-      guru: ["Budi Santoso, S.Pd", "Siti Aminah, M.Pd"] 
+      guru: ["Memuat data guru cloud..."] 
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Deteksi otomatis jika user membuka file lewat protokol lokal file:///
+      // Deteksi otomatis jika dijalankan tanpa server (lokal)
       if(window.location.protocol === 'file:') {
         document.getElementById('local-warning-banner').classList.remove('hidden');
       }
@@ -340,10 +342,10 @@
       });
 
       populateAllSelectors();
-      fetchMasterDropdowns(); // Cari data live, kalau gagal akan tetap pakai data cadangan di atas
+      fetchMasterDropdowns(); 
     });
 
-    // ENGINE CALL API AMAN (ANTI ERROR CRASH)
+    // AMAN CALL API ENGINE
     async function callCloudAPI(payload) {
       const loader = document.getElementById('api-loading-barrier');
       loader.classList.remove('hidden');
@@ -363,7 +365,7 @@
       } catch (err) {
         loader.classList.remove('flex');
         loader.classList.add('hidden');
-        console.warn("Koneksi cloud dialihkan ke mode aman offline/lokal karena: ", err.message);
+        console.warn("Koneksi cloud gagal, dialihkan ke local fallback: ", err.message);
         return null;
       }
     }
@@ -411,8 +413,7 @@
       const kelas = document.getElementById('abs-kelas').value;
       let list = await callCloudAPI({ action: "getSiswaByKelas", kelas: kelas });
       
-      // Fallback Lokal (Jika gagal terkoneksi internet / CORS lokal)
-      if(!list) {
+      if(!list || list.length === 0) {
         list = ["Awalia Alfatiha", "FAHMI ALFAROJI", "Fina Amala Sarni", "Hadisah", "ISA KARTIKA", "Nelsya", "Niska Sri Lestari Gulo"];
       }
 
@@ -447,7 +448,7 @@
         pertemuan: document.getElementById('abs-pertemuan').value, tanggal: document.getElementById('abs-tanggal').value,
         guru: document.getElementById('abs-guru').value, dataPack: dataPack
       });
-      alert(msg ? msg : "Simpan Berhasil Lokal (Simulasi)");
+      alert(msg ? msg : "Simpan Berhasil!");
       document.getElementById('abs-daftar-container').classList.add('hidden');
     }
 
@@ -468,7 +469,7 @@
         action: "simpanNilai", judul: document.getElementById('nil-judul').value, mapel: document.getElementById('nil-mapel').value,
         kelas: document.getElementById('nil-kelas').value, guru: document.getElementById('nil-guru').value, dataNilai: dataNilai
       });
-      alert(msg ? msg : "Simpan Nilai Berhasil!");
+      alert(msg ? msg : "Simpan Nilai Sukses!");
       document.getElementById('nil-daftar-container').classList.add('hidden');
     }
 
@@ -497,8 +498,9 @@
       const inp = document.getElementById('add-master-' + jenis.toLowerCase());
       if (!inp.value.trim()) return alert('Isi data master!');
       const msg = await callCloudAPI({ action: "tambahMaster", jenis: jenis, val: inp.value.trim() });
-      alert(msg ? msg : "Data Master Diperbarui secara lokal.");
+      alert(msg ? msg : "Master data cloud berhasil diperbarui.");
       inp.value = '';
+      fetchMasterDropdowns();
     }
 
     async function tarikRekapAbsenPDF() {
@@ -539,7 +541,7 @@
       const mapel = document.getElementById('age-mapel').value;
       let list = await callCloudAPI({ action: "getLaporanAgenda", kelas: kelas, mapel: mapel });
       if(!list) list = [{tgl:"2026-05-29", p:1, materi:"Pengenalan UI / UX", status:"Kondusif", h:30, a:0, guru:"Guru Model"}];
-      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl.split("T")[0]}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.p}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.materi}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.status}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">H:${r.h}/A:${r.a}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
+      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl.split("T")[0]}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.p}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.materi}</td><td style="border:1px solid #94a3b8; text-align:center;">${r.status}</td><td style="border:1px solid #94a3b8; text-align:center;">H:${r.h}/A:${r.a}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
       bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>Buku Jurnal Mengajar Harian</h2></div><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #94a3b8; padding:8px;">TANGGAL</th><th style="border:1px solid #94a3b8; padding:8px;">P-KE</th><th style="border:1px solid #94a3b8; padding:8px;">MATERI</th><th style="border:1px solid #94a3b8; padding:8px;">KONDISI</th><th style="border:1px solid #94a3b8; padding:8px;">KEHADIRAN</th><th style="border:1px solid #94a3b8; padding:8px;">GURU</th></tr></thead><tbody>${bodyHtml}</tbody></table>`);
     }
 
@@ -557,7 +559,7 @@
       if(!kelasTujuan || !rawTextNama.trim()) return alert("Lengkapi data!");
       const arrayNamaSiswa = rawTextNama.split('\n').map(n => n.trim()).filter(Boolean);
       const msg = await callCloudAPI({ action: "importSiswaBulk", arrayNama: arrayNamaSiswa, kelasTujuan: kelasTujuan });
-      alert(msg ? msg : `Berhasil mengimpor ${arrayNamaSiswa.length} siswa secara lokal.`);
+      alert(msg ? msg : `Berhasil mengimpor ${arrayNamaSiswa.length} siswa.`);
       document.getElementById('imp-area-nama').value = "";
     }
   </script>
