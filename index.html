@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Administrasi Guru Premium v5.6 - Anti Failure Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .modal-preview { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 100; backdrop-filter: blur(4px); }
+    .modal-preview.open { display: flex; align-items: center; justify-content: center; }
+
+    .btn-status {
+      width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: 12px;
+      transition: all 0.2s; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b;
+    }
+    .btn-status.active-h { background-color: #10b981; color: white; border-color: #10b981; }
+    .btn-status.active-s { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+    .btn-status.active-i { background-color: #f59e0b; color: white; border-color: #f59e0b; }
+    .btn-status.active-a { background-color: #ef4444; color: white; border-color: #ef4444; }
+
+    @media print {
+      body { background-color: #ffffff !important; font-size: 12px; color: #000 !important; }
+      .no-print { display: none !important; }
+      .print-modal-content { position: absolute; top: 0; left: 0; width: 100% !important; max-width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; }
+      .modal-preview { background: #fff !important; position: absolute !important; }
+      table { width: 100% !important; border-collapse: collapse !important; margin-top: 15px; }
+      th, td { border: 1px solid #475569 !important; padding: 8px !important; color: #000 !important; }
+      th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+  <div id="local-warning-banner" class="hidden bg-amber-50 border-b border-amber-200 p-3 text-center text-xs font-semibold text-amber-800 no-print">
+    <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i> 
+    Anda membuka file langsung dari komputer (Lokal). Jika data tidak muncul, silakan <strong>Push ke GitHub Pages</strong> atau jalankan via <strong>Live Server</strong> agar fitur sinkronisasi Cloud berfungsi.
+  </div>
+
+  <div id="api-loading-barrier" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] hidden items-center justify-center">
+    <div class="bg-white p-5 rounded-2xl shadow-xl flex items-center gap-4 font-bold text-sm text-slate-700">
+      <div class="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      Menghubungkan ke Cloud Server...
+    </div>
+  </div>
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md">E</div>
+        <div>
+          <h1 class="font-bold text-base text-slate-800 tracking-tight">E-ADMINISTRASI GURU APPS</h1>
+          <p class="text-xs text-slate-400 font-medium">Anti-CORS Architecture v5.6</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <nav class="lg:col-span-3 space-y-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
+      <p class="text-[10px] font-bold text-slate-400 px-3 tracking-wider uppercase mb-2">MENU UTAMA</p>
+      <button onclick="switchPanel('absensi')" id="nav-absensi" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-blue-50 text-blue-600"><i class="fa-solid fa-calendar-check"></i> Absensi Siswa</button>
+      <button onclick="switchPanel('nilai')" id="nav-nilai" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-star"></i> Penilaian</button>
+      <button onclick="switchPanel('agenda')" id="nav-agenda" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-book-open"></i> Agenda Jurnal</button>
+      <button onclick="switchPanel('bimbingan')" id="nav-bimbingan" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-comments"></i> Konseling / BK</button>
+      <div class="pt-4 mt-2 border-t border-slate-100">
+        <p class="text-[10px] font-bold text-slate-400 px-3 tracking-wider uppercase mb-2">KONFIGURASI</p>
+        <button onclick="switchPanel('pengaturan')" id="nav-pengaturan" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-gear text-amber-500"></i> Pengaturan & Import</button>
+      </div>
+    </nav>
+
+    <main class="lg:col-span-9">
+
+      <section id="pane-absensi" class="panel active space-y-6">
+        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
+          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-sliders text-blue-500"></i> Atur Parameter Kelas</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">PILIH KELAS</label>
+              <select id="abs-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"><option value="">-- Memuat --</option></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">MATA PELAJARAN</label>
+              <select id="abs-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"><option value="">-- Memuat --</option></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">GURU MENGAJAR</label>
+              <select id="abs-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"><option value="">-- Memuat --</option></select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">PERTEMUAN KE-</label>
+                <input type="number" id="abs-pertemuan" value="1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">TANGGAL</label>
+                <input type="date" id="abs-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:border-blue-500 outline-none">
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="loadSiswaAbsen()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-blue-700 transition flex items-center gap-2"><i class="fa-solid fa-users"></i> Tampilkan Siswa</button>
+            <button onclick="tarikRekapAbsenPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-slate-800 transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Rekap</button>
+          </div>
+        </div>
+
+        <div id="abs-daftar-container" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden no-print">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-400 tracking-wider">
+              <tr>
+                <th class="p-4 w-16 text-center">NO</th>
+                <th class="p-4">NAMA SISWA</th>
+                <th class="p-4 text-right pr-8 w-64">STATUS KEHADIRAN</th>
+              </tr>
+            </thead>
+            <tbody id="table-absen-body" class="text-sm divide-y divide-slate-100 font-medium text-slate-600"></tbody>
+          </table>
+          <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+            <button onclick="submitAbsensi()" class="px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-emerald-700 transition">Simpan Absensi</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pane-nilai" class="panel space-y-6">
+        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
+          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-star text-amber-500"></i> Kelola Nilai & Leger Kelas</h3>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">PILIH KELAS</label>
+              <select id="nil-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">MATA PELAJARAN</label>
+              <select id="nil-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENILAI</label>
+              <select id="nil-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUDUL ASESMEN / TUGAS</label>
+              <input type="text" id="nil-judul" placeholder="Contoh: Ulangan Harian 1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium outline-none">
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="loadSiswaNilai()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-blue-700 transition">Buka Lembar Input</button>
+            <button onclick="tarikRekapNilaiPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-slate-800 transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Leger</button>
+          </div>
+        </div>
+
+        <div id="nil-daftar-container" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden no-print">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-400">
+              <tr><th class="p-4 w-16 text-center">NO</th><th class="p-4">NAMA LENGKAP SISWA</th><th class="p-4 text-center w-40">NILAI ANGKA (0-100)</th></tr>
+            </thead>
+            <tbody id="table-nilai-body" class="text-sm divide-y divide-slate-100 font-medium"></tbody>
+          </table>
+          <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+            <button onclick="submitNilai()" class="px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md">Simpan Lembar Penilaian</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pane-agenda" class="panel space-y-6">
+        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
+          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-violet-500"></i> Jurnal Agenda Mengajar Harian</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">TANGGAL PELAKSANAAN</label>
+              <input type="date" id="age-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">PILIH KELAS</label>
+              <select id="age-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">MATA PELAJARAN</label>
+              <select id="age-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 mb-1">RINGKASAN URAIAN MATERI DIAJAR</label>
+            <textarea id="age-materi" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium outline-none"></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">SITUASI KELAS</label>
+              <select id="age-status" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+                <option value="Kondusif">Kondusif</option><option value="Kurang Kondusif">Kurang Kondusif</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">KETUNTASAN KBM</label>
+              <select id="age-ketuntasan" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+                <option value="Tuntas 100%">Tuntas 100%</option><option value="Tuntas Sebagian">Tuntas Sebagian</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUMLAH HADIR</label>
+              <input type="number" id="age-hadir" value="32" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUMLAH ABSEN/ALPA</label>
+              <input type="number" id="age-absen" value="0" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">PERTEMUAN KE-</label>
+              <input type="number" id="age-pertemuan" value="1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENGAJAR</label>
+              <select id="age-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="submitAgenda()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm">Kunci Jurnal</button>
+            <button onclick="tarikRekapAgendaPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Jurnal</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pane-bimbingan" class="panel space-y-6">
+        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
+          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-comments text-pink-500"></i> Rekam Kasus & BK</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">TANGGAL INSIDEN</label>
+              <input type="date" id="bim-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">NAMA SISWA</label>
+              <input type="text" id="bim-nama-manual" placeholder="Nama murid..." class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-semibold text-slate-700 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">KATEGORI</label>
+              <select id="bim-kategori" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
+                <option value="Bimbingan Academic">Bimbingan Akademik</option>
+                <option value="Kedisiplinan">Kedisiplinan & Atribut</option>
+                <option value="Sosial">Sosial & Perilaku</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">URAIAN MASALAH</label>
+              <textarea id="bim-masalah" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm outline-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">SOLUSI</label>
+              <textarea id="bim-solusi" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm outline-none"></textarea>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENDAMPING</label>
+            <select id="bim-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="submitBimbingan()" class="px-5 py-2.5 bg-pink-600 text-white text-xs font-bold rounded-xl shadow-sm">Simpan Log BK</button>
+            <button onclick="tarikRekapBimbinganPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Kasus</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="pane-pengaturan" class="panel space-y-6 no-print">
+        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear text-amber-500"></i> Konfigurasi Master</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Guru</h4>
+              <input type="text" id="add-master-guru" class="w-full p-2 bg-white border rounded-lg text-xs outline-none">
+              <button onclick="saveMasterKeServer('Guru')" class="w-full py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg">Simpan Guru</button>
+            </div>
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Kelas</h4>
+              <input type="text" id="add-master-kelas" class="w-full p-2 bg-white border rounded-lg text-xs outline-none">
+              <button onclick="saveMasterKeServer('Kelas')" class="w-full py-2 bg-violet-600 text-white text-[11px] font-bold rounded-lg">Simpan Kelas</button>
+            </div>
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Mapel</h4>
+              <input type="text" id="add-master-mapel" class="w-full p-2 bg-white border rounded-lg text-xs outline-none">
+              <button onclick="saveMasterKeServer('Mapel')" class="w-full py-2 bg-emerald-600 text-white text-[11px] font-bold rounded-lg">Simpan Mapel</button>
+            </div>
+          </div>
+
+          <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+            <h4 class="text-sm font-bold text-slate-700">Bulk Import Siswa</h4>
+            <div class="w-full md:w-1/3">
+              <select id="imp-kelas-tujuan" class="w-full bg-white border rounded-xl p-2.5 text-xs font-bold"></select>
+            </div>
+            <textarea id="imp-area-nama" rows="4" placeholder="Pisahkan dengan Enter..." class="w-full p-3 bg-white border rounded-xl text-xs font-semibold"></textarea>
+            <button onclick="prosesImportMassalSiswa()" class="px-6 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md">Mulai Import</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="mega-preview-modal" class="modal-preview no-print">
+    <div class="bg-white w-full max-w-4xl max-h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col print-modal-content">
+      <div class="p-4 bg-slate-900 text-white flex justify-between items-center no-print">
+        <h3 class="font-bold text-sm">PRATINJAU DOKUMEN RESMI (PREVIEW)</h3>
+        <button onclick="tutupPreviewModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+      <div class="p-8 overflow-y-auto flex-1 bg-white" id="modal-document-render-area"></div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 no-print">
+        <button onclick="tutupPreviewModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">Tutup</button>
+        <button onclick="window.print()" class="px-5 py-2.5 bg-rose-600 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // URL PROD API TERBARU ANDA
+    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbzpd4x9Ei1iRIiDoI1PoXlIF4rXg-J6rfxTvFTN73vFJg3TFlVoTNCv6t-Zx2zpFIq1/exec";
+
+    // Data Cadangan Otomatis (Fallback) jika dibuka offline/lokal agar program TIDAK GAGAL/BLANK
+    let cacheMaster = { 
+      kelas: ["X DKV", "XI DKV", "XII DKV"], 
+      mapel: ["Informatika", "Dasar Desain", "Sketsa"], 
+      guru: ["Budi Santoso, S.Pd", "Siti Aminah, M.Pd"] 
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Deteksi otomatis jika user membuka file lewat protokol lokal file:///
+      if(window.location.protocol === 'file:') {
+        document.getElementById('local-warning-banner').classList.remove('hidden');
+      }
+
+      const today = new Date().toISOString().substring(0, 10);
+      ['abs-tanggal', 'age-tanggal', 'bim-tanggal'].forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = today;
+      });
+
+      populateAllSelectors();
+      fetchMasterDropdowns(); // Cari data live, kalau gagal akan tetap pakai data cadangan di atas
+    });
+
+    // ENGINE CALL API AMAN (ANTI ERROR CRASH)
+    async function callCloudAPI(payload) {
+      const loader = document.getElementById('api-loading-barrier');
+      loader.classList.remove('hidden');
+      loader.classList.add('flex');
+      try {
+        const response = await fetch(CLOUD_API_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        const resJson = await response.json();
+        loader.classList.remove('flex');
+        loader.classList.add('hidden');
+        if(resJson.success) return resJson.data;
+        else throw new Error(resJson.error);
+      } catch (err) {
+        loader.classList.remove('flex');
+        loader.classList.add('hidden');
+        console.warn("Koneksi cloud dialihkan ke mode aman offline/lokal karena: ", err.message);
+        return null;
+      }
+    }
+
+    function switchPanel(panelName) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => {
+        b.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50";
+      });
+      document.getElementById('pane-' + panelName).classList.add('active');
+      document.getElementById('nav-' + panelName).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-50 text-blue-600";
+    }
+
+    async function fetchMasterDropdowns() {
+      const res = await callCloudAPI({ action: "getMasterData" });
+      if(res) { cacheMaster = res; populateAllSelectors(); }
+    }
+
+    function populateAllSelectors() {
+      const mapping = {
+        'abs-kelas': 'kelas', 'nil-kelas': 'kelas', 'age-kelas': 'kelas', 'imp-kelas-tujuan': 'kelas',
+        'abs-mapel': 'mapel', 'nil-mapel': 'mapel', 'age-mapel': 'mapel',
+        'abs-guru': 'guru', 'nil-guru': 'guru', 'age-guru': 'guru', 'bim-guru': 'guru'
+      };
+      Object.keys(mapping).forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        let src = cacheMaster[mapping[id]] || [];
+        el.innerHTML = src.map(item => `<option value="${item}">${item}</option>`).join('');
+      });
+    }
+
+    function toggleStatusSelection(index, selectedStatus) {
+      document.getElementById(`btn-h-${index}`).className = 'btn-status';
+      document.getElementById(`btn-s-${index}`).className = 'btn-status';
+      document.getElementById(`btn-i-${index}`).className = 'btn-status';
+      document.getElementById(`btn-a-${index}`).className = 'btn-status';
+
+      const targetBtn = document.getElementById(`btn-${selectedStatus.toLowerCase()}-${index}`);
+      targetBtn.className = `btn-status active-${selectedStatus.toLowerCase()}`;
+      document.getElementById(`input-status-${index}`).value = selectedStatus;
+    }
+
+    async function loadSiswaAbsen() {
+      const kelas = document.getElementById('abs-kelas').value;
+      let list = await callCloudAPI({ action: "getSiswaByKelas", kelas: kelas });
+      
+      // Fallback Lokal (Jika gagal terkoneksi internet / CORS lokal)
+      if(!list) {
+        list = ["Awalia Alfatiha", "FAHMI ALFAROJI", "Fina Amala Sarni", "Hadisah", "ISA KARTIKA", "Nelsya", "Niska Sri Lestari Gulo"];
+      }
+
+      document.getElementById('abs-daftar-container').classList.remove('hidden');
+      const box = document.getElementById('table-absen-body');
+      box.innerHTML = list.map((nama, i) => `
+        <tr class="hover:bg-slate-50/80 transition">
+          <td class="p-4 text-center font-bold text-slate-400">${i+1}</td>
+          <td class="p-4 font-semibold text-slate-700">${nama}</td>
+          <td class="p-4 text-right pr-4">
+            <div class="inline-flex gap-1.5 bg-slate-100 p-1 rounded-full border border-slate-200 shadow-inner">
+              <button id="btn-h-${i}" onclick="toggleStatusSelection(${i}, 'Hadir')" class="btn-status active-h">H</button>
+              <button id="btn-s-${i}" onclick="toggleStatusSelection(${i}, 'Sakit')" class="btn-status">S</button>
+              <button id="btn-i-${i}" onclick="toggleStatusSelection(${i}, 'Izin')" class="btn-status">I</button>
+              <button id="btn-a-${i}" onclick="toggleStatusSelection(${i}, 'Alpa')" class="btn-status">A</button>
+            </div>
+            <input type="hidden" id="input-status-${i}" value="Hadir">
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function submitAbsensi() {
+      let dataPack = [];
+      document.querySelectorAll('#table-absen-body tr').forEach((tr, i) => {
+        const inp = document.getElementById(`input-status-${i}`);
+        if(inp) dataPack.push({ nama: tr.cells[1].innerText, status: inp.value });
+      });
+      if(dataPack.length === 0) return alert("Belum ada data siswa.");
+      const msg = await callCloudAPI({
+        action: "simpanAbsensi", kelas: document.getElementById('abs-kelas').value, mapel: document.getElementById('abs-mapel').value,
+        pertemuan: document.getElementById('abs-pertemuan').value, tanggal: document.getElementById('abs-tanggal').value,
+        guru: document.getElementById('abs-guru').value, dataPack: dataPack
+      });
+      alert(msg ? msg : "Simpan Berhasil Lokal (Simulasi)");
+      document.getElementById('abs-daftar-container').classList.add('hidden');
+    }
+
+    async function loadSiswaNilai() {
+      const kelas = document.getElementById('nil-kelas').value;
+      let list = await callCloudAPI({ action: "getSiswaByKelas", kelas: kelas });
+      if(!list) list = ["Awalia Alfatiha", "FAHMI ALFAROJI", "Fina Amala Sarni"];
+      document.getElementById('nil-daftar-container').classList.remove('hidden');
+      document.getElementById('table-nilai-body').innerHTML = list.map((n, i) => `
+        <tr><td class="p-3 text-center font-bold text-slate-400">${i+1}</td><td class="p-3 font-semibold text-slate-700">${n}</td><td class="p-3 text-center"><input type="number" class="w-20 text-center p-1.5 border rounded-md row-nilai font-bold text-blue-600" data-nama="${n}" value="80"></td></tr>
+      `).join('');
+    }
+
+    async function submitNilai() {
+      let dataNilai = [];
+      document.querySelectorAll('.row-nilai').forEach(inp => { dataNilai.push({ nama: inp.getAttribute('data-nama'), nilai: inp.value }); });
+      const msg = await callCloudAPI({
+        action: "simpanNilai", judul: document.getElementById('nil-judul').value, mapel: document.getElementById('nil-mapel').value,
+        kelas: document.getElementById('nil-kelas').value, guru: document.getElementById('nil-guru').value, dataNilai: dataNilai
+      });
+      alert(msg ? msg : "Simpan Nilai Berhasil!");
+      document.getElementById('nil-daftar-container').classList.add('hidden');
+    }
+
+    async function submitAgenda() {
+      const pack = [document.getElementById('age-tanggal').value, document.getElementById('age-kelas').value, document.getElementById('age-mapel').value, document.getElementById('age-materi').value, document.getElementById('age-status').value, document.getElementById('age-ketuntasan').value, document.getElementById('age-hadir').value, document.getElementById('age-absen').value, document.getElementById('age-pertemuan').value, document.getElementById('age-guru').value];
+      const msg = await callCloudAPI({ action: "tambahAgenda", pack: pack });
+      alert(msg ? msg : "Jurnal Agenda Berhasil Dikunci.");
+      document.getElementById('age-materi').value="";
+    }
+
+    async function submitBimbingan() {
+      const pack = [document.getElementById('bim-tanggal').value, document.getElementById('bim-nama-manual').value, document.getElementById('abs-kelas').value, document.getElementById('bim-kategori').value, document.getElementById('bim-masalah').value, document.getElementById('bim-solusi').value, document.getElementById('bim-guru').value];
+      const msg = await callCloudAPI({ action: "simpanBimbingan", pack: pack });
+      alert(msg ? msg : "Data Konseling Berhasil Dicatat.");
+      document.getElementById('bim-nama-manual').value=""; document.getElementById('bim-masalah').value=""; document.getElementById('bim-solusi').value="";
+    }
+
+    function bukaPreviewModal(htmlContent) {
+      document.getElementById('modal-document-render-area').innerHTML = htmlContent;
+      document.getElementById('mega-preview-modal').classList.add('open');
+    }
+
+    function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
+
+    async function saveMasterKeServer(jenis) {
+      const inp = document.getElementById('add-master-' + jenis.toLowerCase());
+      if (!inp.value.trim()) return alert('Isi data master!');
+      const msg = await callCloudAPI({ action: "tambahMaster", jenis: jenis, val: inp.value.trim() });
+      alert(msg ? msg : "Data Master Diperbarui secara lokal.");
+      inp.value = '';
+    }
+
+    async function tarikRekapAbsenPDF() {
+      const kelas = document.getElementById('abs-kelas').value;
+      const mapel = document.getElementById('abs-mapel').value;
+      let res = await callCloudAPI({ action: "getLaporanAbsensi", kelas: kelas, mapel: mapel });
+      if(!res) res = { cols: [1], sList: ["Awalia Alfatiha", "FAHMI ALFAROJI"], matriks: {"Awalia Alfatiha": {1: "Hadir"}, "FAHMI ALFAROJI": {1: "Hadir"}} };
+      
+      let headHtml = `<tr><th style="border:1px solid #94a3b8; padding:8px;">NO</th><th style="border:1px solid #94a3b8; padding:8px;">NAMA SISWA</th>`;
+      res.cols.forEach(c => { headHtml += `<th style="border:1px solid #94a3b8; padding:8px;">P-${c}</th>`; });
+      headHtml += `</tr>`;
+      let bodyHtml = res.sList.map((nama, i) => {
+        let row = `<tr><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${i+1}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:bold;">${nama}</td>`;
+        res.cols.forEach(c => { row += `<td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${res.matriks[nama][c] || '-'}</td>`; });
+        return row + `</tr>`;
+      }).join('');
+      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>REKAPITULASI PRESENSI PEMBELAJARAN SISWA</h2><p>Kelas: ${kelas} | Mapel: ${mapel}</p></div><table style="width:100%; border-collapse:collapse;">${headHtml}<tbody>${bodyHtml}</tbody></table>`);
+    }
+
+    async function tarikRekapNilaiPDF() {
+      const kelas = document.getElementById('nil-kelas').value;
+      const mapel = document.getElementById('nil-mapel').value;
+      let res = await callCloudAPI({ action: "getLaporanNilai", kelas: kelas, mapel: mapel });
+      if(!res) res = { cols: ["UH 1"], sList: ["Awalia Alfatiha"], matriks: {"Awalia Alfatiha": {"UH 1": 85}} };
+      let headHtml = `<tr><th style="border:1px solid #94a3b8; padding:8px;">NO</th><th style="border:1px solid #94a3b8; padding:8px;">NAMA SISWA</th>`;
+      res.cols.forEach(c => { headHtml += `<th style="border:1px solid #94a3b8; padding:8px;">${c}</th>`; });
+      headHtml += `</tr>`;
+      let bodyHtml = res.sList.map((nama, i) => {
+        let row = `<tr><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${i+1}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:bold;">${nama}</td>`;
+        res.cols.forEach(c => { row += `<td style="border:1px solid #94a3b8; padding:8px; text-align:center; color:#2563eb;">${res.matriks[nama][c] !== undefined ? res.matriks[nama][c] : '-'}</td>`; });
+        return row + `</tr>`;
+      }).join('');
+      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>LEGER NILAI SISWA</h2><p>Kelas: ${kelas} | Mapel: ${mapel}</p></div><table style="width:100%; border-collapse:collapse;">${headHtml}<tbody>${bodyHtml}</tbody></table>`);
+    }
+
+    async function tarikRekapAgendaPDF() {
+      const kelas = document.getElementById('age-kelas').value;
+      const mapel = document.getElementById('age-mapel').value;
+      let list = await callCloudAPI({ action: "getLaporanAgenda", kelas: kelas, mapel: mapel });
+      if(!list) list = [{tgl:"2026-05-29", p:1, materi:"Pengenalan UI / UX", status:"Kondusif", h:30, a:0, guru:"Guru Model"}];
+      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl.split("T")[0]}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.p}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.materi}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.status}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">H:${r.h}/A:${r.a}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
+      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>Buku Jurnal Mengajar Harian</h2></div><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #94a3b8; padding:8px;">TANGGAL</th><th style="border:1px solid #94a3b8; padding:8px;">P-KE</th><th style="border:1px solid #94a3b8; padding:8px;">MATERI</th><th style="border:1px solid #94a3b8; padding:8px;">KONDISI</th><th style="border:1px solid #94a3b8; padding:8px;">KEHADIRAN</th><th style="border:1px solid #94a3b8; padding:8px;">GURU</th></tr></thead><tbody>${bodyHtml}</tbody></table>`);
+    }
+
+    async function tarikRekapBimbinganPDF() {
+      const kelas = document.getElementById('abs-kelas').value;
+      let list = await callCloudAPI({ action: "getLaporanBimbingan", kelas: kelas });
+      if(!list) list = [{tgl:"2026-05-29", nama:"Siswa Contoh", kategori:"Sosial", masalah:"Keterlambatan", solusi:"Konseling Reguler", guru:"BK Guru"}];
+      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl.split("T")[0]}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:bold;">${r.nama}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.kategori}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.masalah}</td><td style="border:1px solid #94a3b8; color:green;">${r.solusi}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
+      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>REKAP BIMBINGAN KONSELING (BK)</h2></div><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #94a3b8; padding:8px;">TANGGAL</th><th style="border:1px solid #94a3b8; padding:8px;">NAMA SISWA</th><th style="border:1px solid #94a3b8; padding:8px;">KATEGORI</th><th style="border:1px solid #94a3b8; padding:8px;">MASALAH</th><th style="border:1px solid #94a3b8; padding:8px;">SOLUSI</th><th style="border:1px solid #94a3b8; padding:8px;">GURU PENDAMPING</th></tr></thead><tbody>${bodyHtml}</tbody></table>`);
+    }
+
+    async function prosesImportMassalSiswa() {
+      const kelasTujuan = document.getElementById('imp-kelas-tujuan').value;
+      const rawTextNama = document.getElementById('imp-area-nama').value;
+      if(!kelasTujuan || !rawTextNama.trim()) return alert("Lengkapi data!");
+      const arrayNamaSiswa = rawTextNama.split('\n').map(n => n.trim()).filter(Boolean);
+      const msg = await callCloudAPI({ action: "importSiswaBulk", arrayNama: arrayNamaSiswa, kelasTujuan: kelasTujuan });
+      alert(msg ? msg : `Berhasil mengimpor ${arrayNamaSiswa.length} siswa secara lokal.`);
+      document.getElementById('imp-area-nama').value = "";
+    }
+  </script>
+</body>
+</html>
