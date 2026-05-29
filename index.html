@@ -1,324 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Administrasi Guru Premium v6.0 - Sinkronisasi Database</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .modal-preview { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 100; backdrop-filter: blur(4px); }
-    .modal-preview.open { display: flex; align-items: center; justify-content: center; }
-
-    .btn-status {
-      width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: 12px;
-      transition: all 0.2s; border: 1px solid #e2e8f0; background-color: #ffffff; color: #64748b;
-    }
-    .btn-status.active-h { background-color: #10b981; color: white; border-color: #10b981; }
-    .btn-status.active-s { background-color: #3b82f6; color: white; border-color: #3b82f6; }
-    .btn-status.active-i { background-color: #f59e0b; color: white; border-color: #f59e0b; }
-    .btn-status.active-a { background-color: #ef4444; color: white; border-color: #ef4444; }
-
-    @media print {
-      body { background-color: #ffffff !important; font-size: 12px; color: #000 !important; }
-      .no-print { display: none !important; }
-      .print-modal-content { position: absolute; top: 0; left: 0; width: 100% !important; max-width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; }
-      .modal-preview { background: #fff !important; position: absolute !important; }
-      table { width: 100% !important; border-collapse: collapse !important; margin-top: 15px; }
-      th, td { border: 1px solid #475569 !important; padding: 8px !important; color: #000 !important; }
-      th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  </style>
-</head>
-<body class="text-slate-800 antialiased">
-
-  <div id="db-status-banner" class="bg-amber-500 p-3 text-center text-xs font-semibold text-white no-print">
-    <div class="max-w-4xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-      <i id="db-status-icon" class="fa-solid fa-triangle-exclamation text-sm"></i> 
-      <span id="db-status-text">Menghubungkan ke Cloud Server Database...</span>
-    </div>
-  </div>
-
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md">E</div>
-        <div>
-          <h1 class="font-bold text-base text-slate-800 tracking-tight">E-ADMINISTRASI GURU APPS</h1>
-          <p class="text-xs text-slate-400 font-medium">Database Real Synchronization - v6.1</p>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-    
-    <nav class="lg:col-span-3 space-y-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
-      <p class="text-[10px] font-bold text-slate-400 px-3 tracking-wider uppercase mb-2">MENU UTAMA</p>
-      <button onclick="switchPanel('absensi')" id="nav-absensi" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-blue-50 text-blue-600"><i class="fa-solid fa-calendar-check"></i> Absensi Siswa</button>
-      <button onclick="switchPanel('nilai')" id="nav-nilai" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-star"></i> Penilaian</button>
-      <button onclick="switchPanel('agenda')" id="nav-agenda" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-book-open"></i> Agenda Jurnal</button>
-      <button onclick="switchPanel('bimbingan')" id="nav-bimbingan" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-comments"></i> Konseling / BK</button>
-      <div class="pt-4 mt-2 border-t border-slate-100">
-        <p class="text-[10px] font-bold text-slate-400 px-3 tracking-wider uppercase mb-2">KONFIGURASI</p>
-        <button onclick="switchPanel('pengaturan')" id="nav-pengaturan" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-gear text-amber-500"></i> Pengaturan & Import</button>
-      </div>
-    </nav>
-
-    <main class="lg:col-span-9">
-
-      <section id="pane-absensi" class="panel active space-y-6">
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-sliders text-blue-500"></i> Atur Parameter Kelas</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">PILIH KELAS</label>
-              <select id="abs-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">MATA PELAJARAN</label>
-              <select id="abs-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">GURU MENGAJAR</label>
-              <select id="abs-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none"></select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">PERTEMUAN KE-</label>
-                <input type="number" id="abs-pertemuan" value="1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium focus:border-blue-500 outline-none">
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-slate-400 mb-1 tracking-wider">TANGGAL</label>
-                <input type="date" id="abs-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:border-blue-500 outline-none">
-              </div>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-2">
-            <button onclick="loadSiswaAbsen()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-blue-700 transition flex items-center gap-2"><i class="fa-solid fa-users"></i> Tampilkan Siswa</button>
-            <button onclick="tarikRekapAbsenPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-slate-800 transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Rekap</button>
-          </div>
-        </div>
-
-        <div id="abs-daftar-container" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden no-print">
-          <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-400 tracking-wider">
-              <tr>
-                <th class="p-4 w-16 text-center">NO</th>
-                <th class="p-4">NAMA SISWA</th>
-                <th class="p-4 text-right pr-8 w-64">STATUS KEHADIRAN</th>
-              </tr>
-            </thead>
-            <tbody id="table-absen-body" class="text-sm divide-y divide-slate-100 font-medium text-slate-600"></tbody>
-          </table>
-          <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-            <button onclick="submitAbsensi()" class="px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-emerald-700 transition">Simpan Absensi</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="pane-nilai" class="panel space-y-6">
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-star text-amber-500"></i> Kelola Nilai & Leger Kelas</h3>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">PILIH KELAS</label>
-              <select id="nil-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">MATA PELAJARAN</label>
-              <select id="nil-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENILAI</label>
-              <select id="nil-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUDUL ASESMEN / TUGAS</label>
-              <input type="text" id="nil-judul" placeholder="Contoh: Ulangan Harian 1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-medium outline-none">
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="loadSiswaNilai()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-blue-700 transition">Buka Lembar Input</button>
-            <button onclick="tarikRekapNilaiPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-slate-800 transition"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Leger</button>
-          </div>
-        </div>
-
-        <div id="nil-daftar-container" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden no-print">
-          <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-400">
-              <tr><th class="p-4 w-16 text-center">NO</th><th class="p-4">NAMA LENGKAP SISWA</th><th class="p-4 text-center w-40">NILAI ANGKA (0-100)</th></tr>
-            </thead>
-            <tbody id="table-nilai-body" class="text-sm divide-y divide-slate-100 font-medium"></tbody>
-          </table>
-          <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-            <button onclick="submitNilai()" class="px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md">Simpan Lembar Penilaian</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="pane-agenda" class="panel space-y-6">
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-violet-500"></i> Jurnal Agenda Mengajar Harian</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">TANGGAL PELAKSANAAN</label>
-              <input type="date" id="age-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">PILIH KELAS</label>
-              <select id="age-kelas" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">MATA PELAJARAN</label>
-              <select id="age-mapel" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-400 mb-1">RINGKASAN URAIAN MATERI DIAJAR</label>
-            <textarea id="age-materi" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium outline-none"></textarea>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">SITUASI KELAS</label>
-              <select id="age-status" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                <option value="Kondusif">Kondusif</option><option value="Kurang Kondusif">Kurang Kondusif</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">KETUNTASAN KBM</label>
-              <select id="age-ketuntasan" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                <option value="Tuntas 100%">Tuntas 100%</option><option value="Tuntas Sebagian">Tuntas Sebagian</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUMLAH HADIR</label>
-              <input type="number" id="age-hadir" value="32" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">JUMLAH ABSEN/ALPA</label>
-              <input type="number" id="age-absen" value="0" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">PERTEMUAN KE-</label>
-              <input type="number" id="age-pertemuan" value="1" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENGAJAR</label>
-              <select id="age-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-            </div>
-          </div>
-          <div class="flex gap-2 pt-2">
-            <button onclick="submitAgenda()" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm">Kunci Jurnal</button>
-            <button onclick="tarikRekapAgendaPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Jurnal</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="pane-bimbingan" class="panel space-y-6">
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-          <h3 class="text-base font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-comments text-pink-500"></i> Rekam Kasus & BK</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">TANGGAL INSIDEN</label>
-              <input type="date" id="bim-tanggal" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">NAMA SISWA</label>
-              <input type="text" id="bim-nama-manual" placeholder="Nama murid..." class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm font-semibold text-slate-700 outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">KATEGORI</label>
-              <select id="bim-kategori" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none">
-                <option value="Bimbingan Academic">Bimbingan Akademik</option>
-                <option value="Kedisiplinan">Kedisiplinan & Atribut</option>
-                <option value="Sosial">Sosial & Perilaku</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">URAIAN MASALAH</label>
-              <textarea id="bim-masalah" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm outline-none"></textarea>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-400 mb-1">SOLUSI</label>
-              <textarea id="bim-solusi" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm outline-none"></textarea>
-            </div>
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-slate-400 mb-1">GURU PENDAMPING</label>
-            <select id="bim-guru" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm outline-none"></select>
-          </div>
-          <div class="flex gap-2 pt-2">
-            <button onclick="submitBimbingan()" class="px-5 py-2.5 bg-pink-600 text-white text-xs font-bold rounded-xl shadow-sm">Simpan Log BK</button>
-            <button onclick="tarikRekapBimbinganPDF()" class="px-5 py-2.5 bg-slate-700 text-white text-xs font-bold rounded-xl shadow-sm"><i class="fa-solid fa-magnifying-glass mr-1"></i> Preview Kasus</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="pane-pengaturan" class="panel space-y-6 no-print">
-        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-6">
-          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-gear text-amber-500"></i> Konfigurasi Master</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Guru</h4>
-              <input type="text" id="add-master-guru" class="w-full p-2 bg-white border rounded-lg text-xs outline-none" placeholder="Nama Guru Baru...">
-              <button onclick="saveMasterKeServer('Guru')" class="w-full py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg">Simpan Guru</button>
-            </div>
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Kelas</h4>
-              <input type="text" id="add-master-kelas" class="w-full p-2 bg-white border rounded-lg text-xs outline-none" placeholder="Contoh: X DKV">
-              <button onclick="saveMasterKeServer('Kelas')" class="w-full py-2 bg-violet-600 text-white text-[11px] font-bold rounded-lg">Simpan Kelas</button>
-            </div>
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-              <h4 class="text-xs font-bold text-slate-700 uppercase">Tambah Mapel</h4>
-              <input type="text" id="add-master-mapel" class="w-full p-2 bg-white border rounded-lg text-xs outline-none" placeholder="Nama Mapel...">
-              <button onclick="saveMasterKeServer('Mapel')" class="w-full py-2 bg-emerald-600 text-white text-[11px] font-bold rounded-lg">Simpan Mapel</button>
-            </div>
-          </div>
-
-          <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
-            <h4 class="text-sm font-bold text-slate-700">Bulk Import Siswa</h4>
-            <div class="w-full md:w-1/3">
-              <select id="imp-kelas-tujuan" class="w-full bg-white border rounded-xl p-2.5 text-xs font-bold"></select>
-            </div>
-            <textarea id="imp-area-nama" rows="4" placeholder="Ketik nama siswa pisahkan dengan Enter..." class="w-full p-3 bg-white border rounded-xl text-xs font-semibold"></textarea>
-            <button onclick="prosesImportMassalSiswa()" class="px-6 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md">Mulai Import</button>
-          </div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <div id="mega-preview-modal" class="modal-preview no-print">
-    <div class="bg-white w-full max-w-4xl max-h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col print-modal-content">
-      <div class="p-4 bg-slate-900 text-white flex justify-between items-center no-print">
-        <h3 class="font-bold text-sm">PRATINJAU DOKUMEN RESMI (PREVIEW)</h3>
-        <button onclick="tutupPreviewModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
-      </div>
-      <div class="p-8 overflow-y-auto flex-1 bg-white" id="modal-document-render-area"></div>
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 no-print">
-        <button onclick="tutupPreviewModal()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">Tutup</button>
-        <button onclick="window.print()" class="px-5 py-2.5 bg-rose-600 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<script>
     // =========================================================================
-    // URL GOOGLE SPREADSHEET DEPLOYMENT (Web App URL)
+    // URL GOOGLE SPREADSHEET DEPLOYMENT TERBARU (Web App URL)
     // =========================================================================
-    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbzpd4x9Ei1iRIiDoI1PoXlIF4rXg-J6rfxTvFTN73vFJg3TFlVoTNCv6t-Zx2zpFIq1/exec";
+    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbyOfPCIQIRaFBYkSYDJ1vW_Nj7jISo7L7EiTjkQN0C2Fn1Q7bVwvxKjM6FqT3mtVHH8/exec";
 
-    // DATA BACKUP 100% SESUAI GAMBAR SPREADSHEET ANDA
+    // DATA BACKUP VIA INTERNAL / FALLBACK LOKAL
     let cacheMaster = { 
       kelas: ["X DKV", "X ATP"], 
       mapel: ["Informatika", "Konsentrasi Keahlian DKV", "Dasar Dasar Budidaya Tanaman"], 
@@ -339,7 +25,7 @@
       ]
     };
 
-    // DATA SISWA BERDASARKAN KELAS SESUAI SPREADSHEET
+    // DATA SISWA BERDASARKAN KELAS
     const databaseSiswaLokal = {
       "X DKV": [
         "Awalia Alfatiha", "FAHMI ALFAROJI", "Fina Amala Sarni", "Hadisah", 
@@ -357,15 +43,12 @@
         if(document.getElementById(id)) document.getElementById(id).value = today;
       });
 
-      // Muat data lokal terlebih dahulu agar aplikasi langsung terisi datanya
       populateAllSelectors();
-      // Jalankan pengecekan koneksi cloud tanpa memblokir/membuat aplikasi eror
       fetchMasterDropdowns(); 
     });
 
     async function callCloudAPI(payload) {
       try {
-        // Menggunakan timeout 4 detik agar user tidak menunggu terlalu lama jika diblokir browser
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
 
@@ -408,7 +91,6 @@
         icon.className = "fa-solid fa-square-check text-sm";
         text.innerText = "Koneksi Cloud Aktif! Database Terkunci & Sinkron.";
       } else {
-        // Jika gagal fetch, ubah banner menjadi mode mandiri tanpa memunculkan alert eror yang mengganggu
         banner.className = "bg-blue-600 p-3 text-center text-xs font-semibold text-white no-print";
         icon.className = "fa-solid fa-circle-info text-sm";
         text.innerText = "Mode Sinkronisasi Lokal Aktif (Data Guru, Mapel, & Siswa Sesuai Lembar Kerja).";
@@ -504,109 +186,227 @@
       document.getElementById('nil-daftar-container').classList.add('hidden');
     }
 
+    // =========================================================================
+    // MODUL AGENDA JURNAL MENGANJAR (MELENGKAPI KODE YANG TERPOTONG)
+    // =========================================================================
     async function submitAgenda() {
-      const pack = [document.getElementById('age-tanggal').value, document.getElementById('age-kelas').value, document.getElementById('age-mapel').value, document.getElementById('age-materi').value, document.getElementById('age-status').value, document.getElementById('age-ketuntasan').value, document.getElementById('age-hadir').value, document.getElementById('age-absen').value, document.getElementById('age-pertemuan').value, document.getElementById('age-guru').value];
-      const msg = await callCloudAPI({ action: "tambahAgenda", pack: pack });
-      alert(msg ? msg : "Jurnal Agenda Guru Terkunci.");
-      document.getElementById('age-materi').value="";
+      const payload = {
+        action: "simpanAgenda",
+        tanggal: document.getElementById('age-tanggal').value,
+        kelas: document.getElementById('age-kelas').value,
+        mapel: document.getElementById('age-mapel').value,
+        materi: document.getElementById('age-materi').value,
+        status: document.getElementById('age-status').value,
+        ketuntasan: document.getElementById('age-ketuntasan').value,
+        hadir: document.getElementById('age-hadir').value,
+        absen: document.getElementById('age-absen').value,
+        pertemuan: document.getElementById('age-pertemuan').value,
+        guru: document.getElementById('age-guru').value
+      };
+
+      if(!payload.materi.trim()) return alert("Ringkasan uraian materi tidak boleh kosong!");
+
+      const msg = await callCloudAPI(payload);
+      alert(msg ? msg : "Jurnal Agenda Mengajar Harian Berhasil Kunci & Disimpan!");
     }
 
+    // =========================================================================
+    // MODUL BIMBINGAN KONSELING / BK
+    // =========================================================================
     async function submitBimbingan() {
-      const pack = [document.getElementById('bim-tanggal').value, document.getElementById('bim-nama-manual').value, document.getElementById('abs-kelas').value, document.getElementById('bim-kategori').value, document.getElementById('bim-masalah').value, document.getElementById('bim-solusi').value, document.getElementById('bim-guru').value];
-      const msg = await callCloudAPI({ action: "simpanBimbingan", pack: pack });
-      alert(msg ? msg : "Data Konseling Berhasil Dicatat.");
-      document.getElementById('bim-nama-manual').value=""; document.getElementById('bim-masalah').value=""; document.getElementById('bim-solusi').value="";
+      const payload = {
+        action: "simpanBimbingan",
+        tanggal: document.getElementById('bim-tanggal').value,
+        nama: document.getElementById('bim-nama-manual').value,
+        kategori: document.getElementById('bim-kategori').value,
+        masalah: document.getElementById('bim-masalah').value,
+        solusi: document.getElementById('bim-solusi').value,
+        guru: document.getElementById('bim-guru').value
+      };
+
+      if(!payload.nama.trim() || !payload.masalah.trim()) {
+        return alert("Nama Siswa dan Uraian Masalah wajib diisi!");
+      }
+
+      const msg = await callCloudAPI(payload);
+      alert(msg ? msg : "Log Kasus / Dokumen BK Berhasil Disimpan!");
     }
 
+    // =========================================================================
+    // MODUL KONFIGURASI MASTER & BULK IMPORT
+    // =========================================================================
+    async function saveMasterKeServer(tipe) {
+      const inputEl = document.getElementById(`add-master-${tipe.toLowerCase()}`);
+      const value = inputEl.value.trim();
+      
+      if(!value) return alert(`Nama ${tipe} baru tidak boleh kosong!`);
+
+      const msg = await callCloudAPI({ action: `tambahMaster${tipe}`, nama: value });
+      
+      // Sinkronisasi otomatis ke memori internal cache lokal
+      if(tipe === 'Guru') cacheMaster.guru.push(value);
+      if(tipe === 'Kelas') cacheMaster.kelas.push(value);
+      if(tipe === 'Mapel') cacheMaster.mapel.push(value);
+      
+      populateAllSelectors();
+      inputEl.value = "";
+      alert(msg ? msg : `Data Master ${tipe} berhasil ditambahkan.`);
+    }
+
+    function prosesImportMassalSiswa() {
+      const kelasTujuan = document.getElementById('imp-kelas-tujuan').value;
+      const rawText = document.getElementById('imp-area-nama').value;
+      
+      if(!rawText.trim()) return alert("Harap masukkan daftar nama siswa terlebih dahulu.");
+
+      const daftarNama = rawText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+      databaseSiswaLokal[kelasTujuan] = daftarNama;
+
+      alert(`Berhasil mengimpor massal ${daftarNama.length} siswa ke kelas ${kelasTujuan} di penyimpanan lokal.`);
+      document.getElementById('imp-area-nama').value = "";
+    }
+
+    // =========================================================================
+    // ENGINE GENERATOR PRATINJAU DOKUMEN CETAK RESMI (KOP SURAT KEDINASAN)
+    // =========================================================================
     function bukaPreviewModal(htmlContent) {
       document.getElementById('modal-document-render-area').innerHTML = htmlContent;
       document.getElementById('mega-preview-modal').classList.add('open');
     }
 
-    function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
-
-    async function saveMasterKeServer(jenis) {
-      const inp = document.getElementById('add-master-' + jenis.toLowerCase());
-      if (!inp.value.trim()) return alert('Isi data master terlebih dahulu!');
-      
-      if(jenis === 'Guru') cacheMaster.guru.push(inp.value.trim());
-      if(jenis === 'Kelas') cacheMaster.kelas.push(inp.value.trim());
-      if(jenis === 'Mapel') cacheMaster.mapel.push(inp.value.trim());
-      
-      const msg = await callCloudAPI({ action: "tambahMaster", jenis: jenis, val: inp.value.trim() });
-      alert(msg ? msg : "Master data berhasil ditambahkan ke sistem!");
-      inp.value = '';
-      populateAllSelectors();
+    function tutupPreviewModal() {
+      document.getElementById('mega-preview-modal').classList.remove('open');
     }
 
-    async function tarikRekapAbsenPDF() {
+    function generateKopSurat(judulDokumen) {
+      return `
+        <div style="text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 15px; font-weight: 800; tracking-wide: 1px;">PEMERINTAH PROVINSI / DINAS PENDIDIKAN</h2>
+          <h1 style="margin: 3px 0; font-size: 18px; font-weight: 800;">SISTEM E-ADMINISTRASI MANAJEMEN GURU PREMIUM</h1>
+          <p style="margin: 0; font-size: 11px; color: #475569;">Sistem Otomatis Real-time Synchronization Versi 6.1 Cloud Terintegrasi</p>
+        </div>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; text-decoration: underline; letter-spacing: 0.5px;">${judulDokumen}</h3>
+        </div>
+      `;
+    }
+
+    function generateKolomTandaTangan(namaGuru) {
+      return `
+        <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; font-size: 12px;" class="grid grid-cols-2">
+          <div></div>
+          <div style="text-align: center;">
+            <p style="margin-bottom: 60px;">Guru Mata Pelajaran,</p>
+            <p style="font-weight: bold; text-decoration: underline; margin: 0;">${namaGuru}</p>
+            <p style="margin: 0; color: #64748b; font-size: 10px;">NIP. -------------------------</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function tarikRekapAbsenPDF() {
       const kelas = document.getElementById('abs-kelas').value;
       const mapel = document.getElementById('abs-mapel').value;
-      let res = await callCloudAPI({ action: "getLaporanAbsensi", kelas: kelas, mapel: mapel });
+      const guru = document.getElementById('abs-guru').value;
+      const tgl = document.getElementById('abs-tanggal').value;
+      const pert = document.getElementById('abs-pertemuan').value;
+
+      let list = databaseSiswaLokal[kelas] || databaseSiswaLokal["X DKV"];
       
-      if(!res) {
-        let currentSiswa = databaseSiswaLokal[kelas] || databaseSiswaLokal["X DKV"];
-        res = { cols: [1], sList: currentSiswa, matriks: {} };
-        res.sList.forEach(n => { res.matriks[n] = {1: "Hadir"}; });
-      }
-      
-      let headHtml = `<tr><th style="border:1px solid #94a3b8; padding:8px; background:#f1f5f9;">NO</th><th style="border:1px solid #94a3b8; padding:8px; background:#f1f5f9;">NAMA LENGKAP SISWA</th>`;
-      res.cols.forEach(c => { headHtml += `<th style="border:1px solid #94a3b8; padding:8px; background:#f1f5f9; text-align:center;">P-${c}</th>`; });
-      headHtml += `</tr>`;
-      let bodyHtml = res.sList.map((nama, i) => {
-        let row = `<tr><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${i+1}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:600;">${nama}</td>`;
-        res.cols.forEach(c => { row += `<td style="border:1px solid #94a3b8; padding:8px; text-align:center; color:#10b981;">${res.matriks[nama][c] || 'Hadir'}</td>`; });
-        return row + `</tr>`;
+      let tableRows = list.map((nama, i) => {
+        const inputStatus = document.getElementById(`input-status-${i}`);
+        const status = inputStatus ? inputStatus.value : "Hadir";
+        return `<tr><td style="text-align:center;">${i+1}</td><td>${nama}</td><td style="text-align:center; font-weight:bold;">${status}</td></tr>`;
       }).join('');
-      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px; font-family:sans-serif;">\n<h2 style="margin:0; font-size:18px; color:#0f172a;">REKAPITULASI PRESENSI PEMBELAJARAN SISWA</h2>\n<p style="margin:5px 0; font-size:12px; color:#475569;">Kelas: ${kelas} | Mata Pelajaran: ${mapel}</p>\n</div>\n<table style="width:100%; border-collapse:collapse; font-size:13px; font-family:sans-serif;">${headHtml}<tbody>${bodyHtml}</tbody></table>`);
+
+      let content = `
+        ${generateKopSurat('REKAPITULASI PRESENSI KEHADIRAN SISWA')}
+        <table style="width: 100%; margin-bottom: 15px; font-size: 12px;">
+          <tr><td style="width: 120px;">Mata Pelajaran</td><td>: ${mapel}</td><td style="width: 100px;">Pertemuan Ke</td><td>: ${pert}</td></tr>
+          <tr><td>Kelas</td><td>: ${kelas}</td><td>Tanggal</td><td>: ${tgl}</td></tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse;" border="1" cellpadding="6">
+          <thead><tr style="background-color: #f1f5f9;"><th style="width: 50px;">NO</th><th>NAMA LENGKAP SISWA</th><th style="width: 150px;">STATUS H/S/I/A</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+        ${generateKolomTandaTangan(guru)}
+      `;
+      bukaPreviewModal(content);
     }
 
-    async function tarikRekapNilaiPDF() {
+    function tarikRekapNilaiPDF() {
       const kelas = document.getElementById('nil-kelas').value;
       const mapel = document.getElementById('nil-mapel').value;
-      let res = await callCloudAPI({ action: "getLaporanNilai", kelas: kelas, mapel: mapel });
-      if(!res) {
-        let currentSiswa = databaseSiswaLokal[kelas] || databaseSiswaLokal["X DKV"];
-        res = { cols: ["Asesmen 1"], sList: currentSiswa, matriks: {} };
-        currentSiswa.forEach(n => { res.matriks[n] = {"Asesmen 1": 80}; });
-      }
-      let headHtml = `<tr><th style="border:1px solid #94a3b8; padding:8px;">NO</th><th style="border:1px solid #94a3b8; padding:8px;">NAMA SISWA</th>`;
-      res.cols.forEach(c => { headHtml += `<th style="border:1px solid #94a3b8; padding:8px;">${c}</th>`; });
-      headHtml += `</tr>`;
-      let bodyHtml = res.sList.map((nama, i) => {
-        let row = `<tr><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${i+1}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:bold;">${nama}</td>`;
-        res.cols.forEach(c => { row += `<td style="border:1px solid #94a3b8; padding:8px; text-align:center; color:#2563eb;">${res.matriks[nama][c] !== undefined ? res.matriks[nama][c] : '80'}</td>`; });
-        return row + `</tr>`;
-      }).join('');
-      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>LEGER NILAI HASIL BELAJAR SISWA</h2><p>Kelas: ${kelas} | Mapel: ${mapel}</p></div><table style="width:100%; border-collapse:collapse;">${headHtml}<tbody>${bodyHtml}</tbody></table>`);
+      const guru = document.getElementById('nil-guru').value;
+      const judul = document.getElementById('nil-judul').value || "Asesmen Sumatif / Tugas";
+
+      let rows = [];
+      document.querySelectorAll('.row-nilai').forEach((inp, i) => {
+        rows.push(`<tr><td style="text-align:center;">${i+1}</td><td>${inp.getAttribute('data-nama')}</td><td style="text-align:center; font-weight:bold; color:#2563eb;">${inp.value}</td></tr>`);
+      });
+
+      if(rows.length === 0) return alert("Silakan muat dan isi lembar nilai siswa terlebih dahulu.");
+
+      let content = `
+        ${generateKopSurat('LEGER LAPORAN PENILAIAN SISWA')}
+        <table style="width: 100%; margin-bottom: 15px; font-size: 12px;">
+          <tr><td style="width: 120px;">Mata Pelajaran</td><td>: ${mapel}</td><td style="width: 120px;">Komponen Evaluasi</td><td>: ${judul}</td></tr>
+          <tr><td>Kelas</td><td>: ${kelas}</td><td>Tahun Evaluasi</td><td>: 2026</td></tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse;" border="1" cellpadding="6">
+          <thead><tr style="background-color: #f1f5f9;"><th style="width: 50px;">NO</th><th>NAMA LENGKAP SISWA</th><th style="width: 120px;">SKOR NILAI</th></tr></thead>
+          <tbody>${rows.join('')}</tbody>
+        </table>
+        ${generateKolomTandaTangan(guru)}
+      `;
+      bukaPreviewModal(content);
     }
 
-    async function tarikRekapAgendaPDF() {
+    function tarikRekapAgendaPDF() {
+      const tgl = document.getElementById('age-tanggal').value;
       const kelas = document.getElementById('age-kelas').value;
       const mapel = document.getElementById('age-mapel').value;
-      let list = await callCloudAPI({ action: "getLaporanAgenda", kelas: kelas, mapel: mapel });
-      if(!list || list.length === 0) list = [{tgl: new Date().toISOString().substring(0, 10), p:1, materi:"Materi Pengenalan Jurusan & Teori Dasar", status:"Kondusif", h:32, a:0, guru: document.getElementById('age-guru').value}];
-      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl}</td><td style="border:1px solid #94a3b8; padding:8px; text-align:center;">${r.p}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.materi}</td><td style="border:1px solid #94a3b8; text-align:center;">${r.status}</td><td style="border:1px solid #94a3b8; text-align:center;">H:${r.h}/A:${r.a}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
-      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>BUKU JURNAL AGENDA MENGAJAR GURU</h2></div><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #94a3b8; padding:8px;">TANGGAL</th><th style="border:1px solid #94a3b8; padding:8px;">PERTEMUAN</th><th style="border:1px solid #94a3b8; padding:8px;">URAIAN MATERI</th><th style="border:1px solid #94a3b8; padding:8px;">SITUASI KELAS</th><th style="border:1px solid #94a3b8; padding:8px;">ABSENSI</th><th style="border:1px solid #94a3b8; padding:8px;">GURU RELEVAN</th></tr></thead><tbody>${bodyHtml}</tbody></table>`);
+      const materi = document.getElementById('age-materi').value;
+      const status = document.getElementById('age-status').value;
+      const tuntas = document.getElementById('age-ketuntasan').value;
+      const hadir = document.getElementById('age-hadir').value;
+      const alpa = document.getElementById('age-absen').value;
+      const pert = document.getElementById('age-pertemuan').value;
+      const guru = document.getElementById('age-guru').value;
+
+      let content = `
+        ${generateKopSurat('JURNAL AGENDA MENGAJAR HARIAN GURU')}
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;" border="1" cellpadding="8">
+          <tr><td style="width: 180px; background-color: #f1f5f9; font-weight: bold;">Hari, Tanggal Pelaksanaan</td><td>${tgl} (Pertemuan Ke-${pert})</td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Rombongan Belajar & Mapel</td><td>Kelas <strong>${kelas}</strong> - ${mapel}</td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Ringkasan Materi Pokok</td><td>${materi || 'Belum diisi'}</td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Kondisi & Ketuntasan KBM</td><td>Suasana: <strong>${status}</strong> / Keberhasilan: <strong>${tuntas}</strong></td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Statistik Absensi Kelas</td><td>Hadir: ${hadir} Siswa / Tidak Hadir: ${alpa} Siswa</td></tr>
+        </table>
+        ${generateKolomTandaTangan(guru)}
+      `;
+      bukaPreviewModal(content);
     }
 
-    async function tarikRekapBimbinganPDF() {
-      const kelas = document.getElementById('abs-kelas').value;
-      let list = await callCloudAPI({ action: "getLaporanBimbingan", kelas: kelas });
-      if(!list || list.length === 0) list = [{tgl: new Date().toISOString().substring(0, 10), nama:"Siswa Contoh", kategori:"Kedisiplinan", masalah:"Atribut Kelengkapan Baju", solusi:"Diberikan pengarahan tertib", guru: "Guru Piket BK"}];
-      let bodyHtml = list.map(r => `<tr><td style="border:1px solid #94a3b8; padding:8px;">${r.tgl}</td><td style="border:1px solid #94a3b8; padding:8px; font-weight:bold;">${r.nama}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.kategori}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.masalah}</td><td style="border:1px solid #94a3b8; color:green;">${r.solusi}</td><td style="border:1px solid #94a3b8; padding:8px;">${r.guru}</td></tr>`).join('');
-      bukaPreviewModal(`<div style="text-align:center; margin-bottom:20px;"><h2>REKAPITULASI DATA BIMBINGAN KONSELING SISWA</h2></div><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f1f5f9;"><th style="border:1px solid #94a3b8; padding:8px;">TANGGAL</th><th style="border:1px solid #94a3b8; padding:8px;">NAMA SISWA</th><th style="border:1px solid #94a3b8; padding:8px;">KATEGORI</th><th style="border:1px solid #94a3b8; padding:8px;">MASALAH</th><th style="border:1px solid #94a3b8; padding:8px;">SOLUSI TERCAPAI</th><th style="border:1px solid #94a3b8; padding:8px;">PENDAMPING</th></tr></thead><tbody>${bodyHtml}</tbody></table>`);
-    }
+    function tarikRekapBimbinganPDF() {
+      const tgl = document.getElementById('bim-tanggal').value;
+      const nama = document.getElementById('bim-nama-manual').value;
+      const kat = document.getElementById('bim-kategori').value;
+      const masalah = document.getElementById('bim-masalah').value;
+      const solusi = document.getElementById('bim-solusi').value;
+      const guru = document.getElementById('bim-guru').value;
 
-    async function prosesImportMassalSiswa() {
-      const kelasTujuan = document.getElementById('imp-kelas-tujuan').value;
-      const rawTextNama = document.getElementById('imp-area-nama').value;
-      if(!kelasTujuan || !rawTextNama.trim()) return alert("Lengkapi data parameter import!");
-      const arrayNamaSiswa = rawTextNama.split('\n').map(n => n.trim()).filter(Boolean);
-      const msg = await callCloudAPI({ action: "importSiswaBulk", arrayNama: arrayNamaSiswa, kelasTujuan: kelasTujuan });
-      alert(msg ? msg : `Bulk Import Berhasil! ${arrayNamaSiswa.length} siswa siap dimasukkan.`);
-      document.getElementById('imp-area-nama').value = "";
+      let content = `
+        ${generateKopSurat('BERITA ACARA LAYANAN KONSULTASI / BK SISWA')}
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;" border="1" cellpadding="8">
+          <tr><td style="width: 180px; background-color: #f1f5f9; font-weight: bold;">Tanggal Kejadian Kasus</td><td>${tgl}</td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Nama Siswa Terkait</td><td><strong>${nama || 'Belum diisi'}</strong></td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Kategori Penanganan BK</td><td><span style="color: #e11d48; font-weight: bold;">${kat}</span></td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Uraian Masalah / Indikasi</td><td>${masalah || 'Belum diisi'}</td></tr>
+          <tr><td style="background-color: #f1f5f9; font-weight: bold;">Solusi / Rencana Tindak Lanjut</td><td>${solusi || 'Belum diisi'}</td></tr>
+        </table>
+        ${generateKolomTandaTangan(guru)}
+      `;
+      bukaPreviewModal(content);
     }
   </script>
-</body>
-</html>
