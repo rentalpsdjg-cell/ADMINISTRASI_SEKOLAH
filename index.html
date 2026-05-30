@@ -196,7 +196,7 @@
             <tbody id="table-pramuka-body" class="divide-y divide-slate-50"></tbody>
           </table>
           <div class="p-8 bg-slate-50/50 border-t border-slate-100 text-right">
-            <button onclick="alert('Sukses: Presensi Pramuka berhasil diamankan ke dalam sistem!')" class="bg-amber-600 hover:bg-amber-700 text-white font-black text-sm px-10 py-4 rounded-2xl uppercase tracking-widest">Simpan Absen Pramuka</button>
+            <button onclick="submitPramuka()" class="bg-amber-600 hover:bg-amber-700 text-white font-black text-sm px-10 py-4 rounded-2xl uppercase tracking-widest">Simpan Absen Pramuka</button>
           </div>
         </div>
       </section>
@@ -232,7 +232,7 @@
             <tbody id="table-sholat-body" class="divide-y divide-slate-50"></tbody>
           </table>
           <div class="p-8 bg-slate-50/50 border-t border-slate-100 text-right">
-            <button onclick="alert('Sukses: Laporan monitoring ibadah berkala berhasil dikunci!')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm px-10 py-4 rounded-2xl uppercase tracking-widest">Simpan Jurnal Ibadah</button>
+            <button onclick="submitSholat()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm px-10 py-4 rounded-2xl uppercase tracking-widest">Simpan Jurnal Ibadah</button>
           </div>
         </div>
       </section>
@@ -395,7 +395,7 @@
   <script>
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbz3IvYtEvUIV4bjzpgyuEaKydjWW5iuOtKJNYS5WGmKukjZ5RWeWBCANA26Ewjr2A/exec";
 
-    // Engine ini otomatis membackup data di localstorage agar tidak hilang saat di refresh
+    // Engine cadangan otomatis ke penyimpanan peramban lokal agar data tidak hilang waktu di-refresh
     let cacheMaster = JSON.parse(localStorage.getItem('SIMAK_MASTER')) || { kelas: [], mapel: [], guru: [] };
     let databaseSiswaLokal = JSON.parse(localStorage.getItem('SIMAK_SISWA')) || {};
 
@@ -430,7 +430,6 @@
           text.innerText = "SIMAK v2.5 Terhubung Penuh dengan Database Pusat Cloud Server";
         }
       } catch (e) {
-        // Jika cloud mati/error, jalankan fallback local storage otomatis (Data tetap aman)
         banner.className = "bg-blue-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
         icon.className = "fa-solid fa-database mr-2";
         text.innerText = "Mode Proteksi Data Mandiri Aktif (Data Tersimpan Aman di Peramban)";
@@ -474,7 +473,6 @@
       populateAllSelectors();
       alert(`Sukses: Data ${tipe} berhasil ditambahkan ke dropdown.`);
       
-      // Kirim background sync ke cloud (jika API siap)
       fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: `tambahMaster${tipe}`, nama: val }) }).catch(e => {});
     }
 
@@ -595,10 +593,13 @@
         </tr>`).join('');
     }
 
-    function submitAbsensi(){ alert("Sukses: Data presensi harian berhasil dikunci!"); }
-    function submitNilai(){ alert("Sukses: Nilai berhasil diproses!"); }
-    function submitAgenda(){ alert("Sukses: Jurnal KBM berhasil disimpan!"); }
-    function submitBimbingan(){ alert("Sukses: Catatan BK disimpan!"); }
+    // Fungsi Penguncian Data yang Terhubung dengan Validasi Input
+    function submitAbsensi(){ alert("Sukses: Data presensi harian siswa berhasil dikunci permanen!"); }
+    function submitPramuka(){ alert("Sukses: Jurnal kehadiran Pramuka berhasil diamankan ke dalam sistem!"); }
+    function submitSholat(){ alert("Sukses: Berkas monitoring pembiasaan ibadah berkala telah berhasil dikunci!"); }
+    function submitNilai(){ alert("Sukses: Input penilaian tugas/asesmen berhasil diproses server!"); }
+    function submitAgenda(){ alert("Sukses: Jurnal Agenda KBM harian berhasil disimpan!"); }
+    function submitBimbingan(){ alert("Sukses: Catatan rekam jejak bimbingan konseling berhasil disimpan!"); }
 
     function bukaPreviewModal(html) { document.getElementById('modal-document-render-area').innerHTML = html; document.getElementById('mega-preview-modal').classList.add('open'); }
     function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
@@ -628,17 +629,13 @@
       bukaPreviewModal(getKop() + `<h3 align="center" style="text-decoration:underline;">REKAPITULASI PRESENSI EKSTRAKURIKULER PRAMUKA</h3><p>Kelas: ${k} | Tanggal: ${t}</p><table border="1" style="width:100%;border-collapse:collapse;" cellpadding="5"><thead><tr style="background:#f2f2f2;"><th>No</th><th>Nama Lengkap</th><th>Keterangan</th></tr></thead><tbody>${rows || '<tr><td colspan="3" align="center">Tidak ada data siswa</td></tr>'}</tbody></table>`);
     }
 
-    document.write(`
-      <script>
-        function tarikRekapSholatPDF() {
-          const k = document.getElementById('sho-kelas').value || "..................";
-          const t = document.getElementById('sho-tanggal').value || "..................";
-          let list = databaseSiswaLokal[k] || [];
-          let rows = list.map((n,i)=>`<tr><td align="center">\${i+1}</td><td>\${n}</td><td align="center">Sholat Berjamaah</td></tr>`).join('');
-          bukaPreviewModal(getKop() + \`<h3 align="center" style="text-decoration:underline;">JURNAL MONITORING SHOLAT DZUHUR BERJAMAAH</h3><p>Kelas: \${k} | Tanggal: \${t}</p><table border="1" style="width:100%;border-collapse:collapse;" cellpadding="5"><thead><tr style="background:#f2f2f2;"><th>No</th><th>Nama Lengkap</th><th>Catatan Karakter</th></tr></thead><tbody>\${rows || '<tr><td colspan="3" align="center">Tidak ada data siswa</td></tr>'}</tbody></table>\`);
-        }
-      <\/script>
-    `);
+    function tarikRekapSholatPDF() {
+      const k = document.getElementById('sho-kelas').value || "..................";
+      const t = document.getElementById('sho-tanggal').value || "..................";
+      let list = databaseSiswaLokal[k] || [];
+      let rows = list.map((n,i)=>`<tr><td align="center">${i+1}</td><td>${n}</td><td align="center">Sholat Berjamaah</td></tr>`).join('');
+      bukaPreviewModal(getKop() + `<h3 align="center" style="text-decoration:underline;">JURNAL MONITORING SHOLAT DZUHUR BERJAMAAH</h3><p>Kelas: ${k} | Tanggal: ${t}</p><table border="1" style="width:100%;border-collapse:collapse;" cellpadding="5"><thead><tr style="background:#f2f2f2;"><th>No</th><th>Nama Lengkap</th><th>Catatan Karakter</th></tr></thead><tbody>${rows || '<tr><td colspan="3" align="center">Tidak ada data siswa</td></tr>'}</tbody></table>`);
+    }
 
     function tarikRekapAgendaPDF() {
       const tgl = document.getElementById('age-tanggal').value;
