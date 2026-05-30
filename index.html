@@ -2,95 +2,382 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Portal E-Guru - Input Massal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Sekolah - E-Guru</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .container { max-width: 500px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 120px; margin-bottom: 10px; padding: 10px; box-sizing: border-radius: 4px; }
-        button { background-color: #1a56db; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #1145bc; }
-        select { width: 100%; padding: 10px; margin-top: 20px; border-radius: 4px; }
-        .btn-danger { background-color: #dc2626; margin-top: 10px; }
-        .btn-danger:hover { background-color: #b91c1c; }
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-hover: #172554;
+            --secondary-color: #2563eb;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header & Main Controls */
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .btn-reset-global {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-reset-global:hover {
+            background-color: var(--danger-hover);
+        }
+
+        /* Grid Layout untuk Input */
+        .grid-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Elements */
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            background-color: #f8fafc;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: var(--secondary-color);
+            background-color: #fff;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .btn-block {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+
+        .btn-block:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Panel Penyesuaian Jadwal (Lebar Penuh) */
+        .full-card {
+            grid-column: span 2;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .flex-group {
+            flex: 1;
+        }
+
+        .flex-group label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .btn-action {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            height: 46px;
+            margin-bottom: 15px;
+        }
+
+        .status-empty {
+            color: #64748b;
+            text-align: center;
+            padding: 12px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h3>Unggah Massal Nama Guru</h3>
-    <p style="color: #666; font-size: 14px;">Gunakan baris baru (Enter) untuk memisahkan antar nama guru.</p>
-    
-    <textarea id="inputMassalGuru" placeholder="Contoh:&#10;Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd"></textarea>
-    <button onclick="simpanMassalGuru()">SIMPAN DATA GURU</button>
-    <button onclick="hapusSemuaData()" class="btn-danger">HAPUS SEMUA DATA</button>
 
-    <hr style="margin: 20px 0;">
+    <div class="header-panel">
+        <h2>Dashboard Manajemen Akademik</h2>
+        <button class="btn-reset-global" onclick="resetSemuaMenu()">
+            🔄 RESET SEMUA DATA SISTEM
+        </button>
+    </div>
 
-    <h3>Nama Guru Pengajar</h3>
-    <select id="dropdownGuru">
-        <option>-- Silakan Pilih --</option>
-    </select>
+    <div class="grid-input">
+        
+        <div class="card">
+            <div class="card-title">👨‍🏫 Tambah Guru</div>
+            <input type="text" id="namaGuruTunggal" placeholder="Nama Lengkap Guru + Gelar">
+            <button class="btn-block" onclick="simpanGuruTunggal()">Simpan Data Guru</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📥 Unggah Massal Nama Siswa</div>
+            <p class="hint">Masukkan daftar nama siswa secara kolektif. Gunakan baris baru (Enter) untuk memisahkan antar nama siswa.</p>
+            <textarea id="inputMassalSiswa" placeholder="Contoh:&#10;Andi Wijaya&#10;Budi Santoso&#10;Citra Lestari"></textarea>
+            <button class="btn-block" onclick="simpanMassalSiswa()">Unggah Massal Nama Siswa</button>
+        </div>
+
+        <div class="card" style="grid-column: span 2;">
+            <div class="card-title">👥 Unggah Massal Nama Guru</div>
+            <p class="hint">Masukkan daftar nama guru secara kolektif. Gunakan baris baru (Enter) untuk memisahkan antar nama guru.</p>
+            <textarea id="inputMassalGuru" placeholder="Contoh:&#10;Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd&#10;Budi Hartono, S.T"></textarea>
+            <button class="btn-block" onclick="simpanMassalGuru()">Unggah Massal Nama Guru</button>
+        </div>
+
+        <div class="card full-card">
+            <div class="card-title">⚙️ Penyesuaian Kelas & Jadwal</div>
+            <div class="flex-row">
+                <div class="flex-group">
+                    <label>Pilih Rombel / Kelas</label>
+                    <select id="dropdownRombel">
+                        <option>-- Data Masih Kosong --</option>
+                    </select>
+                </div>
+                <div class="flex-group">
+                    <label>Mata Pelajaran</label>
+                    <select id="dropdownMapel">
+                        <option>-- Data Masih Kosong --</option>
+                    </select>
+                </div>
+                <div class="flex-group">
+                    <label>Nama Guru Pengajar</label>
+                    <select id="dropdownGuru">
+                        <option>-- Data Masih Kosong --</option>
+                    </select>
+                </div>
+                <button class="btn-action" onclick="alert('Membuka daftar siswa untuk rombel terpilih...')">
+                    BUKA DAFTAR SISWA
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
-// Fungsi untuk memuat data ke dropdown saat halaman dibuka
-function muatDropdown() {
-    const dropdown = document.getElementById('dropdownGuru');
-    
-    // Ambil data dari localStorage, jika kosong buat array kosong []
-    const daftarGuru = JSON.parse(localStorage.getItem('database_guru')) || [];
-    
-    // Reset isi dropdown ke default
-    dropdown.innerHTML = '<option>-- Silakan Pilih --</option>';
-    
-    // Masukkan data guru yang valid ke dalam opsi dropdown
-    daftarGuru.forEach(function(nama) {
-        const opsi = document.createElement('option');
-        opsi.textContent = nama;
-        dropdown.appendChild(opsi);
-    });
-}
+    // --- FUNGSI APALIKASI JALAN PERTAMA KALI ---
+    window.onload = function() {
+        muatSemuaDropdown();
+    };
 
-// FUNGSI UTAMA: Memproses input teks massal menjadi data array
-function simpanMassalGuru() {
-    const formatTeks = document.getElementById('inputMassalGuru').value;
-    
-    // Perbaikan Alur: Memecah teks berdasarkan baris (Enter) dan menghapus spasi kosong yang tidak perlu
-    const barisNama = formatTeks.split('\n')
-                                .map(nama => nama.trim())
-                                .filter(nama => nama.length > 0); // Menolak baris kosong kosong
+    // --- SINKRONISASI & AMBIL DATA DARI DATABASE (LOCALSTORAGE) ---
+    function muatSemuaDropdown() {
+        // 1. Load Data Guru ke Dropdown
+        const listGuru = JSON.parse(localStorage.getItem('db_guru')) || [];
+        const dropGuru = document.getElementById('dropdownGuru');
+        if (listGuru.length > 0) {
+            dropGuru.innerHTML = '<option>-- Silakan Pilih --</option>';
+            listGuru.forEach(guru => {
+                let opt = document.createElement('option');
+                opt.textContent = guru;
+                dropGuru.appendChild(opt);
+            });
+        } else {
+            dropGuru.innerHTML = '<option>-- Data Masih Kosong --</option>';
+        }
 
-    if (barisNama.length === 0) {
-        alert("Proses Selesai! Berhasil menyimpan 0 nama guru. Mohon isi data terlebih dahulu.");
-        return;
+        // 2. Load Data Siswa / Rombel (Otomatis dibuat tiruan rombel jika data siswa ada)
+        const listSiswa = JSON.parse(localStorage.getItem('db_siswa')) || [];
+        const dropRombel = document.getElementById('dropdownRombel');
+        const dropMapel = document.getElementById('dropdownMapel');
+
+        if (listSiswa.length > 0) {
+            // Simulasi rombel terisi otomatis jika ada siswa
+            dropRombel.innerHTML = `
+                <option>-- Silakan Pilih --</option>
+                <option>Kelas X - IPA 1</option>
+                <option>Kelas XI - IPS 2</option>
+            `;
+            dropMapel.innerHTML = `
+                <option>-- Silakan Pilih --</option>
+                <option>Matematika</option>
+                <option>Bahasa Indonesia</option>
+                <option>Fisika / Sejarah</option>
+            `;
+        } else {
+            dropRombel.innerHTML = '<option>-- Data Masih Kosong --</option>';
+            dropMapel.innerHTML = '<option>-- Data Masih Kosong --</option>';
+        }
     }
 
-    // Ambil data lama di database (jika ada), lalu gabungkan dengan data baru
-    let databaseLama = JSON.parse(localStorage.getItem('database_guru')) || [];
-    let databaseBaru = databaseLama.concat(barisNama);
+    // --- PROSES SIMPAN: GURU TUNGGAL ---
+    function simpanGuruTunggal() {
+        const namaInput = document.getElementById('namaGuruTunggal').value.trim();
+        
+        if (namaInput === "") {
+            alert("Nama guru tidak boleh kosong!");
+            return;
+        }
 
-    // Simpan kembali ke dalam LocalStorage database browser
-    localStorage.setItem('database_guru', JSON.stringify(databaseBaru));
+        let dbGuru = JSON.parse(localStorage.getItem('db_guru')) || [];
+        dbGuru.push(namaInput);
+        localStorage.setItem('db_guru', JSON.stringify(dbGuru));
 
-    // Berikan notifikasi sesuai jumlah data nyata yang diproses
-    alert(`Proses Selesai! Berhasil menyimpan ${barisNama.length} nama guru.`);
-    
-    // Kosongkan form teks dan segarkan dropdown
-    document.getElementById('inputMassalGuru').value = '';
-    muatDropdown();
-}
-
-// FUNGSI UNTUK MENGHAPUS SEMUA DATA (RESET)
-function hapusSemuaData() {
-    if (confirm("Apakah Anda yakin ingin menghapus seluruh data guru di database?")) {
-        localStorage.removeItem('database_guru');
-        alert("Semua data guru berhasil dihapuskan!");
-        muatDropdown();
+        alert("Proses Selesai! Berhasil menyimpan 1 nama guru.");
+        document.getElementById('namaGuruTunggal').value = "";
+        muatSemuaDropdown();
     }
-}
 
-// Jalankan fungsi muat data otomatis setiap kali halaman dimuat
-window.onload = muatDropdown;
+    // --- PROSES SIMPAN: MASSAL GURU ---
+    function simpanMassalGuru() {
+        const teksArea = document.getElementById('inputMassalGuru').value;
+        
+        // Memecah baris teks, hapus spasi kosong, buang baris kosong
+        const kumpulanNama = teksArea.split('\n')
+                                     .map(n => n.trim())
+                                     .filter(n => n.length > 0);
+
+        if (kumpulanNama.length === 0) {
+            alert("Proses Selesai! Berhasil menyimpan 0 nama guru.");
+            return;
+        }
+
+        let dbGuru = JSON.parse(localStorage.getItem('db_guru')) || [];
+        dbGuru = dbGuru.concat(kumpulanNama);
+        localStorage.setItem('db_guru', JSON.stringify(dbGuru));
+
+        alert(`Proses Selesai! Berhasil menyimpan ${kumpulanNama.length} nama guru.`);
+        document.getElementById('inputMassalGuru').value = "";
+        muatSemuaDropdown();
+    }
+
+    // --- PROSES SIMPAN: MASSAL SISWA ---
+    function simpanMassalSiswa() {
+        const teksArea = document.getElementById('inputMassalSiswa').value;
+        const kumpulanSiswa = teksArea.split('\n')
+                                      .map(s => s.trim())
+                                      .filter(s => s.length > 0);
+
+        if (kumpulanSiswa.length === 0) {
+            alert("Proses Selesai! Berhasil menyimpan 0 nama siswa.");
+            return;
+        }
+
+        let dbSiswa = JSON.parse(localStorage.getItem('db_siswa')) || [];
+        dbSiswa = dbSiswa.concat(kumpulanSiswa);
+        localStorage.setItem('db_siswa', JSON.stringify(dbSiswa));
+
+        alert(`Proses Selesai! Berhasil menyimpan ${kumpulanSiswa.length} nama siswa.`);
+        document.getElementById('inputMassalSiswa').value = "";
+        muatSemuaDropdown();
+    }
+
+    // --- TOMBOL RESET GLOBAL: MENGHAPUS SEMUA MENU ---
+    function resetSemuaMenu() {
+        const konfirmasi1 = confirm("⚠️ PERINGATAN KERAS!\nTindakan ini akan menghapus:\n- Semua Data Guru\n- Semua Data Siswa\n- Pengaturan Rombel & Jadwal\n\nApakah Anda yakin ingin mengosongkan sistem?");
+        
+        if (konfirmasi1) {
+            const konfirmasi2 = confirm("Tekan 'OK' sekali lagi untuk mengonfirmasi pembersihan total.");
+            
+            if (konfirmasi2) {
+                // Menghapus database internal web browser
+                localStorage.removeItem('db_guru');
+                localStorage.removeItem('db_siswa');
+                
+                alert("Sistem Berhasil Direset! Semua data menu kini kembali kosong.");
+                
+                // Mengosongkan form input di layar
+                document.getElementById('namaGuruTunggal').value = "";
+                document.getElementById('inputMassalGuru').value = "";
+                document.getElementById('inputMassalSiswa').value = "";
+                
+                // Segarkan data dropdown secara real-time
+                muatSemuaDropdown();
+            }
+        }
+    }
 </script>
 
 </body>
