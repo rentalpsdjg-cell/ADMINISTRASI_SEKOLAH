@@ -38,9 +38,6 @@
     .active-i { background: #3b82f6 !important; color: white !important; transform: scale(1.1); }
     .active-a { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
 
-    .active-sholat { background: #059669 !important; color: white !important; transform: scale(1.05); }
-    .active-halangan { background: #db2777 !important; color: white !important; transform: scale(1.05); }
-
     #mega-preview-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 9999;
@@ -120,7 +117,7 @@
         <div class="flex gap-3">
           <div class="bg-white px-5 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-right">
             <p class="text-[10px] font-bold text-slate-400 uppercase">Status Sistem</p>
-            <p id="local-indicator" class="text-sm font-extrabold text-amber-600 flex items-center gap-2"><i class="fa-solid fa-database"></i> Database Engine Siap</p>
+            <p id="local-indicator" class="text-sm font-extrabold text-emerald-600 flex items-center gap-2"><i class="fa-solid fa-database"></i> Database Engine Siap</p>
           </div>
         </div>
       </header>
@@ -169,7 +166,6 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 glass-card p-6 rounded-[28px] shadow-xl">
           <div class="md:col-span-3 flex justify-between items-center mb-2">
             <h3 class="font-extrabold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-campground text-amber-600"></i> Jurnal Kehadiran Ekstra Kurikuler Pramuka</h3>
-            <button onclick="tarikRekapPramukaPDF()" class="bg-amber-700 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><i class="fa-solid fa-print mr-2"></i> Cetak PDF Pramuka</button>
           </div>
           <div>
             <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Pilih Rombel / Kelas</label>
@@ -205,7 +201,6 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 glass-card p-6 rounded-[28px] shadow-xl">
           <div class="md:col-span-3 flex justify-between items-center mb-2">
             <h3 class="font-extrabold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-mosque text-emerald-600"></i> Kontrol Pembiasaan Sholat Dzuhur Berjamaah</h3>
-            <button onclick="tarikRekapSholatPDF()" class="bg-emerald-700 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><i class="fa-solid fa-print mr-2"></i> Cetak PDF Sholat</button>
           </div>
           <div>
             <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Pilih Rombel / Kelas</label>
@@ -226,7 +221,7 @@
               <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 <th class="p-6 w-20 text-center">No</th>
                 <th class="p-6">Nama Lengkap Siswa</th>
-                <th class="p-6 text-right pr-12">Status Kehadiran Ibadah</th>
+                <th class="p-6 text-right pr-12">Status Kehadiran Ibadah (H=Ikut / A=Halangan)</th>
               </tr>
             </thead>
             <tbody id="table-sholat-body" class="divide-y divide-slate-50"></tbody>
@@ -239,9 +234,7 @@
 
       <section id="pane-nilai" class="panel space-y-8">
         <div class="glass-card p-8 rounded-[32px] shadow-xl">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black text-slate-800">Analisis Nilai Pembelajaran</h2>
-          </div>
+          <h2 class="text-xl font-black text-slate-800 mb-6">Analisis Nilai Pembelajaran</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Nama Tugas / Asesmen</label>
@@ -275,10 +268,7 @@
 
       <section id="pane-agenda" class="panel">
         <div class="max-w-3xl mx-auto glass-card p-10 rounded-[40px] shadow-2xl">
-          <div class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
-            <h2 class="text-2xl font-black text-slate-900">Isian Jurnal Agenda Mengajar</h2>
-            <button onclick="tarikRekapAgendaPDF()" class="bg-slate-900 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><i class="fa-solid fa-print mr-2"></i> Cetak Jurnal</button>
-          </div>
+          <h2 class="text-2xl font-black text-slate-900 mb-8 border-b border-slate-100 pb-4">Isian Jurnal Agenda Mengajar</h2>
           <div class="space-y-6">
             <div class="grid grid-cols-2 gap-4">
               <input type="date" id="age-tanggal" class="bg-slate-50 border-none p-4 rounded-2xl font-bold">
@@ -297,10 +287,7 @@
 
       <section id="pane-bimbingan" class="panel">
         <div class="glass-card p-8 rounded-[32px] shadow-xl">
-           <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-             <h2 class="text-xl font-black text-slate-900 tracking-tighter">Log Layanan Bimbingan Konseling (BK)</h2>
-             <button onclick="tarikRekapBKPDF()" class="bg-slate-900 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><i class="fa-solid fa-print mr-2"></i> Cetak Berkas BK</button>
-           </div>
+           <h2 class="text-xl font-black text-slate-900 tracking-tighter mb-6 border-b border-slate-100 pb-4">Log Layanan Bimbingan Konseling (BK)</h2>
            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="md:col-span-2 grid grid-cols-2 gap-4">
                 <div>
@@ -329,17 +316,14 @@
         <div class="glass-card p-10 rounded-[40px] text-center max-w-xl mx-auto">
             <i class="fa-solid fa-cloud-arrow-up text-6xl text-sky-400 mb-6"></i>
             <h2 class="text-2xl font-black text-slate-900 mb-4">Penyimpanan Perangkat Digital</h2>
-            <p class="text-slate-400 text-sm mb-8">Tautkan link penyimpanan luar Anda (seperti Google Drive) untuk membagikan file administrasi guru.</p>
             <input type="text" placeholder="https://drive.google.com/..." class="w-full bg-slate-50 p-4 rounded-2xl text-center font-bold text-sm mb-4 border-none">
             <button onclick="alert('Link berhasil ditautkan ke sistem!')" class="w-full bg-sky-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest">Perbarui Tautan Modul</button>
         </div>
       </section>
-
       <section id="pane-laporan" class="panel">
         <div class="glass-card p-10 rounded-[40px] text-center max-w-2xl mx-auto">
             <i class="fa-solid fa-file-invoice-dollar text-7xl text-blue-900 mb-6"></i>
             <h2 class="text-3xl font-black text-slate-900 mb-4 tracking-tighter">Laporan Rekapitulasi Kolektif</h2>
-            <p class="text-slate-400 font-medium mb-10">Penarikan otomatis berkas rekap absensi untuk diserahkan kepada Kepala Sekolah.</p>
             <button onclick="alert('Sedang mengompilasi rangkuman laporan eksekutif...')" class="w-full bg-blue-900 text-white font-black py-5 rounded-[24px] uppercase tracking-widest text-sm shadow-2xl">Buat Ringkasan Laporan</button>
         </div>
       </section>
@@ -348,11 +332,9 @@
         <div class="bg-amber-50 p-6 rounded-[22px] border border-amber-100 flex justify-between items-center flex-wrap gap-4">
             <div>
               <h2 class="text-lg font-black text-amber-900 mb-1">Pusat Pengisian Data Utama Instansi</h2>
-              <p class="text-xs text-amber-700 font-bold opacity-80">Tambahkan data guru, kelas, dan mata pelajaran baru di bawah ini agar terbaca di seluruh menu pilihan.</p>
+              <p class="text-xs text-amber-700 font-bold opacity-80">Sinkronisasikan data master lokal ke awan spreadsheet untuk pendataan utama dropdown.</p>
             </div>
-            <button onclick="resetSistemLokalTotal()" class="bg-red-600 hover:bg-red-700 text-white font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider transition">
-              <i class="fa-solid fa-trash-can mr-2"></i> Reset Data Mandiri
-            </button>
+            <button onclick="resetSistemLokalTotal()" class="bg-red-600 hover:bg-red-700 text-white font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider transition"><i class="fa-solid fa-trash-can mr-2"></i> Reset Data Mandiri</button>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -376,17 +358,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
             <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-users-gear text-blue-600"></i> Unggah Massal Nama Guru</h3>
-            <p class="text-xs text-slate-400 mb-4 font-medium">Masukkan daftar nama guru. Gunakan baris baru (Enter) untuk memisahkan.</p>
-            <textarea id="imp-area-guru" rows="6" placeholder="Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd&#10;Budi Hartono, S.T" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 border-none"></textarea>
-            <button onclick="prosesImportMassalGuru()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Semua Guru</button>
+            <textarea id="imp-area-guru" rows="6" placeholder="Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 border-none"></textarea>
+            <button onclick="prosesImportMassalGuru()" class="w-full bg-blue-800 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs">Eksekusi Impor Semua Guru</button>
           </div>
-
           <div class="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
             <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-import text-emerald-600"></i> Unggah Massal Nama Siswa</h3>
-            <p class="text-xs text-slate-400 mb-4 font-medium">Pilih kelas tujuan, lalu tempel seluruh nama siswa (pisahkan dengan Enter).</p>
             <select id="imp-kelas-tujuan" class="w-full bg-slate-50 p-4 rounded-2xl font-bold text-sm mb-4 border-none"></select>
-            <textarea id="imp-area-nama" rows="4" placeholder="Andi Wijaya&#10;Citra Lestari&#10;Dedi Kurniawan" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 border-none"></textarea>
-            <button onclick="prosesImportMassalSiswa()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Siswa</button>
+            <textarea id="imp-area-nama" rows="4" placeholder="Andi Wijaya&#10;Citra Lestari" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 border-none"></textarea>
+            <button onclick="prosesImportMassalSiswa()" class="w-full bg-slate-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs">Eksekusi Impor Siswa</button>
           </div>
         </div>
       </section>
@@ -407,15 +386,14 @@
   </div>
 
   <script>
-    // TAUTAN BARU GOOGLE APPS SCRIPT ANDA
-    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbzTc1sxTN7st9AEWSY8jPfs-qCLzEbn-FX4oKHtKlcLkPFt14l2cR7gk5u54VXmrvpq/exec";
+    const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbwKu5AZ3VxxMFBIicOQg6NKBp7fgY-ykueONzrEWMokXO73aFtDVamv2ipMJgnMXivc/exec";
 
     let cacheMaster = JSON.parse(localStorage.getItem('SIMAK_MASTER')) || { kelas: [], mapel: [], guru: [] };
     let databaseSiswaLokal = JSON.parse(localStorage.getItem('SIMAK_SISWA')) || {};
 
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().substring(0, 10);
-      ['abs-tanggal', 'age-tanggal', 'bim-tanggal', 'pra-tanggal', 'sho-tanggal'].forEach(id => {
+      ['pra-tanggal', 'sho-tanggal', 'age-tanggal', 'bim-tanggal'].forEach(id => {
         if(document.getElementById(id)) document.getElementById(id).value = today;
       });
       initSystemData();
@@ -425,40 +403,33 @@
       const banner = document.getElementById('db-status-banner');
       const text = document.getElementById('db-status-text');
       const icon = document.getElementById('db-status-icon');
-      
       populateAllSelectors();
 
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000); 
+        const tId = setTimeout(() => controller.abort(), 5000);
 
         const response = await fetch(CLOUD_API_URL, {
           method: 'POST',
           mode: 'cors',
-          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: "getMasterData" }),
           signal: controller.signal
         });
-        
-        clearTimeout(timeoutId);
+        clearTimeout(tId);
         const resJson = await response.json();
         
-        if(resJson && resJson.success && resJson.data.guru.length > 0) {
+        if(resJson && resJson.success) {
           cacheMaster = resJson.data;
           localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
           banner.className = "bg-emerald-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
           icon.className = "fa-solid fa-cloud-check mr-2";
           text.innerText = "SIMAK v2.5 Terhubung Penuh dengan Database Pusat Cloud Server";
-        } else {
-          throw new Error("Respons data kosong atau tidak valid.");
         }
       } catch (e) {
-        console.warn("Koneksi cloud bermasalah, menggunakan mode lokal mandiri:", e);
         banner.className = "bg-blue-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
         icon.className = "fa-solid fa-database mr-2";
         text.innerText = "Mode Proteksi Data Mandiri Aktif (Data Tersimpan Aman di Peramban)";
       }
-      
       populateAllSelectors();
     }
 
@@ -477,11 +448,11 @@
       });
     }
 
-    function switchPanel(panelName) {
+    function switchPanel(pName) {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      if(document.getElementById('pane-' + panelName)) document.getElementById('pane-' + panelName).classList.add('active');
+      if(document.getElementById('pane-' + pName)) document.getElementById('pane-' + pName).classList.add('active');
       document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-      if(document.getElementById('nav-' + panelName)) document.getElementById('nav-' + panelName).classList.add('active');
+      if(document.getElementById('nav-' + pName)) document.getElementById('nav-' + pName).classList.add('active');
     }
 
     function saveMasterKeServer(tipe) {
@@ -489,228 +460,193 @@
       const val = input.value.trim();
       if(!val) return alert("Isian tidak boleh kosong!");
 
-      const key = tipe.toLowerCase();
-      if(!cacheMaster[key].includes(val)) {
-        cacheMaster[key].push(val);
+      if(!cacheMaster[tipe.toLowerCase()].includes(val)) {
+        cacheMaster[tipe.toLowerCase()].push(val);
         localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
       }
       input.value = "";
       populateAllSelectors();
-      alert(`Sukses: Data ${tipe} berhasil ditambahkan.`);
       
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: `tambahMaster${tipe}`, nama: val }) }).catch(e => {});
+      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: `tambahMaster${tipe}`, nama: val }) })
+      .then(() => alert(`Sukses: ${tipe} tersimpan di Cloud.`));
     }
 
     function prosesImportMassalGuru() {
-      const textEl = document.getElementById('imp-area-guru');
-      const lines = textEl.value.split('\n').map(n => n.trim()).filter(Boolean);
-      if(lines.length === 0) return alert("Kosong!");
-
-      lines.forEach(nama => {
-        if(!cacheMaster.guru.includes(nama)) cacheMaster.guru.push(nama);
-      });
+      const tEl = document.getElementById('imp-area-guru');
+      const lines = tEl.value.split('\n').map(n => n.trim()).filter(Boolean);
+      lines.forEach(nama => { if(!cacheMaster.guru.includes(nama)) cacheMaster.guru.push(nama); });
       localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
       populateAllSelectors();
-      alert("Impor Guru Berhasil!");
-      textEl.value = "";
+      alert("Impor Guru Berhasil!"); tEl.value = "";
     }
 
     function prosesImportMassalSiswa() {
-      const targetKelas = document.getElementById('imp-kelas-tujuan').value;
-      const textEl = document.getElementById('imp-area-nama');
-      if(!targetKelas) return alert("Pilih kelas tujuan!");
-      
-      const lines = textEl.value.split('\n').map(n => n.trim()).filter(Boolean);
-      if(lines.length === 0) return alert("Kosong!");
-
-      if(!databaseSiswaLokal[targetKelas]) databaseSiswaLokal[targetKelas] = [];
-      lines.forEach(nama => {
-        if(!databaseSiswaLokal[targetKelas].includes(nama)) databaseSiswaLokal[targetKelas].push(nama);
-      });
+      const target = document.getElementById('imp-kelas-tujuan').value;
+      const tEl = document.getElementById('imp-area-nama');
+      if(!target) return alert("Pilih kelas tujuan!");
+      const lines = tEl.value.split('\n').map(n => n.trim()).filter(Boolean);
+      if(!databaseSiswaLokal[target]) databaseSiswaLokal[target] = [];
+      lines.forEach(nama => { if(!databaseSiswaLokal[target].includes(nama)) databaseSiswaLokal[target].push(nama); });
       localStorage.setItem('SIMAK_SISWA', JSON.stringify(databaseSiswaLokal));
-      alert("Impor Siswa Berhasil!");
-      textEl.value = "";
+      alert("Impor Siswa Berhasil!"); tEl.value = "";
     }
 
-    function resetSistemLokalTotal() {
-      if(confirm("Hapus seluruh pangkalan data lokal di peramban ini?")) {
-        localStorage.clear();
-        window.location.reload();
-      }
-    }
+    function resetSistemLokalTotal() { if(confirm("Hapus seluruh pangkalan data lokal?")) { localStorage.clear(); window.location.reload(); } }
 
-    // LOAD SISWA LOGIC
+    // RENDER GENERATOR TABEL MANAJEMEN SISWA
     function loadSiswaAbsen() {
-      const kelas = document.getElementById('abs-kelas').value;
-      if(!kelas) return alert("Pilih kelas!");
-      const container = document.getElementById('abs-daftar-container');
-      const body = document.getElementById('table-absen-body');
-      body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh 1", "Siswa Contoh 2"];
-      container.classList.remove('hidden');
-      siswa.forEach((nama, i) => {
+      const kelas = document.getElementById('abs-kelas').value; if(!kelas) return alert("Pilih kelas!");
+      const body = document.getElementById('table-absen-body'); body.innerHTML = "";
+      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh A", "Siswa Contoh B"];
+      document.getElementById('abs-daftar-container').classList.remove('hidden');
+      siswa.forEach((n, i) => {
         body.innerHTML += `
-          <tr class="hover:bg-slate-50 transition font-medium text-slate-700">
+          <tr class="hover:bg-slate-50 font-medium text-slate-700">
             <td class="p-6 text-center font-bold text-slate-400">${i+1}</td>
-            <td class="p-6 font-bold text-slate-900">${nama}</td>
+            <td class="p-6 font-bold text-slate-900">${n}</td>
             <td class="p-6 text-right pr-12 space-x-1">
-              <button class="btn-status active-h" onclick="toggleStatusBtn(this, 'H')">H</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'S')">S</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'I')">I</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'A')">A</button>
+              <button class="btn-status active-h" onclick="toggleStatusBtn(this,'H')">H</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'S')">S</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'I')">I</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'A')">A</button>
             </td>
           </tr>`;
       });
     }
 
     function loadSiswaPramuka() {
-      const kelas = document.getElementById('pra-kelas').value;
-      if(!kelas) return alert("Pilih kelas!");
-      const container = document.getElementById('pra-daftar-container');
-      const body = document.getElementById('table-pramuka-body');
-      body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh 1", "Siswa Contoh 2"];
-      container.classList.remove('hidden');
-      siswa.forEach((nama, i) => {
+      const kelas = document.getElementById('pra-kelas').value; if(!kelas) return alert("Pilih kelas!");
+      const body = document.getElementById('table-pramuka-body'); body.innerHTML = "";
+      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh A", "Siswa Contoh B"];
+      document.getElementById('pra-daftar-container').classList.remove('hidden');
+      siswa.forEach((n, i) => {
         body.innerHTML += `
-          <tr class="hover:bg-slate-50 transition">
+          <tr class="hover:bg-slate-50">
             <td class="p-6 text-center">${i+1}</td>
-            <td class="p-6 font-bold">${nama}</td>
+            <td class="p-6 font-bold">${n}</td>
             <td class="p-6 text-right pr-12 space-x-1">
-              <button class="btn-status active-h" onclick="toggleStatusBtn(this, 'H')">H</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'S')">S</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'I')">I</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'A')">A</button>
+              <button class="btn-status active-h" onclick="toggleStatusBtn(this,'H')">H</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'S')">S</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'I')">I</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'A')">A</button>
             </td>
           </tr>`;
       });
     }
 
     function loadSiswaSholat() {
-      const kelas = document.getElementById('sho-kelas').value;
-      if(!kelas) return alert("Pilih kelas!");
-      const container = document.getElementById('sho-daftar-container');
-      const body = document.getElementById('table-sholat-body');
-      body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh 1", "Siswa Contoh 2"];
-      container.classList.remove('hidden');
-      siswa.forEach((nama, i) => {
+      const kelas = document.getElementById('sho-kelas').value; if(!kelas) return alert("Pilih kelas!");
+      const body = document.getElementById('table-sholat-body'); body.innerHTML = "";
+      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh A", "Siswa Contoh B"];
+      document.getElementById('sho-daftar-container').classList.remove('hidden');
+      siswa.forEach((n, i) => {
         body.innerHTML += `
-          <tr class="hover:bg-slate-50 transition">
+          <tr class="hover:bg-slate-50">
             <td class="p-6 text-center">${i+1}</td>
-            <td class="p-6 font-bold">${nama}</td>
+            <td class="p-6 font-bold">${n}</td>
             <td class="p-6 text-right pr-12 space-x-1">
-              <button class="btn-status active-h" onclick="toggleStatusBtn(this, 'H')">Ikut</button>
-              <button class="btn-status" onclick="toggleStatusBtn(this, 'A')">Halangan</button>
+              <button class="btn-status active-h" onclick="toggleStatusBtn(this,'H')">H</button>
+              <button class="btn-status" onclick="toggleStatusBtn(this,'A')">A</button>
             </td>
           </tr>`;
       });
     }
 
     function loadSiswaNilai() {
-      const kelas = document.getElementById('nil-kelas').value;
-      if(!kelas) return alert("Pilih kelas!");
-      const container = document.getElementById('nil-daftar-container');
-      const body = document.getElementById('table-nilai-body');
-      body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh 1", "Siswa Contoh 2"];
-      container.classList.remove('hidden');
-      siswa.forEach((nama, i) => {
+      const kelas = document.getElementById('nil-kelas').value; if(!kelas) return alert("Pilih kelas!");
+      const body = document.getElementById('table-nilai-body'); body.innerHTML = "";
+      const siswa = databaseSiswaLokal[kelas] || ["Siswa Contoh A", "Siswa Contoh B"];
+      document.getElementById('nil-daftar-container').classList.remove('hidden');
+      siswa.forEach((n, i) => {
         body.innerHTML += `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-6 text-center">${i+1}</td>
-            <td class="p-6 font-bold">${nama}</td>
-            <td class="p-6 text-right pr-12"><input type="number" class="bg-slate-50 p-2 rounded-xl text-center font-bold w-20" value="100"></td>
-          </tr>`;
+          <tr class="hover:bg-slate-50"><td class="p-6 text-center">${i+1}</td><td class="p-6 font-bold">${n}</td>
+          <td class="p-6 text-right pr-12"><input type="number" class="bg-slate-50 p-2 rounded-xl text-center font-bold w-20 n-val" data-nama="${n}" value="100"></td></tr>`;
       });
     }
 
-    function toggleStatusBtn(btn, status) {
+    function toggleStatusBtn(btn, st) {
       btn.parentElement.querySelectorAll('.btn-status').forEach(b => b.className = "btn-status");
-      btn.classList.add('active-' + status.toLowerCase());
+      btn.classList.add('active-' + st.toLowerCase());
     }
 
-    // INTEGRASI KELUARAN CLOUD (FETCH ACTIONS)
+    // OPERASI PIPELINE PENGIRIMAN DATA AWAN (POST FETCH METHOD)
     function submitAbsensi() {
-      const payload = {
-        action: "submitAbsen",
-        tanggal: new Date().toLocaleDateString('id-ID'),
-        kelas: document.getElementById('abs-kelas').value,
-        mapel: document.getElementById('abs-mapel').value,
-        guru: document.getElementById('abs-guru').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Data presensi telah berhasil dikunci ke Cloud Google Sheets!"))
-      .catch(() => alert("Data tersimpan aman di lokal browser."));
+      let dataSiswa = [];
+      document.querySelectorAll('#table-absen-body tr').forEach(tr => {
+        const nama = tr.cells[1].innerText;
+        const act = tr.querySelector('.btn-status[class*="active-"]');
+        dataSiswa.push({ nama: nama, status: act ? act.innerText : 'H' });
+      });
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({
+          action: "submitAbsensi", kelas: document.getElementById('abs-kelas').value,
+          mapel: document.getElementById('abs-mapel').value, guru: document.getElementById('abs-guru').value, dataSiswa: dataSiswa
+        })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
     function submitPramuka() {
-      const payload = {
-        action: "submitPramuka",
-        tanggal: document.getElementById('pra-tanggal').value,
-        kelas: document.getElementById('pra-kelas').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Presensi Pramuka sukses dikirim ke Cloud!"))
-      .catch(() => alert("Disimpan di lokal browser."));
+      let dataSiswa = [];
+      document.querySelectorAll('#table-pramuka-body tr').forEach(tr => {
+        const nama = tr.cells[1].innerText;
+        const act = tr.querySelector('.btn-status[class*="active-"]');
+        dataSiswa.push({ nama: nama, status: act ? act.innerText : 'H' });
+      });
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({ action: "submitPramuka", kelas: document.getElementById('pra-kelas').value, tanggal: document.getElementById('pra-tanggal').value, dataSiswa: dataSiswa })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
     function submitSholat() {
-      const payload = {
-        action: "submitSholat",
-        tanggal: document.getElementById('sho-tanggal').value,
-        kelas: document.getElementById('sho-kelas').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Jurnal Ibadah sukses terkirim ke Cloud!"))
-      .catch(() => alert("Disimpan di lokal browser."));
+      let dataSiswa = [];
+      document.querySelectorAll('#table-sholat-body tr').forEach(tr => {
+        const nama = tr.cells[1].innerText;
+        const act = tr.querySelector('.btn-status[class*="active-"]');
+        dataSiswa.push({ nama: nama, status: act ? act.innerText : 'H' });
+      });
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({ action: "submitSholat", kelas: document.getElementById('sho-kelas').value, tanggal: document.getElementById('sho-tanggal').value, dataSiswa: dataSiswa })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
     function submitNilai() {
-      const payload = {
-        action: "submitNilai",
-        kelas: document.getElementById('nil-kelas').value,
-        judul: document.getElementById('nil-judul').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Kompilasi nilai berhasil terkirim ke Cloud!"))
-      .catch(() => alert("Disimpan di lokal browser."));
+      let dataNilai = [];
+      document.querySelectorAll('.n-val').forEach(input => { dataNilai.push({ nama: input.getAttribute('data-nama'), nilai: input.value }); });
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({ action: "submitNilai", kelas: document.getElementById('nil-kelas').value, judulTugas: document.getElementById('nil-judul').value, dataNilai: dataNilai })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
     function submitAgenda() {
-      const payload = {
-        action: "submitAgenda",
-        tanggal: document.getElementById('age-tanggal').value,
-        kelas: document.getElementById('age-kelas').value,
-        materi: document.getElementById('age-materi').value,
-        status: document.getElementById('age-status').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Jurnal Agenda KBM berhasil dikunci ke Cloud!"))
-      .catch(() => alert("Disimpan di lokal browser."));
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({
+          action: "submitAgenda", tanggal: document.getElementById('age-tanggal').value, kelas: document.getElementById('age-kelas').value,
+          materi: document.getElementById('age-materi').value, statusGrid: document.getElementById('age-status').value,
+          jumlahHadir: document.getElementById('age-hadir').value, jumlahAbsen: document.getElementById('age-absen').value
+        })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
     function submitBimbingan() {
-      const payload = {
-        action: "submitBK",
-        tanggal: document.getElementById('bim-tanggal').value,
-        kelas: document.getElementById('bim-kelas').value,
-        nama: document.getElementById('bim-nama-manual').value,
-        kategori: document.getElementById('bim-kategori').value,
-        masalah: document.getElementById('bim-masalah').value,
-        solusi: document.getElementById('bim-solusi').value
-      };
-      fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) })
-      .then(() => alert("Sukses: Catatan Kasus/Bimbingan BK sukses dikunci ke Cloud!"))
-      .catch(() => alert("Disimpan di lokal browser."));
+      fetch(CLOUD_API_URL, {
+        method: 'POST', mode: 'cors',
+        body: JSON.stringify({
+          action: "submitBimbingan", tanggal: document.getElementById('bim-tanggal').value, kelas: document.getElementById('bim-kelas').value,
+          namaSiswa: document.getElementById('bim-nama-manual').value, kategori: document.getElementById('bim-kategori').value,
+          masalah: document.getElementById('bim-masalah').value, solusi: document.getElementById('bim-solusi').value
+        })
+      }).then(r => r.json()).then(res => alert(res.message));
     }
 
-    // MODAL CONTROL & PREVIEW
+    // MODAL RENDER PRATINJAU DOKUMEN PDF
     function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
-    
     function tarikRekapAbsenPDF() {
-      const docArea = document.getElementById('modal-document-render-area');
-      docArea.innerHTML = `
+      document.getElementById('modal-document-render-area').innerHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
           <h2 style="font-size: 18px; font-weight: bold; text-transform: uppercase;">LAPORAN DOKUMEN PRESENSI KBM</h2>
           <p style="font-size: 12px; margin-top: 5px;">Sistem Informasi Manajemen Akademik - SIMAK v2.5</p>
@@ -720,14 +656,9 @@
           <tr><td style="width: 150px; font-weight:bold;">Kelas</td><td>: ${document.getElementById('abs-kelas').value || '[Belum Dipilih]'}</td></tr>
           <tr><td style="font-weight:bold;">Mata Pelajaran</td><td>: ${document.getElementById('abs-mapel').value || '[Belum Dipilih]'}</td></tr>
           <tr><td style="font-weight:bold;">Guru Pengajar</td><td>: ${document.getElementById('abs-guru').value || '[Belum Dipilih]'}</td></tr>
-        </table>
-      `;
+        </table>`;
       document.getElementById('mega-preview-modal').classList.add('open');
     }
-    function tarikRekapPramukaPDF() { alert('Pratinjau Pramuka Siap.'); }
-    function tarikRekapSholatPDF() { alert('Pratinjau Sholat Siap.'); }
-    function tarikRekapAgendaPDF() { alert('Pratinjau Agenda Siap.'); }
-    function tarikRekapBKPDF() { alert('Pratinjau BK Siap.'); }
   </script>
 </body>
 </html>
