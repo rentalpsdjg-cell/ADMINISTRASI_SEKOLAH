@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMAK v2.0 - SMKN 1 SINGKIL UTARA</title>
+  <title>SIMAK v2.0 - PORTAL ADMINISTRASI E-GURU</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -38,7 +38,6 @@
     .active-i { background: #3b82f6 !important; color: white !important; transform: scale(1.1); }
     .active-a { background: #ef4444 !important; color: white !important; transform: scale(1.1); }
 
-    /* Sistem Modal */
     #mega-preview-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 9999;
@@ -69,7 +68,7 @@
           <i class="fa-solid fa-shield-halved text-4xl"></i>
         </div>
         <h2 class="font-extrabold text-slate-900 leading-tight">SIMAK v2.0</h2>
-        <p class="text-[10px] font-bold text-sky-600 tracking-widest uppercase">SMKN 1 Singkil Utara</p>
+        <p class="text-[10px] font-bold text-sky-600 tracking-widest uppercase">E-GURU PORTAL</p>
       </div>
 
       <div class="space-y-6 flex-1">
@@ -103,8 +102,8 @@
         <div>
           <h1 class="text-3xl font-black text-slate-900 tracking-tighter">Portal Administrasi E-Guru</h1>
           <div class="flex items-center gap-2 mt-1">
-            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md uppercase">Provinsi Aceh</span>
-            <span class="text-slate-400 text-xs font-medium">SMK Negeri 1 Singkil Utara</span>
+            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md uppercase">Dinas Pendidikan</span>
+            <span class="text-slate-400 text-xs font-medium">Madrasah / Sekolah Menengah Atas</span>
           </div>
         </div>
         <div class="flex gap-3">
@@ -226,7 +225,7 @@
               <select id="bim-kategori" class="bg-slate-50 p-4 rounded-2xl font-bold">
                 <option>Sosial & Perilaku</option>
                 <option>Pelanggaran Kedisiplinan</option>
-                <option>Konsultasi Prestasi Academic</option>
+                <option>Konsultasi Prestasi Akademik</option>
               </select>
               <textarea id="bim-masalah" placeholder="Deskripsi kronologi masalah / kendala siswa..." class="md:col-span-2 bg-slate-50 p-4 rounded-2xl h-24 font-medium text-sm"></textarea>
               <textarea id="bim-solusi" placeholder="Tindakan lanjut / Solusi pemecahan masalah..." class="md:col-span-2 bg-slate-50 p-4 rounded-2xl h-24 font-medium text-sm"></textarea>
@@ -276,11 +275,12 @@
       <section id="pane-config" class="panel space-y-8">
         <div class="bg-amber-50 p-8 rounded-[32px] border border-amber-100">
             <h2 class="text-xl font-black text-amber-900 mb-2">Pusat Pengisian Data Utama Instansi</h2>
-            <p class="text-xs text-amber-700 font-bold opacity-80 uppercase tracking-tighter">Tambahkan entitas data guru, kelas, dan mata pelajaran baru untuk SMKN 1 Singkil Utara di sini.</p>
+            <p class="text-xs text-amber-700 font-bold opacity-80 uppercase tracking-tighter">Tambahkan entitas data guru, kelas, dan mata pelajaran baru di sini.</p>
         </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-[28px] border border-slate-200">
-            <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Tambah Guru</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Tambah Guru (Satuan)</p>
             <input type="text" id="add-master-guru" placeholder="Nama Lengkap Guru + Gelar" class="w-full bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold">
             <button onclick="saveMasterKeServer('Guru')" class="w-full bg-blue-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Guru</button>
           </div>
@@ -295,13 +295,22 @@
             <button onclick="saveMasterKeServer('Mapel')" class="w-full bg-sky-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Mapel</button>
           </div>
         </div>
-        <div class="bg-white p-8 rounded-[32px] border border-slate-200">
-          <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-import text-blue-600"></i> Unggah Massal Nama Siswa</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <select id="imp-kelas-tujuan" class="bg-slate-50 p-4 rounded-2xl font-bold"></select>
-            <textarea id="imp-area-nama" rows="5" placeholder="Tempel/Ketik daftar nama siswa di sini (Gunakan Enter untuk memisahkan setiap nama siswa)..." class="md:col-span-2 bg-slate-50 p-4 rounded-2xl font-medium text-sm"></textarea>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+            <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-users-gear text-blue-600"></i> Unggah Massal Nama Guru</h3>
+            <p class="text-xs text-slate-400 mb-4 font-medium">Masukkan daftar nama guru secara kolektif. Gunakan baris baru (Enter) untuk memisahkan antar nama guru.</p>
+            <textarea id="imp-area-guru" rows="6" placeholder="Contoh:&#10;Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd&#10;Budi Hartono, S.T" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 focus:ring-2 focus:ring-blue-500 border-none"></textarea>
+            <button onclick="prosesImportMassalGuru()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Semua Guru</button>
           </div>
-          <button onclick="prosesImportMassalSiswa()" class="mt-4 w-full bg-slate-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest">Eksekusi Impor Siswa</button>
+
+          <div class="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
+            <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-import text-emerald-600"></i> Unggah Massal Nama Siswa</h3>
+            <p class="text-xs text-slate-400 mb-4 font-medium">Pilih kelas tujuan terlebih dahulu, kemudian tempel seluruh nama siswa yang dipisahkan baris baru (Enter).</p>
+            <select id="imp-kelas-tujuan" class="w-full bg-slate-50 p-4 rounded-2xl font-bold text-sm mb-4 border-none"></select>
+            <textarea id="imp-area-nama" rows="3" placeholder="Contoh:&#10;Andi Wijaya&#10;Citra Lestari&#10;Dedi Kurniawan" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 focus:ring-2 focus:ring-emerald-500 border-none"></textarea>
+            <button onclick="prosesImportMassalSiswa()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Siswa</button>
+          </div>
         </div>
       </section>
 
@@ -313,7 +322,7 @@
       <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 no-print">
         <div class="flex items-center gap-3">
             <i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i>
-            <h4 class="font-black text-slate-800 text-sm uppercase tracking-widest">Arsip Resmi SMK Negeri 1 Singkil Utara</h4>
+            <h4 class="font-black text-slate-800 text-sm uppercase tracking-widest">Arsip Resmi Dokumen Administrasi Sekolah</h4>
         </div>
         <div class="flex gap-2">
           <button onclick="window.print()" class="bg-blue-600 text-white font-black text-[10px] px-6 py-2.5 rounded-xl uppercase transition hover:bg-blue-700">Cetak ke Kertas / PDF</button>
@@ -367,7 +376,7 @@
         cacheMaster = res; 
         banner.classList.replace('bg-slate-800', 'bg-emerald-600');
         icon.className = "fa-solid fa-cloud-check mr-2";
-        text.innerText = "SIMAK v2.0 Terhubung Penuh dengan Database Pusat SMKN 1 Singkil Utara";
+        text.innerText = "SIMAK v2.0 Terhubung Penuh dengan Database Pusat Cloud Server";
       } else {
         banner.classList.replace('bg-slate-800', 'bg-amber-600');
         icon.className = "fa-solid fa-wifi-slash mr-2";
@@ -410,6 +419,25 @@
       alert(`Sukses: Data ${tipe} berhasil ditambahkan!`);
     }
 
+    // --- FITUR BARU: PROSES IMPOR MASSAL GURU ---
+    function prosesImportMassalGuru() {
+      const text = document.getElementById('imp-area-guru').value;
+      if (!text.trim()) return alert("Silakan masukkan daftar nama guru terlebih dahulu!");
+      
+      const daftarGuruBaru = text.split('\n').map(n => n.trim()).filter(Boolean);
+      if (daftarGuruBaru.length === 0) return alert("Format teks tidak valid.");
+
+      // Gabungkan ke cache lokal
+      cacheMaster.guru = cacheMaster.guru.concat(daftarGuruBaru);
+      
+      // Kirim data kolektif ke server cloud (Opsional payload sesuai backend Anda)
+      callCloudAPI({ action: "tambahMasterGuruMassal", list: daftarGuruBaru });
+      
+      populateAllSelectors();
+      alert(`Berhasil mengimpor massal sejumlah ${daftarGuruBaru.length} nama guru baru ke dalam sistem!`);
+      document.getElementById('imp-area-guru').value = "";
+    }
+
     function prosesImportMassalSiswa() {
       const kelas = document.getElementById('imp-kelas-tujuan').value;
       const text = document.getElementById('imp-area-nama').value;
@@ -442,7 +470,7 @@
         : `<tr><td colspan="3" class="p-10 text-center font-bold text-slate-400 tracking-widest uppercase text-xs">Belum ada siswa di kelas ini. Silakan tambahkan lewat menu Pengaturan Sistem.</td></tr>`;
     }
     function setS(b,s){ b.parentElement.querySelectorAll('button').forEach(x=>x.className='btn-status'); b.classList.add('active-'+s); }
-    function submitAbsensi(){ alert("Sukses: Data presensi harian SMKN 1 Singkil Utara berhasil disimpan!"); }
+    function submitAbsensi(){ alert("Sukses: Data presensi harian berhasil disimpan!"); }
 
     function loadSiswaNilai() {
       const k = document.getElementById('nil-kelas').value;
@@ -461,13 +489,13 @@
     function bukaPreviewModal(html) { document.getElementById('modal-document-render-area').innerHTML = html; document.getElementById('mega-preview-modal').classList.add('open'); }
     function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
 
+    // Disesuaikan dengan format gambar kop resmi yang dikirimkan
     function getKop() {
       return `
         <div style="text-align:center;border-bottom:4px double #000;padding-bottom:15px;margin-bottom:25px;color:#000;">
-          <h2 style="margin:0;font-size:16px;font-weight:bold;">PEMERINTAH PROVINSI ACEH · DINAS PENDIDIKAN</h2>
-          <h1 style="margin:5px 0;font-size:22px;font-weight:900;">SMK NEGERI 1 SINGKIL UTARA</h1>
-          <p style="margin:0;font-size:11px;">Jl. Singkil - Rimo KM 12, Gosong Telaga Barat, Kec. Singkil Utara, Kab. Aceh Singkil</p>
-          <p style="margin:0;font-size:10px;font-style:italic;">Email: info@smkn1singkilutara.sch.id | Dokumen Administrasi Digital SIMAK</p>
+          <h2 style="margin:0;font-size:16px;font-weight:bold;letter-spacing:1px;">KEMENTERIAN AGAMA / DINAS PENDIDIKAN DAN KEBUDAYAAN</h2>
+          <h1 style="margin:5px 0;font-size:22px;font-weight:900;letter-spacing:0.5px;">MADRASAH / SEKOLAH MENENGAH ATAS E-GURU PORTAL</h1>
+          <p style="margin:0;font-size:12px;font-style:italic;">Jl. Jaringan Terpadu Cloud Server No. 5.8 Telp/Fax: (021) 20260530</p>
         </div>
       `;
     }
@@ -480,9 +508,8 @@
       bukaPreviewModal(getKop() + `<h3 align="center" style="text-decoration:underline;color:#000;">LAPORAN PRESENSI SISWA</h3><p style="color:#000;">Kelas: ${k} | Guru Pengajar: ${g}</p><table border="1" style="width:100%;border-collapse:collapse;color:#000;" cellpadding="5"><thead><tr style="background:#f2f2f2;"><th>No</th><th>Nama Lengkap Siswa</th><th>Status Kehadiran</th></tr></thead><tbody>${rows}</tbody></table>`);
     }
     
-    function tarikRekapNilaiPDF() { bukaPreviewModal(getKop() + `<h3 align="center" style="color:#000;">LEGER REKAPITULASI CAPAIAN NILAI SISWA</h3><p align="center" style="color:#000;">Arsip digital tersimpan permanen pada pangkalan data cloud SMKN 1 Singkil Utara.</p>`); }
+    function tarikRekapNilaiPDF() { bukaPreviewModal(getKop() + `<h3 align="center" style="color:#000;">LEGER REKAPITULASI CAPAIAN NILAI SISWA</h3><p align="center" style="color:#000;">Arsip digital tersimpan permanen pada pangkalan data cloud server.</p>`); }
     
-    // --- FITUR BARU: CETAK JURNAL ---
     function tarikRekapAgendaPDF() {
       const tgl = document.getElementById('age-tanggal').value || "..................";
       const kls = document.getElementById('age-kelas').value || "..................";
@@ -508,7 +535,7 @@
           <tr>
             <td width="50%"></td>
             <td align="center">
-              Singkil Utara, ${tgl}<br>Guru Pengajar,<br><br><br><br>
+              Jakarta, ${tgl}<br>Guru Pengajar,<br><br><br><br>
               ______________________
             </td>
           </tr>
@@ -517,7 +544,6 @@
       bukaPreviewModal(htmlKonten);
     }
 
-    // --- FITUR BARU: CETAK CATATAN BK ---
     function tarikRekapBKPDF() {
       const tgl = document.getElementById('bim-tanggal').value || "..................";
       const kls = document.getElementById('bim-kelas').value || "..................";
