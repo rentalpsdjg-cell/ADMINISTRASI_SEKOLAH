@@ -282,17 +282,17 @@
           <div class="bg-white p-6 rounded-[28px] border border-slate-200">
             <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Tambah Guru (Satuan)</p>
             <input type="text" id="add-master-guru" placeholder="Nama Lengkap Guru + Gelar" class="w-full bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold">
-            <button onclick="saveMasterKeServer('Guru')" class="w-full bg-blue-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Guru</button>
+            <button id="btn-save-guru" onclick="saveMasterKeServer('Guru')" class="w-full bg-blue-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Guru</button>
           </div>
           <div class="bg-white p-6 rounded-[28px] border border-slate-200">
             <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Tambah Rombel / Kelas</p>
             <input type="text" id="add-master-kelas" placeholder="Contoh: XII DKV 1" class="w-full bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold">
-            <button onclick="saveMasterKeServer('Kelas')" class="w-full bg-emerald-700 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Kelas</button>
+            <button id="btn-save-kelas" onclick="saveMasterKeServer('Kelas')" class="w-full bg-emerald-700 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Kelas</button>
           </div>
           <div class="bg-white p-6 rounded-[28px] border border-slate-200">
             <p class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Tambah Mata Pelajaran</p>
             <input type="text" id="add-master-mapel" placeholder="Nama Mata Pelajaran" class="w-full bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold">
-            <button onclick="saveMasterKeServer('Mapel')" class="w-full bg-sky-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Mapel</button>
+            <button id="btn-save-mapel" onclick="saveMasterKeServer('Mapel')" class="w-full bg-sky-900 text-white font-black text-[10px] py-3 rounded-xl uppercase">Simpan Data Mapel</button>
           </div>
         </div>
 
@@ -366,6 +366,7 @@
       }
     }
 
+    // Mengambil data teranyar dari server Apps Script & me-refresh UI
     async function fetchMasterDropdowns() {
       const banner = document.getElementById('db-status-banner');
       const text = document.getElementById('db-status-text');
@@ -385,6 +386,7 @@
       populateAllSelectors();
     }
 
+    // Menyusun elemen dropdown dari cache terupdate
     function populateAllSelectors() {
       const ids = {
         'abs-kelas': 'kelas', 'nil-kelas': 'kelas', 'age-kelas': 'kelas', 'imp-kelas-tujuan': 'kelas', 'lap-kelas': 'kelas', 'bim-kelas': 'kelas',
@@ -411,18 +413,32 @@
       if(targetNav) targetNav.classList.add('active');
     }
 
-    function saveMasterKeServer(tipe) {
+    // Menyimpan data satuan (Guru/Kelas/Mapel) dan langsung me-refresh dropdown otomatis
+    async function saveMasterKeServer(tipe) {
       const input = document.getElementById(`add-master-${tipe.toLowerCase()}`);
+      const btn = document.getElementById(`btn-save-${tipe.toLowerCase()}`);
       const val = input.value.trim();
+      
       if(!val) return alert("Bagian ini tidak boleh kosong!");
-      cacheMaster[tipe.toLowerCase()].push(val);
-      callCloudAPI({ action: `tambahMaster${tipe}`, nama: val });
-      input.value = "";
-      populateAllSelectors();
-      alert(`Sukses: Data ${tipe} berhasil ditambahkan!`);
+      
+      btn.disabled = true;
+      btn.innerText = "Menyimpan...";
+
+      try {
+        await callCloudAPI({ action: `tambahMaster${tipe}`, nama: val });
+        input.value = "";
+        // Refresh instan dari database cloud
+        await fetchMasterDropdowns();
+        alert(`Sukses: Data ${tipe} baru berhasil disimpan ke database dan menu pilihan diperbarui!`);
+      } catch(e) {
+        alert("Gagal menyimpan data ke server.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = `Simpan Data ${tipe}`;
+      }
     }
 
-    // --- SOLUSI UTAMA: PERBAIKAN IMPORT MASSAL GURU LANGSUNG KE GOOGLE SHEETS ---
+    // SUPER FIX: Mengimpor massal guru, lalu menyinkronkan ulang data dropdown agar langsung muncul
     async function prosesImportMassalGuru() {
       const textEl = document.getElementById('imp-area-guru');
       const btnEl = document.getElementById('btn-import-guru');
@@ -433,40 +449,39 @@
       const daftarGuruBaru = text.split('\n').map(n => n.trim()).filter(Boolean);
       if (daftarGuruBaru.length === 0) return alert("Format teks tidak valid.");
 
-      // Berikan indikator visual proses unggah sedang berjalan
       btnEl.disabled = true;
+      const originalText = btnEl.innerText;
       btnEl.innerText = `Menyimpan 0 / ${daftarGuruBaru.length} Guru Ke Database...`;
 
       let suksesCounter = 0;
 
-      // Loop pengiriman data satu per satu memanfaatkan endpoint backend 'tambahMasterGuru' yang sudah aktif
       for (let i = 0; i < daftarGuruBaru.length; i++) {
         const namaGuru = daftarGuruBaru[i];
         btnEl.innerText = `Menyimpan ${i + 1} / ${daftarGuruBaru.length} Guru Ke Database...`;
         
         try {
-          // Memanggil action bawaan yang sudah terbukti bekerja pada server Anda
           await fetch(CLOUD_API_URL, {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ action: "tambahMasterGuru", nama: namaGuru })
           });
-          
-          cacheMaster.guru.push(namaGuru);
           suksesCounter++;
         } catch (err) {
           console.error("Gagal mengunggah nama:", namaGuru, err);
         }
       }
 
-      // Kembalikan status tombol dan bersihkan input halaman
-      btnEl.disabled = false;
-      btnEl.innerText = "Eksekusi Impor Semua Guru";
       textEl.value = "";
+      btnEl.innerText = "Sinkronisasi Pilihan Dropdown...";
       
-      populateAllSelectors();
-      alert(`Proses Selesai! Berhasil menyimpan ${suksesCounter} dari ${daftarGuruBaru.length} nama guru langsung ke database cloud.`);
+      // Mengunduh ulang data terupdate dari Google Sheets
+      await fetchMasterDropdowns(); 
+
+      btnEl.disabled = false;
+      btnEl.innerText = originalText;
+      
+      alert(`Proses Selesai! Berhasil menyimpan ${suksesCounter} nama guru. Menu dropdown pilihan guru saat ini sudah aktif dan terperbarui.`);
     }
 
     function prosesImportMassalSiswa() {
@@ -562,13 +577,7 @@
           <p style="white-space:pre-line;font-style:italic;">${mtr}</p>
         </div>
         <table style="width:100%;margin-top:50px;color:#000;">
-          <tr>
-            <td width="50%"></td>
-            <td align="center">
-              Guru Pengajar,<br><br><br><br>
-              ______________________
-            </td>
-          </tr>
+          <tr><td width="50%"></td><td align="center">Guru Pengajar,<br><br><br><br>______________________</td></tr>
         </table>
       `;
       bukaPreviewModal(htmlKonten);
