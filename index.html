@@ -301,7 +301,7 @@
             <h3 class="font-black text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-users-gear text-blue-600"></i> Unggah Massal Nama Guru</h3>
             <p class="text-xs text-slate-400 mb-4 font-medium">Masukkan daftar nama guru secara kolektif. Gunakan baris baru (Enter) untuk memisahkan antar nama guru.</p>
             <textarea id="imp-area-guru" rows="6" placeholder="Contoh:&#10;Dr. Ahmad Fauzi, M.Pd&#10;Siti Rahma, S.Pd&#10;Budi Hartono, S.T" class="w-full bg-slate-50 p-4 rounded-2xl font-medium text-sm mb-4 focus:ring-2 focus:ring-blue-500 border-none"></textarea>
-            <button onclick="prosesImportMassalGuru()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Semua Guru</button>
+            <button id="btn-import-guru" onclick="prosesImportMassalGuru()" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs transition">Eksekusi Impor Semua Guru</button>
           </div>
 
           <div class="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm">
@@ -361,7 +361,7 @@
         const resJson = await response.json();
         return resJson.success ? resJson.data : null;
       } catch (e) {
-        console.warn("Server Cloud penampung data belum siap. Berjalan di memori lokal sementara.", e);
+        console.warn("Koneksi gagal atau dihentikan.", e);
         return null;
       }
     }
@@ -374,11 +374,11 @@
       const res = await callCloudAPI({ action: "getMasterData" });
       if(res && res.guru && res.guru.length > 0) { 
         cacheMaster = res; 
-        banner.classList.replace('bg-slate-800', 'bg-emerald-600');
+        banner.className = "bg-emerald-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
         icon.className = "fa-solid fa-cloud-check mr-2";
         text.innerText = "SIMAK v2.0 Terhubung Penuh dengan Database Pusat Cloud Server";
       } else {
-        banner.classList.replace('bg-slate-800', 'bg-amber-600');
+        banner.className = "bg-amber-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
         icon.className = "fa-solid fa-wifi-slash mr-2";
         text.innerText = "Mode Data Lokal Aktif - Silakan Lengkapi Data Master di Menu Pengaturan";
       }
@@ -403,9 +403,12 @@
 
     function switchPanel(panelName) {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('pane-' + panelName).classList.add('active');
+      const targetPane = document.getElementById('pane-' + panelName);
+      if(targetPane) targetPane.classList.add('active');
+      
       document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('nav-' + panelName).classList.add('active');
+      const targetNav = document.getElementById('nav-' + panelName);
+      if(targetNav) targetNav.classList.add('active');
     }
 
     function saveMasterKeServer(tipe) {
@@ -419,23 +422,51 @@
       alert(`Sukses: Data ${tipe} berhasil ditambahkan!`);
     }
 
-    // --- FITUR BARU: PROSES IMPOR MASSAL GURU ---
-    function prosesImportMassalGuru() {
-      const text = document.getElementById('imp-area-guru').value;
+    // --- SOLUSI UTAMA: PERBAIKAN IMPORT MASSAL GURU LANGSUNG KE GOOGLE SHEETS ---
+    async function prosesImportMassalGuru() {
+      const textEl = document.getElementById('imp-area-guru');
+      const btnEl = document.getElementById('btn-import-guru');
+      const text = textEl.value;
+      
       if (!text.trim()) return alert("Silakan masukkan daftar nama guru terlebih dahulu!");
       
       const daftarGuruBaru = text.split('\n').map(n => n.trim()).filter(Boolean);
       if (daftarGuruBaru.length === 0) return alert("Format teks tidak valid.");
 
-      // Gabungkan ke cache lokal
-      cacheMaster.guru = cacheMaster.guru.concat(daftarGuruBaru);
-      
-      // Kirim data kolektif ke server cloud (Opsional payload sesuai backend Anda)
-      callCloudAPI({ action: "tambahMasterGuruMassal", list: daftarGuruBaru });
+      // Berikan indikator visual proses unggah sedang berjalan
+      btnEl.disabled = true;
+      btnEl.innerText = `Menyimpan 0 / ${daftarGuruBaru.length} Guru Ke Database...`;
+
+      let suksesCounter = 0;
+
+      // Loop pengiriman data satu per satu memanfaatkan endpoint backend 'tambahMasterGuru' yang sudah aktif
+      for (let i = 0; i < daftarGuruBaru.length; i++) {
+        const namaGuru = daftarGuruBaru[i];
+        btnEl.innerText = `Menyimpan ${i + 1} / ${daftarGuruBaru.length} Guru Ke Database...`;
+        
+        try {
+          // Memanggil action bawaan yang sudah terbukti bekerja pada server Anda
+          await fetch(CLOUD_API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: "tambahMasterGuru", nama: namaGuru })
+          });
+          
+          cacheMaster.guru.push(namaGuru);
+          suksesCounter++;
+        } catch (err) {
+          console.error("Gagal mengunggah nama:", namaGuru, err);
+        }
+      }
+
+      // Kembalikan status tombol dan bersihkan input halaman
+      btnEl.disabled = false;
+      btnEl.innerText = "Eksekusi Impor Semua Guru";
+      textEl.value = "";
       
       populateAllSelectors();
-      alert(`Berhasil mengimpor massal sejumlah ${daftarGuruBaru.length} nama guru baru ke dalam sistem!`);
-      document.getElementById('imp-area-guru').value = "";
+      alert(`Proses Selesai! Berhasil menyimpan ${suksesCounter} dari ${daftarGuruBaru.length} nama guru langsung ke database cloud.`);
     }
 
     function prosesImportMassalSiswa() {
@@ -489,7 +520,6 @@
     function bukaPreviewModal(html) { document.getElementById('modal-document-render-area').innerHTML = html; document.getElementById('mega-preview-modal').classList.add('open'); }
     function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
 
-    // Disesuaikan dengan format gambar kop resmi yang dikirimkan
     function getKop() {
       return `
         <div style="text-align:center;border-bottom:4px double #000;padding-bottom:15px;margin-bottom:25px;color:#000;">
@@ -535,7 +565,7 @@
           <tr>
             <td width="50%"></td>
             <td align="center">
-              Jakarta, ${tgl}<br>Guru Pengajar,<br><br><br><br>
+              Guru Pengajar,<br><br><br><br>
               ______________________
             </td>
           </tr>
