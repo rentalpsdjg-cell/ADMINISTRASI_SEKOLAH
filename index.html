@@ -112,7 +112,7 @@
       
       <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6 no-print">
         <div>
-          <h1 class="text-3xl font-black text-slate-900 tracking-tighter">Portal Administrasi E-Guru</h1>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tighter">Portal Administrative E-Guru</h1>
           <div class="flex items-center gap-2 mt-1">
             <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md uppercase">Dinas Pendidikan</span>
             <span class="text-slate-400 text-xs font-medium">Madrasah / Sekolah Menengah Atas</span>
@@ -227,7 +227,7 @@
               <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 <th class="p-6 w-20 text-center">No</th>
                 <th class="p-6">Nama Lengkap Siswa</th>
-                <th class="p-6 text-right pr-12">Status Kehadiran Ibadah (Sholat / Halangan / Alfa)</th>
+                <th class="p-6 text-right pr-12">Status Kehadiran Ibadah</th>
               </tr>
             </thead>
             <tbody id="table-sholat-body" class="divide-y divide-slate-50"></tbody>
@@ -258,9 +258,9 @@
           </div>
         </div>
         <div id="nil-daftar-container" class="hidden glass-card rounded-[32px] overflow-hidden">
-          <table class="w-full">
+          <table class="w-full text-left">
             <thead class="bg-slate-50">
-              <tr class="text-[10px] font-black text-slate-400 uppercase text-left">
+              <tr class="text-[10px] font-black text-slate-400 uppercase">
                 <th class="p-4 text-center w-20">No</th>
                 <th class="p-4">Nama Lengkap Siswa</th>
                 <th class="p-4 w-40">Input Angka Nilai</th>
@@ -338,7 +338,7 @@
 
       <section id="pane-laporan" class="panel">
         <div class="glass-card p-10 rounded-[40px] text-center max-w-2xl mx-auto">
-            <i class="fa-solid fa-file-invoice text-7xl text-blue-900 mb-6"></i>
+            <i class="fa-solid fa-file-contract text-7xl text-blue-900 mb-6"></i>
             <h2 class="text-3xl font-black text-slate-900 mb-4 tracking-tighter">Laporan Rekapitulasi Kolektif</h2>
             <p class="text-slate-400 font-medium mb-10">Penarikan otomatis berkas rekap absensi untuk diserahkan kepada Kepala Sekolah.</p>
             <button onclick="alert('Sedang mengompilasi rangkuman laporan eksekutif...')" class="w-full bg-blue-900 text-white font-black py-5 rounded-[24px] uppercase tracking-widest text-sm shadow-2xl">Buat Ringkasan Laporan</button>
@@ -408,6 +408,7 @@
   </div>
 
   <script>
+    // MASUKKAN URL GOOGLE APPS SCRIPT WEB APP ANDA DI SINI
     const CLOUD_API_URL = "https://script.google.com/macros/s/AKfycbzo-vk6quVXaapKLAjKPotnZLAeQyAQ0iSrdbYmYhUvpYQy_jG-qrhVOmcOGPuWJRIk/exec";
 
     let cacheMaster = JSON.parse(localStorage.getItem('SIMAK_MASTER')) || { kelas: [], mapel: [], guru: [] };
@@ -415,7 +416,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().substring(0, 10);
-      ['age-tanggal', 'bim-tanggal', 'pra-tanggal', 'sho-tanggal'].forEach(id => {
+      ['pra-tanggal', 'sho-tanggal', 'age-tanggal', 'bim-tanggal'].forEach(id => {
         if(document.getElementById(id)) document.getElementById(id).value = today;
       });
       initSystemData();
@@ -439,14 +440,14 @@
         if(resJson && resJson.success) {
           cacheMaster = resJson.data;
           localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
-          banner.className = "bg-emerald-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
-          icon.className = "fa-solid fa-cloud-check mr-2";
-          text.innerText = "SIMAK v2.5 Terhubung Penuh dengan Database Pusat Cloud Server";
+          if(banner) banner.className = "bg-emerald-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
+          if(icon) icon.className = "fa-solid fa-cloud-check mr-2";
+          if(text) text.innerText = "SIMAK v2.5 Terhubung Penuh dengan Database Pusat Cloud Server";
         }
       } catch (e) {
-        banner.className = "bg-blue-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
-        icon.className = "fa-solid fa-database mr-2";
-        text.innerText = "Mode Proteksi Data Mandiri Aktif (Data Tersimpan Aman di Peramban)";
+        if(banner) banner.className = "bg-blue-600 p-2.5 text-center text-[10px] font-bold text-white uppercase tracking-[2px] no-print";
+        if(icon) icon.className = "fa-solid fa-database mr-2";
+        if(text) text.innerText = "Mode Proteksi Data Mandiri Aktif (Data Tersimpan Aman di Peramban)";
       }
       populateAllSelectors();
     }
@@ -490,29 +491,69 @@
       fetch(CLOUD_API_URL, { method: 'POST', mode: 'cors', body: JSON.stringify({ action: `tambahMaster${tipe}`, nama: val }) }).catch(e => {});
     }
 
+    // 🔥 PERBAIKAN UTAMA: PROSES UNGGAH MASSAL GURU (LANGSUNG TEMBAK SPREADSHEET CLOUD)
     function prosesImportMassalGuru() {
       const textEl = document.getElementById('imp-area-guru');
       const lines = textEl.value.split('\n').map(n => n.trim()).filter(Boolean);
-      if(lines.length === 0) return alert("Input nama guru kosong.");
+      
+      if(lines.length === 0) {
+        alert("Input nama guru kosong.");
+        return;
+      }
 
+      let namaBaruUntukDikirimi = [];
       let updateCount = 0;
+
       lines.forEach(nama => {
         if(!cacheMaster.guru.includes(nama)) {
           cacheMaster.guru.push(nama);
+          namaBaruUntukDikirimi.push(nama); // Masukkan list guru baru ke penampung array
           updateCount++;
         }
       });
 
-      localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
-      populateAllSelectors();
-      alert(`Proses Selesai! Berhasil menyimpan ${updateCount} nama guru.`);
+      if (updateCount > 0) {
+        // 1. Simpan backup lokal ke browser agar dropdown langsung terisi
+        localStorage.setItem('SIMAK_MASTER', JSON.stringify(cacheMaster));
+        populateAllSelectors();
+
+        const bannerText = document.getElementById('db-status-text');
+        if(bannerText) bannerText.innerText = "SEDANG MENYINKRONKAN DATA MASSAL GURU KE DATABASE PUSAT SPREADSHEET...";
+
+        // 2. Kirim paket array data secara kolektif ke Apps Script Backend
+        fetch(CLOUD_API_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ 
+            action: "tambahMasterGuruMassal", 
+            daftarGuru: namaBaruUntukDikirimi 
+          })
+        })
+        .then(res => res.json())
+        .then(resJson => {
+          if(resJson && resJson.success) {
+            alert(`Sukses Sinkronisasi Cloud! ${updateCount} nama guru baru berhasil didaftarkan ke Spreadsheet.`);
+            initSystemData(); // Refresh pangkalan data utama
+          } else {
+            alert("Data masuk sementara ke lokal browser, namun gagal masuk ke spreadsheet cloud: " + (resJson.message || "Error server"));
+          }
+        })
+        .catch(e => {
+          alert("Jaringan sibuk. Data guru Anda telah dicadangkan dengan aman di browser lokal Anda.");
+        });
+
+      } else {
+        alert("Semua nama guru yang Anda masukkan sudah terdaftar sebelumnya.");
+      }
+
       textEl.value = "";
     }
 
     function prosesImportMassalSiswa() {
       const targetKelas = document.getElementById('imp-kelas-tujuan').value;
       const textEl = document.getElementById('imp-area-nama');
-      if(!targetKelas) return alert("Pilih kelas tujuan terlebih dahulu!");
+      if(!targetKelas) return alert("Pilih kelas sasaran siswa terlebih dahulu!");
       
       const lines = textEl.value.split('\n').map(n => n.trim()).filter(Boolean);
       if(lines.length === 0) return alert("Input nama siswa kosong.");
@@ -528,25 +569,25 @@
       });
 
       localStorage.setItem('SIMAK_SISWA', JSON.stringify(databaseSiswaLokal));
-      alert(`Proses Selesai! Berhasil memproses ${updateCount} siswa ke kelas ${targetKelas}.`);
+      alert(`Proses Selesai! Berhasil mengimpor ${updateCount} siswa ke dalam rombel ${targetKelas}.`);
       textEl.value = "";
     }
 
     function resetSistemLokalTotal() {
-      if(confirm("⚠️ PERINGATAN!\nHapus seluruh pangkalan data lokal di peramban ini?")) {
+      if(confirm("⚠️ PERINGATAN!\nHapus pangkalan data utama lokal peramban ini?")) {
         localStorage.removeItem('SIMAK_MASTER');
         localStorage.removeItem('SIMAK_SISWA');
         window.location.reload();
       }
     }
 
-    // INTERAKSI PRESENSI SISWA KBM
+    // LOGIKA PRESENSI KBM SISWA
     function loadSiswaAbsen() {
       const kelas = document.getElementById('abs-kelas').value;
       if(!kelas) return alert("Pilih kelas terlebih dahulu!");
       const body = document.getElementById('table-absen-body');
       body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Contoh Siswa A", "Contoh Siswa B"];
+      const siswa = databaseSiswaLokal[kelas] || ["Contoh Siswa Utama A", "Contoh Siswa Utama B"];
       document.getElementById('abs-daftar-container').classList.remove('hidden');
 
       siswa.forEach((nama, i) => {
@@ -554,7 +595,7 @@
         tr.className = "hover:bg-slate-50/80 transition font-medium text-slate-700";
         tr.innerHTML = `
           <td class="p-6 text-center font-bold text-slate-400">${i + 1}</td>
-          <td class="p-6 font-bold text-slate-900 data-nama">${nama}</td>
+          <td class="p-6 font-bold text-slate-900">${nama}</td>
           <td class="p-6 text-right pr-12 space-x-1">
             <button class="btn-status active-h" onclick="toggleStatusBtn(this, 'H')">H</button>
             <button class="btn-status" onclick="toggleStatusBtn(this, 'S')">S</button>
@@ -565,7 +606,7 @@
       });
     }
 
-    // INTERAKSI PRESENSI PRAMUKA
+    // LOGIKA PRESENSI PRAMUKA
     function loadSiswaPramuka() {
       const kelas = document.getElementById('pra-kelas').value;
       if(!kelas) return alert("Pilih kelas terlebih dahulu!");
@@ -579,7 +620,7 @@
         tr.className = "hover:bg-slate-50/80 transition font-medium text-slate-700";
         tr.innerHTML = `
           <td class="p-6 text-center font-bold text-slate-400">${i + 1}</td>
-          <td class="p-6 font-bold text-slate-900 data-nama">${nama}</td>
+          <td class="p-6 font-bold text-slate-900">${nama}</td>
           <td class="p-6 text-right pr-12 space-x-1">
             <button class="btn-status active-h" onclick="toggleStatusBtn(this, 'H')">H</button>
             <button class="btn-status" onclick="toggleStatusBtn(this, 'S')">S</button>
@@ -590,13 +631,13 @@
       });
     }
 
-    // INTERAKSI SHOLAT DZUHUR 
+    // LOGIKA KONTROL SHOLAT DZUHUR
     function loadSiswaSholat() {
       const kelas = document.getElementById('sho-kelas').value;
       if(!kelas) return alert("Pilih kelas terlebih dahulu!");
       const body = document.getElementById('table-sholat-body');
       body.innerHTML = "";
-      const siswa = databaseSiswaLokal[kelas] || ["Contoh Siswa Muslim A", "Contoh Siswi Muslim B"];
+      const siswa = databaseSiswaLokal[kelas] || ["Contoh Jamaah Muslim A", "Contoh Jamaah Muslim B"];
       document.getElementById('sho-daftar-container').classList.remove('hidden');
 
       siswa.forEach((nama, i) => {
@@ -604,7 +645,7 @@
         tr.className = "hover:bg-slate-50/80 transition font-medium text-slate-700";
         tr.innerHTML = `
           <td class="p-6 text-center font-bold text-slate-400">${i + 1}</td>
-          <td class="p-6 font-bold text-slate-900 data-nama">${nama}</td>
+          <td class="p-6 font-bold text-slate-900">${nama}</td>
           <td class="p-6 text-right pr-12 space-x-2">
             <button class="btn-sholat-opt active-sholat" onclick="toggleSholatBtn(this, 'sholat')">Sholat</button>
             <button class="btn-sholat-opt" onclick="toggleSholatBtn(this, 'halangan')">Halangan</button>
@@ -621,14 +662,25 @@
 
     function toggleSholatBtn(btn, status) {
       btn.parentElement.querySelectorAll('.btn-sholat-opt').forEach(b => b.className = "btn-sholat-opt");
-      if(status === 'alfa') {
-        btn.classList.add('active-a');
-      } else {
-        btn.classList.add('active-' + status);
-      }
+      if(status === 'alfa') { btn.classList.add('active-a'); } else { btn.classList.add('active-' + status); }
     }
 
-    // SUBMIT DATA HANDLERS
+    // LOG ISIAN ASESMEN NILAI
+    function loadSiswaNilai() {
+      const kelas = document.getElementById('nil-kelas').value;
+      if(!kelas) return alert("Pilih kelas terlebih dahulu!");
+      const body = document.getElementById('table-nilai-body');
+      body.innerHTML = "";
+      const siswa = databaseSiswaLokal[kelas] || ["Siswa A", "Siswa B"];
+      document.getElementById('nil-daftar-container').classList.remove('hidden');
+      siswa.forEach((nama, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="p-4 text-center">${i+1}</td><td class="p-4 font-bold">${nama}</td><td class="p-4"><input type="number" placeholder="0-100" class="w-full bg-slate-100 border-none p-2 rounded-xl text-center font-bold"></td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    // HANDLER SIMPAN / SUBMIT
     function submitAbsensi() { alert("Sukses: Data presensi harian berhasil diamankan!"); }
     function submitPramuka() { alert("Sukses: Jurnal Ekstrakurikuler Pramuka berhasil dikunci!"); }
     function submitSholat() { alert("Sukses: Kontrol monitoring ibadah berkala berhasil diarsipkan!"); }
@@ -636,7 +688,7 @@
     function submitAgenda() { alert("Sukses: Log jurnal harian KBM berhasil direkam!"); }
     function submitBimbingan() { alert("Sukses: Berkas rekam kasus BK berhasil disimpan!"); }
 
-    // MODAL WINDOW PRATINJAU PDF ENGINE
+    // RENDER PREVIEW PDF ENGINE
     function tutupPreviewModal() { document.getElementById('mega-preview-modal').classList.remove('open'); }
     function bukaModal(html) {
       document.getElementById('modal-document-render-area').innerHTML = html;
@@ -644,19 +696,19 @@
     }
 
     function tarikRekapAbsenPDF() {
-      bukaModal(`<h2>LAPORAN DOKUMEN PRESENSI KBM</h2><p>Kelas: ${document.getElementById('abs-kelas').value || '-'}</p><p>Mata Pelajaran: ${document.getElementById('abs-mapel').value || '-'}</p>`);
+      bukaModal(`<h2>LAPORAN REKAP PRESENSI KBM</h2><p>Kelas: ${document.getElementById('abs-kelas').value || '-'}</p><p>Mata Pelajaran: ${document.getElementById('abs-mapel').value || '-'}</p>`);
     }
     function tarikRekapPramukaPDF() {
-      bukaModal(`<h2>LAPORAN PRESENSI EKSTRAKURIKULER PRAMUKA</h2><p>Kelas: ${document.getElementById('pra-kelas').value || '-'}</p><p>Tanggal Latihan: ${document.getElementById('pra-tanggal').value}</p>`);
+      bukaModal(`<h2>LAPORAN PRESENSI PRAMUKA WAKIL KESISWAAN</h2><p>Kelas: ${document.getElementById('pra-kelas').value || '-'}</p><p>Tanggal Latihan: ${document.getElementById('pra-tanggal').value}</p>`);
     }
     function tarikRekapSholatPDF() {
-      bukaModal(`<h2>REKAPITULASI PEMBIASAAN SHOLAT DZUHUR BERJAMAAH</h2><p>Kelas: ${document.getElementById('sho-kelas').value || '-'}</p><p>Tanggal Monitoring: ${document.getElementById('sho-tanggal').value}</p>`);
+      bukaModal(`<h2>REKAPITULASI PEMBIASAAN SHOLAT DZUHUR BERJAMAAH</h2><p>Kelas: ${document.getElementById('sho-kelas').value || '-'}</p><p>Tanggal: ${document.getElementById('sho-tanggal').value}</p>`);
     }
     function tarikRekapAgendaPDF() {
-      bukaModal(`<h2>JURNAL AGENDA HARIAN MENGAJAR GURU</h2><p>Materi: ${document.getElementById('age-materi').value || 'Tidak diisi'}</p>`);
+      bukaModal(`<h2>JURNAL AGENDA HARIAN MENGAJAR</h2><p>Materi: ${document.getElementById('age-materi').value || 'Tidak diisi'}</p>`);
     }
     function tarikRekapBKPDF() {
-      bukaModal(`<h2>BERKAS CATATAN BIMBINGAN KONSELING SISWA</h2><p>Siswa: ${document.getElementById('bim-nama-manual').value || '-'}</p>`);
+      bukaModal(`<h2>BERKAS FORMULIR CATATAN KASUS SISWA (BK)</h2><p>Nama Siswa: ${document.getElementById('bim-nama-manual').value || '-'}</p>`);
     }
   </script>
 </body>
