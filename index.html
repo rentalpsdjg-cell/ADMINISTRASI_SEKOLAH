@@ -3,693 +3,646 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SIMAK v2.6 Enterprise - PORTAL SMART E-GURU MULTIUSER</title>
+  <title>SIMAK v2.7 - PORTAL E-GURU PINTAR & MUDAH</title>
   
+  <!-- UI Framework & Font Icons -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --primary-color: #1e3a8a;
-      --secondary-color: #0f172a;
-      --accent-color: #2563eb;
-      --bg-global: #f8fafc;
-      --card-bg: #ffffff;
+      --bg-slate-custom: #f1f5f9;
     }
-    
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-global);
-      color: var(--secondary-color);
+      background-color: var(--bg-slate-custom);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
-
-    /* Sistem Perpindahan Panel Halus */
+    /* Animasi Transisi Halaman Super Halus */
     .panel {
       display: none;
     }
     .panel.active {
       display: block;
-      animation: slideUpView 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInFast 0.2s ease-out;
     }
-    
-    @keyframes slideUpView {
-      from {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    @keyframes fadeInFast {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    /* Desain Input Anti Gagal Klik untuk Jari Guru Senior */
-    input, select, textarea {
-      font-size: 16px !important; /* Mengunci auto-zoom browser iOS/Android */
+    /* Proteksi Ukuran Huruf Seluler Terkunci */
+    input, select, textarea, button {
+      font-size: 16px !important;
     }
-    
-    .btn-haptic-feedback:active {
-      transform: scale(0.96);
-      filter: brightness(0.92);
+    .text-raksasa {
+      font-size: 18px !important;
     }
-
-    /* Kustomisasi Scrollbar Internal */
+    .text-judul-kartu {
+      font-size: 17px !important;
+    }
+    /* Efek Tekan Haptic Lembut */
+    .btn-klik-besar:active {
+      transform: scale(0.95);
+      filter: brightness(0.9);
+    }
+    /* Custom Scrollbar */
     .custom-scroll::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 10px;
+      width: 8px;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
       background: #cbd5e1;
-      border-radius: 10px;
+      border-radius: 99px;
     }
-
-    /* Aturan Cetak Kertas/PDF Resmi */
     @media print {
-      .no-print {
-        display: none !important;
-      }
-      body {
-        background: #ffffff;
-        color: #000000;
-        padding: 0;
-      }
-      .print-container {
-        display: block !important;
-        width: 100% !important;
-      }
-      table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-      }
-      th, td {
-        border: 1px solid #000000 !important;
-        padding: 6px !important;
-        font-size: 11px !important;
-      }
+      .no-print { display: none !important; }
+      .print-container { display: block !important; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col pb-28">
+<body class="min-h-screen flex flex-col pb-32">
 
   <script>
-    // URL Endpoint API Google Apps Script Deployment Anda
+    // URL Jalur Utama Google Apps Script Anda
     const API_URL = "https://script.google.com/macros/s/AKfycbyN4cUNE6PMwPlPZvsYLrh4homfsVhJFKHj0ceUkX0B9AEP71BDd0_uaBl-IxpCyr3Y/exec";
   </script>
 
-  <div id="app-toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform scale-0 transition-all duration-300 pointer-events-none w-11/12 max-w-sm">
-    <div id="toast-body" class="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-slate-700">
-      <i id="toast-icon" class="fa-solid fa-circle-info text-blue-400 text-lg"></i>
-      <span id="toast-message">Notifikasi Berhasil</span>
+  <!-- POPUP NOTIFIKASI TOAST BESAR -->
+  <div id="app-toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transform scale-0 transition-all duration-200 pointer-events-none w-11/12 max-w-sm">
+    <div id="toast-body" class="bg-slate-900 text-white p-5 rounded-2xl shadow-xl flex items-center gap-4 text-base font-bold border-2 border-slate-700">
+      <i id="toast-icon" class="fa-solid fa-circle-info text-blue-400 text-xl"></i>
+      <span id="toast-message">Pesan Sistem</span>
     </div>
   </div>
 
-  <div id="global-spinner" class="fixed inset-0 bg-slate-950/50 backdrop-blur-md flex items-center justify-center z-50 hidden">
-    <div class="bg-white p-7 rounded-3xl shadow-2xl flex flex-col items-center gap-4 max-w-xs text-center border border-slate-100">
-      <div class="relative w-14 h-14 flex items-center justify-center">
-        <div class="absolute inset-0 rounded-full border-4 border-slate-100 border-t-blue-800 animate-spin"></div>
-        <i class="fa-solid fa-cloud text-blue-700 animate-pulse text-base"></i>
-      </div>
+  <!-- MONITOR LOADING SCREEN -->
+  <div id="global-spinner" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center z-50 hidden">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center gap-4 max-w-xs text-center">
+      <div class="w-12 h-12 rounded-full border-4 border-slate-200 border-t-blue-700 animate-spin"></div>
       <div>
-        <h4 class="text-base font-extrabold text-slate-800">Sinkronisasi Server...</h4>
-        <p class="text-xs text-slate-400 mt-1">Mengamankan enkripsi jalur data ke sistem cloud pusat</p>
+        <h4 class="text-base font-extrabold text-slate-800">Mohon Tunggu...</h4>
+        <p class="text-xs text-slate-400 mt-1">Sistem sedang mengirim data dengan aman ke server pusat sekolah</p>
       </div>
     </div>
   </div>
 
-  <header class="no-print bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-950 text-white shadow-lg sticky top-0 z-30 px-5 py-4 flex items-center justify-between">
-    <div class="truncate mr-2">
-      <h1 id="app-header-title" class="text-base font-extrabold tracking-wider uppercase truncate">Beranda Utama</h1>
-      <p class="text-[11px] text-blue-300/90 font-semibold tracking-wide truncate">SIMAK v2.6 • SMK NEGERI 1 SINGKIL UTARA</p>
+  <!-- HEADER UTAMA NYAMAN MATA -->
+  <header class="no-print bg-blue-900 text-white shadow-md sticky top-0 z-30 px-5 py-4 flex items-center justify-between border-b-4 border-amber-500">
+    <div>
+      <h1 id="app-header-title" class="text-lg font-extrabold tracking-wide uppercase">MENU UTAMA</h1>
+      <p class="text-xs text-blue-200 font-bold tracking-wider">SMK NEGERI 1 SINGKIL UTARA</p>
     </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <button onclick="initMasterDatabase()" title="Tarik Data Terbaru" class="btn-haptic-feedback bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition duration-200">
-        <i class="fa-solid fa-arrows-rotate text-sm"></i>
+    <div class="flex items-center gap-2">
+      <button onclick="initMasterDatabase()" title="Segarkan Data" class="btn-klik-besar bg-white/20 p-3 rounded-xl transition">
+        <i class="fa-solid fa-arrows-rotate text-base"></i>
       </button>
-      <div id="network-badge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ONLINE
+      <div id="network-badge" class="bg-emerald-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg">
+        ONLINE
       </div>
     </div>
   </header>
 
+  <!-- KONTEN RESPONSIF UTAMA -->
   <main class="p-4 max-w-md mx-auto w-full grow">
 
+    <!-- ================= DASHBOARD UTAMA ================= -->
     <section id="view-dashboard" class="panel active space-y-4">
-      <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-6 rounded-3xl shadow-md relative overflow-hidden">
-        <div class="absolute -right-8 -bottom-8 text-white/5 text-9xl"><i class="fa-solid fa-school"></i></div>
-        <span class="bg-amber-500 text-blue-950 font-black text-[9px] uppercase px-2.5 py-1 rounded-full tracking-wider">Aplikasi E-Guru</span>
-        <h3 class="text-lg font-extrabold mt-4 mb-1">Selamat Bertugas, Bapak/Ibu!</h3>
-        <p class="text-xs text-slate-200/90 leading-relaxed">Aplikasi ini disempurnakan dengan teks besar dan tombol lapang agar nyaman digunakan oleh seluruh guru senior tanpa kendala mata lelah.</p>
+      <div class="bg-gradient-to-br from-blue-950 to-indigo-900 text-white p-6 rounded-3xl shadow-sm space-y-2">
+        <span class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-md tracking-wide uppercase">Sistem v2.7 Ramah Lansia</span>
+        <h3 class="text-xl font-extrabold pt-2">Selamat Pagi, Bapak / Ibu Guru!</h3>
+        <p class="text-sm text-slate-300 leading-relaxed font-medium">Aplikasi presensi ini telah diperbaiki total agar **jauh lebih mudah digunakan**. Cukup pilih kelas, semua murid otomatis hadir, dan Anda hanya perlu mengganti status murid yang tidak masuk.</p>
       </div>
 
-      <div id="offline-buffer-banner" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
-        <div>
-          <h4 class="text-xs font-bold text-amber-900 uppercase">Ada Data Belum Terkirim</h4>
-          <p class="text-[11px] text-amber-700 mt-1">Sistem mendeteksi ada data presensi yang tersimpan di memori lokal HP saat Anda kehilangan sinyal internet tadi.</p>
-          <button onclick="uploadOfflineBufferToServer()" class="mt-2.5 text-xs bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2 rounded-xl transition shadow-xs">Kirim Ulang ke Cloud Sekarang</button>
+      <!-- Banner Sinkronisasi Backup Offline -->
+      <div id="offline-buffer-banner" class="hidden bg-amber-100 border-2 border-amber-400 p-4 rounded-2xl space-y-2">
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-triangle-exclamation text-amber-700 text-xl mt-0.5"></i>
+          <div>
+            <h4 class="text-sm font-extrabold text-amber-950 uppercase">Ada Data Belum Terkirim!</h4>
+            <p class="text-xs text-amber-800 font-medium">Sinyal internet Anda sempat terputus tadi. Data absen tersimpan aman di memori internal HP Anda.</p>
+          </div>
         </div>
+        <button onclick="uploadOfflineBufferToServer()" class="w-full text-xs bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-3 rounded-xl transition uppercase shadow-xs btn-klik-besar">Kirim Ulang Data Sekarang</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 shrink-0"><i class="fa-solid fa-landmark text-lg"></i></div>
-          <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kelas</p>
-            <h3 id="stat-box-kelas" class="text-xl font-black text-slate-800">0</h3>
-          </div>
-        </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-purple-700 shrink-0"><i class="fa-solid fa-user-tie text-lg"></i></div>
-          <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Guru</p>
-            <h3 id="stat-box-guru" class="text-xl font-black text-slate-800">0</h3>
-          </div>
-        </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700 shrink-0"><i class="fa-solid fa-book-bookmark text-lg"></i></div>
-          <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mapel</p>
-            <h3 id="stat-box-mapel" class="text-xl font-black text-slate-800">0</h3>
-          </div>
-        </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
-          <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700 shrink-0"><i class="fa-solid fa-users text-lg"></i></div>
-          <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Siswa</p>
-            <h3 id="stat-box-siswa" class="text-xl font-black text-slate-800">0</h3>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-absensi" class="panel space-y-4">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3.5">
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Absen</label>
-            <input type="date" id="form-abs-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pilih Kelas</label>
-            <select id="form-abs-kelas" onchange="renderLembarAbsensiSiswa()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-black text-blue-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"></select>
-          </div>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-          <select id="form-abs-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Guru Pembina</label>
-          <select id="form-abs-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Jenis Kegiatan / Modul Aplikasi</label>
-          <select id="form-abs-kegiatan" class="w-full text-xs p-3 rounded-xl border border-amber-200 bg-amber-50/50 text-amber-900 font-bold focus:outline-none">
-            <option value="submitAbsensi">Kegiatan Belajar Mengajar Harian (KBM)</option>
-            <option value="submitPramuka">Laporan Ekstrakurikuler Pramuka</option>
-            <option value="submitSholat">Monitoring Sholat Berjamaah</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden">
-        <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Lembar Pengisian</span>
-            <button onclick="setGlobalStatusAbsensi('H')" class="text-[11px] px-3.5 py-2 bg-emerald-600 text-white font-bold rounded-xl shadow-xs btn-haptic-feedback">Set Semua Hadir (H)</button>
-          </div>
-          
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" id="search-bar-abs" oninput="liveFilterNamaSiswaAbsen()" placeholder="Ketik nama murid untuk memfilter..." class="w-full pl-9 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
-          </div>
-
-          <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-black pt-1">
-            <div class="bg-emerald-50 text-emerald-700 p-2 rounded-xl border border-emerald-100">H: <span id="live-h">0</span></div>
-            <div class="bg-blue-50 text-blue-700 p-2 rounded-xl border border-blue-100">S: <span id="live-s">0</span></div>
-            <div class="bg-amber-50 text-amber-700 p-2 rounded-xl border border-amber-100">I: <span id="live-i">0</span></div>
-            <div class="bg-rose-50 text-rose-700 p-2 rounded-xl border border-rose-100">A: <span id="live-a">0</span></div>
-          </div>
-        </div>
+      <!-- Tombol Akses Cepat Langsung Pilihan Utama -->
+      <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-2xs space-y-3">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Langkah Cepat Mulai Kerja:</h3>
         
-        <div id="wrapper-siswa-absensi" class="p-3 space-y-3 max-h-[360px] overflow-y-auto bg-slate-50/40 custom-scroll">
-          <p class="p-6 text-center text-slate-400 italic text-xs">Silakan pilih kelas di atas terlebih dahulu...</p>
-        </div>
+        <button onclick="handleTabNavigationTransition('absensi')" class="w-full flex items-center gap-4 p-5 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-200 rounded-2xl text-left btn-klik-besar transition">
+          <div class="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-xs"><i class="fa-solid fa-address-card"></i></div>
+          <div>
+            <h4 class="text-base font-extrabold text-emerald-950">Isi Presensi / Absen Kelas</h4>
+            <p class="text-xs text-emerald-700 font-medium mt-0.5">Otomatis hadir semua, tinggal ganti yang absen</p>
+          </div>
+        </button>
 
-        <div class="p-4 bg-white border-t border-slate-100">
-          <button onclick="submitAbsensiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md cursor-pointer transition uppercase tracking-wider btn-haptic-feedback"><i class="fa-solid fa-cloud-arrow-up mr-2 text-sm"></i>Simpan & Kunci Presensi</button>
+        <button onclick="handleTabNavigationTransition('nilai')" class="w-full flex items-center gap-4 p-5 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 rounded-2xl text-left btn-klik-besar transition">
+          <div class="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xl shadow-xs"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div>
+            <h4 class="text-base font-extrabold text-blue-950">Input Nilai Tugas & Ulangan</h4>
+            <p class="text-xs text-blue-700 font-medium mt-0.5">Isi nilai rapot atau tugas harian murid</p>
+          </div>
+        </button>
+
+        <button onclick="handleTabNavigationTransition('agenda')" class="w-full flex items-center gap-4 p-5 bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-2xl text-left btn-klik-besar transition">
+          <div class="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center text-white text-xl shadow-xs"><i class="fa-solid fa-book-open"></i></div>
+          <div>
+            <h4 class="text-base font-extrabold text-purple-950">Isi Jurnal Mengajar Harian</h4>
+            <p class="text-xs text-purple-700 font-medium mt-0.5">Catat rangkuman ringkas materi hari ini</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Kotak Indikator Ringkas Jumlah Data -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-3xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-blue-900 font-bold"><i class="fa-solid fa-landmark"></i></div>
+          <div><p class="text-[10px] font-bold text-slate-400 uppercase">Total Kelas</p><h3 id="stat-box-kelas" class="text-base font-extrabold text-slate-800">0</h3></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-3xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-purple-900 font-bold"><i class="fa-solid fa-user-tie"></i></div>
+          <div><p class="text-[10px] font-bold text-slate-400 uppercase">Guru Terdaftar</p><h3 id="stat-box-guru" class="text-base font-extrabold text-slate-800">0</h3></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-3xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-amber-900 font-bold"><i class="fa-solid fa-book-bookmark"></i></div>
+          <div><p class="text-[10px] font-bold text-slate-400 uppercase">Mata Pelajaran</p><h3 id="stat-box-mapel" class="text-base font-extrabold text-slate-800">0</h3></div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-3xs flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-emerald-900 font-bold"><i class="fa-solid fa-users"></i></div>
+          <div><p class="text-[10px] font-bold text-slate-400 uppercase">Total Murid</p><h3 id="stat-box-siswa" class="text-base font-extrabold text-slate-800">0</h3></div>
         </div>
       </div>
     </section>
 
+    <!-- ================= PRESENSI DIGITAL (SISTEM ABSEN OTOMATIS) ================= -->
+    <section id="view-absensi" class="panel space-y-4">
+      <!-- Pilihan Filter Form Ukuran Besar -->
+      <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-2xs space-y-4">
+        <div>
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Langkah 1: Pilih Kelas Terlebih Dahulu</label>
+          <select id="form-abs-kelas" onchange="renderLembarAbsensiSiswaOtomatisHadir()" class="w-full text-raksasa p-4 rounded-xl border-2 border-blue-600 bg-blue-50 font-extrabold text-blue-900 focus:outline-none"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Langkah 2: Pilih Mata Pelajaran</label>
+          <select id="form-abs-mapel" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Langkah 3: Pilih Nama Anda (Guru)</label>
+          <select id="form-abs-guru" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Tanggal Hari Ini</label>
+          <input type="date" id="form-abs-tanggal" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700">
+        </div>
+        <div class="hidden">
+          <select id="form-abs-kegiatan"><option value="submitAbsensi" selected>KBM Harian</option></select>
+        </div>
+      </div>
+
+      <!-- Lembar Pemantauan & Pencarian Instan -->
+      <div class="bg-white rounded-3xl border-2 border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 bg-slate-100 border-b-2 border-slate-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider">Lembar Koreksi Absen</h4>
+            <span class="bg-emerald-600 text-white font-bold text-xs px-2.5 py-1 rounded-md">Default: Hadir Semua</span>
+          </div>
+
+          <!-- Input Ketik Cari Murid Agar Cepat -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-base"></i>
+            <input type="text" id="search-bar-abs" oninput="liveFilterNamaSiswaAbsen()" placeholder="Ketik nama murid untuk koreksi status..." class="w-full pl-11 pr-4 py-3 text-sm rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+          </div>
+
+          <!-- Live Counter Jumlah Kehadiran -->
+          <div class="grid grid-cols-4 gap-2 text-center text-xs font-black">
+            <div class="bg-emerald-200 text-emerald-900 p-2 rounded-xl border border-emerald-300">H: <span id="live-h">0</span></div>
+            <div class="bg-blue-200 text-blue-900 p-2 rounded-xl border border-blue-300">S: <span id="live-s">0</span></div>
+            <div class="bg-amber-200 text-amber-900 p-2 rounded-xl border border-amber-300">I: <span id="live-i">0</span></div>
+            <div class="bg-rose-200 text-rose-900 p-2 rounded-xl border border-rose-300">A: <span id="live-a">0</span></div>
+          </div>
+        </div>
+
+        <!-- Wadah Daftar Kartu Nama Murid -->
+        <div id="wrapper-siswa-absensi" class="p-3 space-y-3 max-h-[380px] overflow-y-auto bg-slate-50 custom-scroll">
+          <p class="p-8 text-center text-slate-400 font-bold italic text-sm">Silakan pilih kelas pada kolom Langkah 1 di atas...</p>
+        </div>
+
+        <!-- Tombol Kirim Besar Nyaman -->
+        <div class="p-4 bg-white border-t-2 border-slate-200">
+          <button onclick="submitAbsensiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-base py-4 rounded-2xl shadow-md transition uppercase tracking-wide btn-klik-besar"><i class="fa-solid fa-cloud-arrow-up mr-2 text-lg"></i>Simpan Absen Hari Ini</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DAFTAR NILAI AKADEMIK ================= -->
     <section id="view-nilai" class="panel space-y-4">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3.5">
+      <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-2xs space-y-4">
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Tugas / Jenis Ulangan</label>
-          <input type="text" id="form-nil-tugas" placeholder="Contoh: Ulangan Harian Bab 1 Hidrolik" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Nama Tugas / Kuis / Ulangan</label>
+          <input type="text" id="form-nil-tugas" placeholder="Contoh: Ulangan Harian Bab 1" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none">
         </div>
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pilih Kelas</label>
-            <select id="form-nil-kelas" onchange="renderLembarNilaiSiswa()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none"></select>
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Pilih Kelas</label>
+            <select id="form-nil-kelas" onchange="renderLembarNilaiSiswa()" class="w-full text-base p-3.5 rounded-xl border-2 border-blue-600 bg-blue-50 font-bold text-blue-900 focus:outline-none"></select>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-            <select id="form-nil-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Mata Pelajaran</label>
+            <select id="form-nil-mapel" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none"></select>
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Guru Penguji</label>
-          <select id="form-nil-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wide mb-1.5">Nama Guru Penguji</label>
+          <select id="form-nil-guru" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold focus:outline-none"></select>
         </div>
-        <button onclick="setGlobalAngkaNilaiMasal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] py-2.5 rounded-xl btn-haptic-feedback"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Isi Standar Nilai Massal (80)</button>
       </div>
 
-      <div class="bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden">
-        <div id="wrapper-siswa-nilai" class="p-3 space-y-2 max-h-[350px] overflow-y-auto bg-slate-50/40 custom-scroll">
-          <p class="p-6 text-center text-slate-400 italic text-xs">Silakan pilih kelas terlebih dahulu...</p>
+      <div class="bg-white rounded-3xl border-2 border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-3 bg-slate-100 border-b border-slate-200 flex justify-between items-center">
+          <span class="text-xs font-black text-slate-500 uppercase">Daftar Input Angka Nilai</span>
+          <button onclick="setGlobalAngkaNilaiMasal()" class="text-xs bg-slate-800 text-white font-bold px-3 py-2 rounded-xl btn-klik-besar">Set Standar (80)</button>
         </div>
-        <div class="p-4 bg-white border-t border-slate-100">
-          <button onclick="submitNilaiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md btn-haptic-feedback uppercase tracking-wider"><i class="fa-solid fa-floppy-disk mr-2"></i>Kirim Nilai ke Cloud</button>
+        <div id="wrapper-siswa-nilai" class="p-3 space-y-3 max-h-[350px] overflow-y-auto bg-slate-50 custom-scroll">
+          <p class="p-6 text-center text-slate-400 font-bold italic text-sm">Silakan tentukan pilihan kelas terlebih dahulu...</p>
+        </div>
+        <div class="p-4 bg-white border-t-2 border-slate-200">
+          <button onclick="submitNilaiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-base py-4 rounded-2xl shadow-md btn-klik-besar uppercase tracking-wide"><i class="fa-solid fa-floppy-disk mr-2"></i>Kirim & Simpan Nilai</button>
         </div>
       </div>
     </section>
 
+    <!-- ================= JURNAL AGENDA HARIAN ================= -->
     <section id="view-agenda" class="panel">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-md space-y-3.5">
-        <div class="grid grid-cols-2 gap-2.5">
+      <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-md space-y-4">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tanggal Kegiatan</label>
-            <input type="date" id="form-age-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold">
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1.5">Tanggal Mengajar</label>
+            <input type="date" id="form-age-tanggal" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-slate-50 font-bold">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kelas Mengajar</label>
-            <select id="form-age-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"></select>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1.5">Kelas Mengajar</label>
+            <select id="form-age-kelas" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-bold"></select>
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rangkuman Pembahasan Materi Pokok</label>
-          <textarea id="form-age-materi" rows="4" placeholder="Tulis detail sub-bab pokok bahasan materi pelajaran yang diajarkan hari ini..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+          <label class="block text-xs font-black text-slate-500 uppercase mb-1.5">Rangkuman Pembahasan Materi Pokok</label>
+          <textarea id="form-age-materi" rows="4" placeholder="Tuliskan sub-bab materi pelajaran yang diajarkan hari ini secara singkat..." class="w-full text-base p-4 rounded-xl border border-slate-300 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kondisi Kelas</label>
-            <select id="form-age-status" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+            <label class="block text-[11px] font-black text-slate-500 uppercase mb-1.5">Kondisi Kelas</label>
+            <select id="form-age-status" class="w-full text-sm p-3 rounded-xl border border-slate-300 bg-white font-bold">
               <option value="Kondusif / Lancar">Lancar</option>
               <option value="Ada Kendala Teknik">Kendala</option>
               <option value="Guru Piket / Tugas">Tugas</option>
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Siswa Hadir</label>
-            <input type="number" id="form-age-hadir" value="30" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
+            <label class="block text-[11px] font-black text-slate-500 uppercase mb-1.5">Murid Hadir</label>
+            <input type="number" id="form-age-hadir" value="30" class="w-full text-base p-3 rounded-xl border border-slate-300 text-center font-black bg-slate-50">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Siswa Absen</label>
-            <input type="number" id="form-age-absen" value="0" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
+            <label class="block text-[11px] font-black text-slate-500 uppercase mb-1.5">Murid Absen</label>
+            <input type="number" id="form-age-absen" value="0" class="w-full text-base p-3 rounded-xl border border-slate-300 text-center font-black bg-slate-50">
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Guru Mengajar</label>
-          <select id="form-age-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <label class="block text-xs font-black text-slate-500 uppercase mb-1.5">Nama Guru Pengajar</label>
+          <select id="form-age-guru" class="w-full text-base p-3.5 rounded-xl border border-slate-300 bg-white font-semibold"></select>
         </div>
-        <button onclick="submitAgendaKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md mt-2 btn-haptic-feedback uppercase tracking-wider"><i class="fa-solid fa-bookmark mr-2"></i>Simpan Jurnal Agenda</button>
+        <button onclick="submitAgendaKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-base py-4 rounded-2xl shadow-md mt-2 btn-klik-besar uppercase tracking-wide"><i class="fa-solid fa-bookmark mr-2"></i>Simpan Jurnal Mengajar</button>
       </div>
     </section>
 
+    <!-- ================= OPERASIONAL LAINNYA ================= -->
     <section id="view-more" class="panel space-y-4">
-      
-      <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-2">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">Menu Lanjutan & Admin</h3>
+      <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-2xs space-y-2">
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Menu Admin & Kelola Master</h3>
         
-        <button onclick="toggleSubPanelMenu('rekap-log')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
-          <span><i class="fa-solid fa-clock-rotate-left mr-3 text-blue-700 text-sm"></i>Lihat Log Bulanan Server</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('rekap-log')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 text-left btn-klik-besar">
+          <span><i class="fa-solid fa-clock-rotate-left mr-3 text-blue-700 text-base"></i>Lihat Log Riwayat Bulanan</span><i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
         </button>
         
-        <button onclick="toggleSubPanelMenu('rekap-matrix')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
-          <span><i class="fa-solid fa-table-cells mr-3 text-purple-700 text-sm"></i>Cetak Laporan Cetak Matrix</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('rekap-matrix')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 text-left btn-klik-besar">
+          <span><i class="fa-solid fa-table-cells mr-3 text-purple-700 text-base"></i>Cetak Laporan Cetak Matrix</span><i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
         </button>
         
-        <button onclick="toggleSubPanelMenu('bk')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
-          <span><i class="fa-solid fa-handshake-angle mr-3 text-rose-600 text-sm"></i>Catat Bimbingan Konseling (BK)</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('bk')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 text-left btn-klik-besar">
+          <span><i class="fa-solid fa-handshake-angle mr-3 text-rose-600 text-base"></i>Catat Kasus Siswa (BK)</span><i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
         </button>
         
-        <button onclick="toggleSubPanelMenu('upload-massal')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
-          <span><i class="fa-solid fa-users-viewfinder mr-3 text-emerald-600 text-sm"></i>Upload Siswa Massal Per Kelas</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('upload-massal')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 text-left btn-klik-besar">
+          <span><i class="fa-solid fa-users-viewfinder mr-3 text-emerald-600 text-base"></i>Upload Nama Siswa Massal</span><i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
         </button>
 
-        <button onclick="toggleSubPanelMenu('manajemen-master')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
-          <span><i class="fa-solid fa-gears mr-3 text-amber-600 text-sm"></i>Kelola File Master Sekolah</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('manajemen-master')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-sm font-bold text-slate-800 text-left btn-klik-besar">
+          <span><i class="fa-solid fa-gears mr-3 text-amber-600 text-base"></i>Kelola Dropdown File Master</span><i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
         </button>
       </div>
 
-      <div id="sub-panel-rekap-log" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-extrabold text-blue-900 uppercase"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Log Histori Database</h4>
+      <!-- SUB-PANEL: LOG ARSIP BULANAN -->
+      <div id="sub-panel-rekap-log" class="hidden bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <h4 class="text-xs font-black text-blue-900 uppercase"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Riwayat Database</h4>
         <div class="space-y-2 text-xs">
-          <select id="log-param-menu" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="KBM Harian">Log Presensi KBM</option><option value="Daftar Nilai Tugas">Log Nilai Tugas</option><option value="Agenda">Log Jurnal Agenda</option></select>
-          <select id="log-param-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="">Semua Kelas</option></select>
+          <select id="log-param-menu" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"><option value="KBM Harian">Log Presensi KBM</option><option value="Daftar Nilai Tugas">Log Nilai Tugas</option><option value="Agenda">Log Jurnal Agenda</option></select>
+          <select id="log-param-kelas" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"><option value="">Semua Kelas</option></select>
           <div class="grid grid-cols-2 gap-2">
-            <select id="log-param-bulan" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+            <select id="log-param-bulan" class="p-3 rounded-xl border border-slate-300 bg-white font-semibold">
               <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option><option value="4">April</option><option value="5">Mei</option><option value="6" selected>Juni</option>
               <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="log-param-tahun" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="2026" selected>2026</option><option value="2027">2027</option></select>
+            <select id="log-param-tahun" class="p-3 rounded-xl border border-slate-300 bg-white font-semibold"><option value="2026" selected>2026</option></select>
           </div>
-          <button onclick="pullHistoryLogFromServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Tarik Data Log</button>
+          <button onclick="pullHistoryLogFromServer()" class="w-full bg-blue-700 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wide btn-klik-besar">Tarik Data Riwayat</button>
         </div>
         <div class="overflow-x-auto pt-2 custom-scroll">
-          <table class="w-full text-[10px] text-left border-collapse min-w-[420px]">
+          <table class="w-full text-[10px] text-left border-collapse min-w-[400px]">
             <thead>
-              <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                <th class="p-2">No</th><th class="p-2">Kolom 1</th><th class="p-2">Kolom 2</th><th class="p-2">Kolom 3</th><th class="p-2">Kolom 4</th><th class="p-2">Kolom 5</th>
+              <tr class="bg-slate-100 border-b border-slate-200">
+                <th class="p-2">No</th><th class="p-2">Kolom 1</th><th class="p-2">Kolom 2</th><th class="p-2">Kolom 3</th><th class="p-2">Kolom 4</th>
               </tr>
             </thead>
-            <tbody id="table-body-log-rows" class="divide-y divide-slate-100 text-slate-600 font-medium">
-              <tr><td colspan="6" class="p-4 text-center italic text-slate-400">Belum ada pencarian.</td></tr>
+            <tbody id="table-body-log-rows" class="divide-y divide-slate-100 text-slate-600">
+              <tr><td colspan="5" class="p-4 text-center italic text-slate-400">Belum ada pencarian.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <div id="sub-panel-rekap-matrix" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-extrabold text-purple-900 uppercase"><i class="fa-solid fa-table-cells mr-1.5"></i> Dokumen Rekap Cetak Matrix</h4>
+      <!-- SUB-PANEL: CETAK MATRIX -->
+      <div id="sub-panel-rekap-matrix" class="hidden bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <h4 class="text-xs font-black text-purple-900 uppercase"><i class="fa-solid fa-table-cells mr-1.5"></i> Dokumen Rekap Cetak Matrix</h4>
         <div class="space-y-2 text-xs">
-          <select id="matrix-param-tipe" onchange="adjustMatrixFilterMapelView()" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="KBM Harian">Matrix KBM Harian</option><option value="Daftar Nilai">Matrix Daftar Nilai</option></select>
-          <select id="matrix-param-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
-          <select id="matrix-param-mapel" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
-          <select id="matrix-param-guru" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
-          <div class="grid grid-cols-2 gap-2">
-            <select id="matrix-param-bulan" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="06" selected>Juni</option></select>
-            <select id="matrix-param-tahun" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="2026" selected>2026</option></select>
-          </div>
-          <input type="text" id="matrix-param-hari" placeholder="Filter Hari Tertentu (Opsional)" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium">
-          <button onclick="generateMatrixDocumentHtml()" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Generate Matrix</button>
+          <select id="matrix-param-tipe" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"><option value="KBM Harian">Matrix KBM Harian</option><option value="Daftar Nilai">Matrix Daftar Nilai</option></select>
+          <select id="matrix-param-kelas" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"></select>
+          <select id="matrix-param-mapel" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"></select>
+          <select id="matrix-param-guru" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"></select>
+          <div class="grid grid-cols-2 gap-2"><select id="matrix-param-bulan" class="p-3 rounded-xl border border-slate-300 bg-white"><option value="06">Juni</option></select><select id="matrix-param-tahun" class="p-3 rounded-xl border border-slate-300 bg-white"><option value="2026">2026</option></select></div>
+          <button onclick="generateMatrixDocumentHtml()" class="w-full bg-purple-700 text-white font-bold p-3 rounded-xl text-xs uppercase btn-klik-besar">Generate Matrix</button>
         </div>
-        <div id="wrapper-matrix-preview" class="bg-white p-2 rounded-xl border border-slate-200 overflow-x-auto text-[9px] custom-scroll">
-          <p class="p-4 text-center text-slate-400 italic">Pratinjau rekap laporan akan muncul di sini...</p>
+        <div id="wrapper-matrix-preview" class="bg-slate-50 p-2 rounded-xl border border-slate-200 overflow-x-auto text-[10px] custom-scroll">
+          <p class="p-4 text-center text-slate-400 italic">Pratinjau rekap laporan...</p>
         </div>
       </div>
 
-      <div id="sub-panel-bk" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-extrabold text-rose-800 uppercase"><i class="fa-solid fa-handshake-angle mr-1.5"></i> Pencatatan Kasus Siswa / BK</h4>
+      <!-- SUB-PANEL: CATATAN BK -->
+      <div id="sub-panel-bk" class="hidden bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <h4 class="text-xs font-black text-rose-800 uppercase"><i class="fa-solid fa-handshake-angle mr-1.5"></i> Pencatatan Kasus Siswa / BK</h4>
         <div class="space-y-2 text-xs">
-          <input type="date" id="form-bk-tanggal" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold">
-          <select id="form-bk-kelas" onchange="syncSiswaDropdownUntukBK()" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
-          <select id="form-bk-siswa" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"><option value="">-- Pilih Nama Siswa --</option></select>
-          <select id="form-bk-kategori" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+          <input type="date" id="form-bk-tanggal" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-bold">
+          <select id="form-bk-kelas" onchange="syncSiswaDropdownUntukBK()" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-semibold"></select>
+          <select id="form-bk-siswa" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-bold"><option value="">-- Pilih Nama Siswa --</option></select>
+          <select id="form-bk-kategori" class="w-full p-3 rounded-xl border border-slate-300 bg-white">
             <option value="Pelanggaran Kedisiplinan">Pelanggaran Kedisiplinan</option>
             <option value="Keterlambatan Masuk Sekolah">Keterlambatan Masuk Sekolah</option>
-            <option value="Siswa Bermasalah KBM">Siswa Bermasalah KBM</option>
           </select>
-          <textarea id="form-bk-masalah" placeholder="Uraikan detail masalah atau pelanggaran..." class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none"></textarea>
-          <textarea id="form-bk-solusi" placeholder="Solusi / Tindak Lanjut Penanganan Guru..." class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none"></textarea>
-          <select id="form-bk-guru" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
-          <button onclick="submitKasusBKKeCloud()" class="w-full bg-rose-700 hover:bg-rose-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Simpan Catatan BK</button>
+          <textarea id="form-bk-masalah" placeholder="Detail masalah murid..." class="w-full p-3 rounded-xl border border-slate-300 bg-white"></textarea>
+          <textarea id="form-bk-solusi" placeholder="Solusi / Penanganan guru..." class="w-full p-3 rounded-xl border border-slate-300 bg-white"></textarea>
+          <select id="form-bk-guru" class="w-full p-3 rounded-xl border border-slate-300 bg-white"></select>
+          <button onclick="submitKasusBKKeCloud()" class="w-full bg-rose-700 text-white font-bold p-3 rounded-xl text-xs uppercase btn-klik-besar">Simpan Catatan BK</button>
         </div>
       </div>
 
-      <div id="sub-panel-upload-massal" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-extrabold text-emerald-800 uppercase"><i class="fa-solid fa-users-viewfinder mr-1.5"></i> Upload Siswa Massal</h4>
+      <!-- SUB-PANEL: UPLOAD MASSAL -->
+      <div id="sub-panel-upload-massal" class="hidden bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <h4 class="text-xs font-black text-emerald-800 uppercase"><i class="fa-solid fa-users-viewfinder mr-1.5"></i> Upload Murid Massal</h4>
         <div class="space-y-2 text-xs">
-          <select id="form-upl-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"></select>
-          <textarea id="form-upl-siswa-list" rows="6" placeholder="Ketik atau paste nama murid per baris. Contoh:&#10;ACHMAD DHANI&#10;BUDI UTOMO&#10;CHELSEA OLLIVIA" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-mono focus:outline-none"></textarea>
-          <button onclick="submitUploadMassalSiswaKeCloud()" class="w-full bg-slate-900 hover:bg-slate-950 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Kirim Massal Ke Cloud</button>
+          <select id="form-upl-kelas" class="w-full p-3 rounded-xl border border-slate-300 bg-white font-bold"></select>
+          <textarea id="form-upl-siswa-list" rows="5" placeholder="Ketik nama murid per baris..." class="w-full p-3 rounded-xl border border-slate-300 bg-white font-mono"></textarea>
+          <button onclick="submitUploadMassalSiswaKeCloud()" class="w-full bg-slate-900 text-white font-bold p-3 rounded-xl text-xs uppercase btn-klik-besar">Kirim Massal</button>
         </div>
       </div>
 
-      <div id="sub-panel-manajemen-master" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-4">
-        <h4 class="text-xs font-extrabold text-amber-800 uppercase border-b border-slate-200 pb-2"><i class="fa-solid fa-gears mr-1.5"></i> Pengaturan Data Master Sekolah</h4>
-        
-        <div class="space-y-1.5">
-          <label class="block text-[10px] font-bold text-slate-500 uppercase">Tambah Kelas Baru</label>
-          <div class="flex gap-2">
-            <input type="text" id="mst-input-kelas" placeholder="Contoh: XII-TKJ-1" class="w-full p-2.5 text-xs border border-slate-200 bg-slate-50 rounded-xl font-bold uppercase">
-            <button onclick="submitSingleMasterItem('tambahMasterKelas', 'mst-input-kelas')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 text-xs rounded-xl btn-haptic-feedback">Simpan</button>
+      <!-- SUB-PANEL: KELOLA DATA DROP DOWN MASTER -->
+      <div id="sub-panel-manajemen-master" class="hidden bg-white p-4 rounded-3xl border border-slate-200 shadow-xs space-y-3">
+        <h4 class="text-xs font-black text-amber-800 uppercase"><i class="fa-solid fa-gears mr-1.5"></i> Tambah Item Dropdown Manual</h4>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-500 mb-1">Tambah Nama Kelas Baru</label>
+            <div class="flex gap-2">
+              <input type="text" id="mst-input-kelas" placeholder="Contoh: X-TJAT-1" class="w-full p-2.5 border border-slate-300 bg-white rounded-xl uppercase font-bold">
+              <button onclick="submitSingleMasterItem('tambahMasterKelas', 'mst-input-kelas')" class="bg-amber-600 text-white font-bold px-4 rounded-xl btn-klik-besar">Simpan</button>
+            </div>
           </div>
-        </div>
-
-        <div class="space-y-1.5">
-          <label class="block text-[10px] font-bold text-slate-500 uppercase">Tambah Nama Guru</label>
-          <div class="flex gap-2">
-            <input type="text" id="mst-input-guru" placeholder="Contoh: Budi Santoso, S.Pd." class="w-full p-2.5 text-xs border border-slate-200 bg-slate-50 rounded-xl font-semibold">
-            <button onclick="submitSingleMasterItem('tambahMasterGuru', 'mst-input-guru')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 text-xs rounded-xl btn-haptic-feedback">Simpan</button>
+          <div>
+            <label class="block font-bold text-slate-500 mb-1">Tambah Nama Guru Baru</label>
+            <div class="flex gap-2">
+              <input type="text" id="mst-input-guru" placeholder="Nama Guru & Gelar" class="w-full p-2.5 border border-slate-300 bg-white rounded-xl font-semibold">
+              <button onclick="submitSingleMasterItem('tambahMasterGuru', 'mst-input-guru')" class="bg-amber-600 text-white font-bold px-4 rounded-xl btn-klik-besar">Simpan</button>
+            </div>
           </div>
-        </div>
-
-        <div class="space-y-1.5 p-3 bg-amber-50/50 border border-amber-200 rounded-2xl space-y-2">
-          <label class="block text-[10px] font-bold text-amber-900 uppercase">Tambah Mata Pelajaran Pintar</label>
-          <input type="text" id="mst-mapel-nama" placeholder="Nama Mapel (Contoh: Sistem Kemudi)" class="w-full p-2.5 text-xs border border-slate-200 bg-white rounded-xl font-semibold">
-          <input type="text" id="mst-mapel-jurusan" placeholder="Kompetensi Keahlian (Contoh: TKR / Umum)" class="w-full p-2.5 text-xs border border-slate-200 bg-white rounded-xl font-semibold">
-          <button onclick="submitMasterMapelPintarSpesifik()" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2.5 text-xs rounded-xl btn-haptic-feedback uppercase tracking-wider">Kunci Mapel Baru</button>
         </div>
       </div>
     </section>
 
   </main>
 
-  <nav class="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl z-40 flex justify-around items-center py-3 px-2">
-    <button onclick="handleTabNavigationTransition('dashboard')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-blue-900 font-extrabold">
-      <i class="fa-solid fa-chart-pie text-xl"></i>
-      <span class="text-[10px] tracking-tight">Beranda</span>
+  <!-- ================= NAVIGASI BOTTOM BAR RAKSASA (RAMAH JEMPOL JELAS) ================= -->
+  <nav class="no-print fixed bottom-0 left-0 right-0 bg-white border-t-4 border-slate-200 shadow-2xl z-40 flex justify-around items-center py-4 px-2">
+    <button onclick="handleTabNavigationTransition('dashboard')" class="nav-btn-link flex flex-col items-center gap-1.5 text-center w-full py-1 text-blue-900 font-extrabold transition">
+      <i class="fa-solid fa-chart-pie text-2xl"></i>
+      <span class="text-xs tracking-tight">Beranda</span>
     </button>
-    <button onclick="handleTabNavigationTransition('absensi')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
-      <i class="fa-solid fa-address-card text-xl"></i>
-      <span class="text-[10px] tracking-tight">Presensi</span>
+    <button onclick="handleTabNavigationTransition('absensi')" class="nav-btn-link flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400 font-bold transition">
+      <i class="fa-solid fa-address-card text-2xl"></i>
+      <span class="text-xs tracking-tight">Presensi</span>
     </button>
-    <button onclick="handleTabNavigationTransition('nilai')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
-      <i class="fa-solid fa-graduation-cap text-xl"></i>
-      <span class="text-[10px] tracking-tight">Nilai</span>
+    <button onclick="handleTabNavigationTransition('nilai')" class="nav-btn-link flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400 font-bold transition">
+      <i class="fa-solid fa-graduation-cap text-2xl"></i>
+      <span class="text-xs tracking-tight">Nilai</span>
     </button>
-    <button onclick="handleTabNavigationTransition('agenda')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
-      <i class="fa-solid fa-book-open text-xl"></i>
-      <span class="text-[10px] tracking-tight">Jurnal</span>
+    <button onclick="handleTabNavigationTransition('agenda')" class="nav-btn-link flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400 font-bold transition">
+      <i class="fa-solid fa-book-open text-2xl"></i>
+      <span class="text-xs tracking-tight">Jurnal</span>
     </button>
-    <button onclick="handleTabNavigationTransition('more')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
-      <i class="fa-solid fa-ellipsis-h text-xl"></i>
-      <span class="text-[10px] tracking-tight">Lainnya</span>
+    <button onclick="handleTabNavigationTransition('more')" class="nav-btn-link flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400 font-bold transition">
+      <i class="fa-solid fa-bars text-2xl"></i>
+      <span class="text-xs tracking-tight">Menu Lain</span>
     </button>
   </nav>
 
-  <div class="print-container hidden p-4">
-    <center>
-      <h2 class="text-md font-bold uppercase">Laporan Dokumen Matriks Sekolah</h2>
-      <p class="text-xs">SMK NEGERI 1 SINGKIL UTARA</p>
-    </center>
-    <hr class="my-3 border-black">
+  <!-- REKAP PRINT OUT TERSEMBUNYI -->
+  <div class="print-container hidden p-6">
+    <center><h2 class="text-xl font-bold uppercase">Laporan Matriks Sekolah Resmi</h2><p>SMK NEGERI 1 SINGKIL UTARA</p></center>
+    <hr class="my-4 border-black border-2">
     <div id="print-injection-table-target"></div>
   </div>
 
+  <!-- ================= CORE CORE CORE JAVASCRIPT ENGINE ENGINE ENGINE ================= -->
   <script>
-    // Penampung File Sinkronisasi Global
     let DATA_CACHE_CONTAINER = { kelas: [], mapel: [], guru: [], siswa: [] };
 
-    // Inisialisasi Pertama Saat Aplikasi Dibuka
     window.addEventListener("DOMContentLoaded", () => {
-      const formatHariIni = new Date().toISOString().split('T')[0];
-      if(document.getElementById("form-abs-tanggal")) document.getElementById("form-abs-tanggal").value = formatHariIni;
-      if(document.getElementById("form-age-tanggal")) document.getElementById("form-age-tanggal").value = formatHariIni;
-      if(document.getElementById("form-bk-tanggal")) document.getElementById("form-bk-tanggal").value = formatHariIni;
+      const hariIni = new Date().toISOString().split('T')[0];
+      if(document.getElementById("form-abs-tanggal")) document.getElementById("form-abs-tanggal").value = hariIni;
+      if(document.getElementById("form-age-tanggal")) document.getElementById("form-age-tanggal").value = hariIni;
+      if(document.getElementById("form-bk-tanggal")) document.getElementById("form-bk-tanggal").value = hariIni;
       
       initMasterDatabase();
       scanLocalStorageOfflineBuffer();
     });
 
-    // Pemicu Toast Pemberitahuan Unik
-    function launchNotificationToast(msg, category = "info") {
+    function launchNotificationToast(msg, tipe = "info") {
       const box = document.getElementById("app-toast");
       const body = document.getElementById("toast-body");
       const icon = document.getElementById("toast-icon");
-      const txt = document.getElementById("toast-message");
+      const text = document.getElementById("toast-message");
 
-      txt.innerText = msg;
-      
-      if(category === "success") {
-        body.className = "bg-emerald-950 text-emerald-100 p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-emerald-600";
-        icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
-      } else if(category === "error") {
-        body.className = "bg-rose-950 text-rose-100 p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-rose-600";
-        icon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
+      text.innerText = msg;
+      if(tipe === "success") {
+        body.className = "bg-emerald-900 text-emerald-50 p-5 rounded-2xl shadow-xl flex items-center gap-4 text-base font-bold border-2 border-emerald-500";
+        icon.className = "fa-solid fa-circle-check text-emerald-400 text-xl";
+      } else if(tipe === "error") {
+        body.className = "bg-rose-900 text-rose-50 p-5 rounded-2xl shadow-xl flex items-center gap-4 text-base font-bold border-2 border-rose-500";
+        icon.className = "fa-solid fa-circle-xmark text-rose-400 text-xl";
       } else {
-        body.className = "bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-slate-700";
-        icon.className = "fa-solid fa-circle-info text-blue-400 text-lg";
+        body.className = "bg-slate-900 text-white p-5 rounded-2xl shadow-xl flex items-center gap-4 text-base font-bold border-2 border-slate-600";
+        icon.className = "fa-solid fa-circle-info text-blue-400 text-xl";
       }
-
-      box.classList.remove("scale-0");
-      box.classList.add("scale-100");
-      setTimeout(() => { box.classList.remove("scale-100"); box.classList.add("scale-0"); }, 3500);
+      box.classList.remove("scale-0"); box.classList.add("scale-100");
+      setTimeout(() => { box.classList.remove("scale-100"); box.classList.add("scale-0"); }, 3000);
     }
 
-    // Loader Kontrol Animasi
-    function triggerLoadingScreen(visible) {
-      document.getElementById("global-spinner").style.display = visible ? "flex" : "none";
+    function triggerLoadingScreen(show) {
+      document.getElementById("global-spinner").style.display = show ? "flex" : "none";
     }
 
-    // Manajemen Tab Menu Utama Atas-Bawah
-    function handleTabNavigationTransition(targetTabId) {
+    function handleTabNavigationTransition(idTarget) {
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".nav-btn-link").forEach(btn => {
-        btn.classList.remove("text-blue-900", "font-extrabold");
-        btn.classList.add("text-slate-400", "font-medium");
+      document.querySelectorAll(".nav-btn-link").forEach(b => {
+        b.classList.remove("text-blue-900", "font-extrabold");
+        b.classList.add("text-slate-400", "font-bold");
       });
       
-      document.getElementById("view-" + targetTabId).classList.add("active");
+      document.getElementById("view-" + idTarget).classList.add("active");
       
-      const setTitles = {
-        'dashboard': 'Beranda Utama', 'absensi': 'Presensi Siswa', 
-        'nilai': 'Input Nilai Massal', 'agenda': 'Jurnal Mengajar', 'more': 'Peralatan Sistem'
+      const judulMap = {
+        'dashboard': 'Beranda Utama', 'absensi': 'Presensi Murid',
+        'nilai': 'Input Nilai Murid', 'agenda': 'Jurnal Mengajar', 'more': 'Menu Kelola Sistem'
       };
-      document.getElementById("app-header-title").innerText = setTitles[targetTabId] || "SIMAK";
+      document.getElementById("app-header-title").innerText = judulMap[idTarget] || "SIMAK";
       
-      const searchButtonMatch = Array.from(document.querySelectorAll(".nav-btn-link")).find(btn => btn.getAttribute("onclick").includes(targetTabId));
-      if(searchButtonMatch) {
-        searchButtonMatch.classList.remove("text-slate-400", "font-medium");
-        searchButtonMatch.classList.add("text-blue-900", "font-extrabold");
+      const btnAktif = Array.from(document.querySelectorAll(".nav-btn-link")).find(b => b.getAttribute("onclick").includes(idTarget));
+      if(btnAktif) {
+        btnAktif.classList.remove("text-slate-400", "font-bold");
+        btnAktif.classList.add("text-blue-900", "font-extrabold");
       }
     }
 
-    // Kontrol Buka Tutup Sub-Panel di Menu Utilitas "Lainnya"
-    function toggleSubPanelMenu(subElementId) {
-      document.getElementById("sub-panel-" + subElementId).classList.toggle("hidden");
+    function toggleSubPanelMenu(idSub) {
+      document.getElementById("sub-panel-" + idSub).classList.toggle("hidden");
     }
 
-    // Pengambilan Pertama File Database Utama (Master)
     function initMasterDatabase() {
       triggerLoadingScreen(true);
       fetch(`${API_URL}?action=getMasterData`)
-      .then(res => res.json())
-      .then(output => {
+      .then(r => r.json())
+      .then(res => {
         triggerLoadingScreen(false);
-        if(!output.success) return launchNotificationToast("Cloud API bermasalah: " + output.error, "error");
+        if(!res.success) return launchNotificationToast("Gagal muat data master cloud", "error");
         
-        DATA_CACHE_CONTAINER = output.data;
+        DATA_CACHE_CONTAINER = res.data;
         
-        // Update Tampilan Kotak Statistik Beranda
         document.getElementById("stat-box-kelas").innerText = DATA_CACHE_CONTAINER.kelas.length;
         document.getElementById("stat-box-guru").innerText = DATA_CACHE_CONTAINER.guru.length;
         document.getElementById("stat-box-mapel").innerText = DATA_CACHE_CONTAINER.mapel.length;
         document.getElementById("stat-box-siswa").innerText = DATA_CACHE_CONTAINER.siswa.length;
         
-        // Injeksi Konten Dropdown Form Absensi
-        buildSelectTagOptions("form-abs-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- Pilih Kelas --");
-        buildSelectTagOptions("form-abs-mapel", DATA_CACHE_CONTAINER.mapel, false);
-        buildSelectTagOptions("form-abs-guru", DATA_CACHE_CONTAINER.guru, false);
+        buildSelectOptions("form-abs-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- PILIH KELAS DISINI --");
+        buildSelectOptions("form-abs-mapel", DATA_CACHE_CONTAINER.mapel);
+        buildSelectOptions("form-abs-guru", DATA_CACHE_CONTAINER.guru);
         
-        // Injeksi Konten Dropdown Form Nilai
-        buildSelectTagOptions("form-nil-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- Pilih Kelas --");
-        buildSelectTagOptions("form-nil-mapel", DATA_CACHE_CONTAINER.mapel); 
-        buildSelectTagOptions("form-nil-guru", DATA_CACHE_CONTAINER.guru);
+        buildSelectOptions("form-nil-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- PILIH KELAS DISINI --");
+        buildSelectOptions("form-nil-mapel", DATA_CACHE_CONTAINER.mapel);
+        buildSelectOptions("form-nil-guru", DATA_CACHE_CONTAINER.guru);
         
-        // Injeksi Konten Dropdown Form Jurnal Agenda
-        buildSelectTagOptions("form-age-kelas", DATA_CACHE_CONTAINER.kelas);
-        buildSelectTagOptions("form-age-guru", DATA_CACHE_CONTAINER.guru);
+        buildSelectOptions("form-age-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectOptions("form-age-guru", DATA_CACHE_CONTAINER.guru);
         
-        // Injeksi Konten Dropdown Form Bimbingan Konseling (BK)
-        buildSelectTagOptions("form-bk-kelas", DATA_CACHE_CONTAINER.kelas, true);
-        buildSelectTagOptions("form-bk-guru", DATA_CACHE_CONTAINER.guru);
+        buildSelectOptions("form-bk-kelas", DATA_CACHE_CONTAINER.kelas, true);
+        buildSelectOptions("form-bk-guru", DATA_CACHE_CONTAINER.guru);
         
-        // Injeksi Konten Dropdown Form Utilitas Pembantu
-        buildSelectTagOptions("log-param-kelas", DATA_CACHE_CONTAINER.kelas);
-        buildSelectTagOptions("form-upl-kelas", DATA_CACHE_CONTAINER.kelas);
-        buildSelectTagOptions("matrix-param-kelas", DATA_CACHE_CONTAINER.kelas);
-        buildSelectTagOptions("matrix-param-mapel", DATA_CACHE_CONTAINER.mapel, false, "-- Semua Mapel --");
-        buildSelectTagOptions("matrix-param-guru", DATA_CACHE_CONTAINER.guru, false, "-- Semua Guru --");
+        buildSelectOptions("log-param-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectOptions("form-upl-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectOptions("matrix-param-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectOptions("matrix-param-mapel", DATA_CACHE_CONTAINER.mapel, false, "Semua Mapel");
+        buildSelectOptions("matrix-param-guru", DATA_CACHE_CONTAINER.guru, false, "Semua Guru");
 
-        // Set Label Jaringan Berhasil
-        document.getElementById("network-badge").className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5";
-        document.getElementById("network-badge").innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ONLINE`;
-
-        launchNotificationToast("Koneksi Sinkronisasi Cloud Sukses!", "success");
-      }).catch(err => {
+        document.getElementById("network-badge").className = "bg-emerald-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg";
+        document.getElementById("network-badge").innerText = "ONLINE";
+        launchNotificationToast("Data Terbaru Berhasil Disinkronkan!", "success");
+      })
+      .catch(() => {
         triggerLoadingScreen(false);
-        launchNotificationToast("Gagal tersambung ke cloud server. Berjalan offline.", "error");
-        
-        // Set Label Jaringan Rusak/Offline
-        document.getElementById("network-badge").className = "bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5";
-        document.getElementById("network-badge").innerHTML = "KONEKSI OFFLINE";
+        launchNotificationToast("Aplikasi berjalan dalam mode Offline harian.", "info");
+        document.getElementById("network-badge").className = "bg-rose-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg";
+        document.getElementById("network-badge").innerText = "OFFLINE";
       });
     }
 
-    // Fungsi Injeksi Tag Opsi Dropdown Seleksi
-    function buildSelectTagOptions(idDom, dataArray, includePlaceholder = false, placeholderText = "-- Pilih --") {
-      const selectTarget = document.getElementById(idDom);
-      if(!selectTarget) return;
-      let rawHtml = includePlaceholder ? `<option value="">${placeholderText}</option>` : "";
-      if(idDom === "log-param-kelas") rawHtml = `<option value="">Semua Kelas</option>`;
-      
-      dataArray.forEach(val => { rawHtml += `<option value="${val}">${val}</option>`; });
-      selectTarget.innerHTML = rawHtml;
+    function buildSelectOptions(idDom, arrData, placeholder = false, teksPlc = "-- Pilih --") {
+      const el = document.getElementById(idDom);
+      if(!el) return;
+      let html = placeholder ? `<option value="">${teksPlc}</option>` : "";
+      if(idDom === "log-param-kelas") html = `<option value="">-- Semua Kelas --</option>`;
+      arrData.forEach(item => { html += `<option value="${item}">${item}</option>`; });
+      el.innerHTML = html;
     }
 
-    // ================= LOGIK ENGINE PRESENSI SISWA =================
-    function renderLembarAbsensiSiswa() {
-      const pickedKelas = document.getElementById("form-abs-kelas").value;
-      const boxContainer = document.getElementById("wrapper-siswa-absensi");
-      if(!pickedKelas) { boxContainer.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Silakan pilih kelas di atas terlebih dahulu...</p>`; return; }
+    // ================= FITUR UTAMA: PRESENSI OTOMATIS HADIR (ANTI RIWET) =================
+    function renderLembarAbsensiSiswaOtomatisHadir() {
+      const kelasPilihan = document.getElementById("form-abs-kelas").value;
+      const box = document.getElementById("wrapper-siswa-absensi");
+      if(!kelasPilihan) { box.innerHTML = `<p class="p-8 text-center text-slate-400 font-bold italic text-sm">Silakan pilih kelas pada kolom Langkah 1 di atas...</p>`; return; }
       
-      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === pickedKelas);
-      if(filterSiswa.length === 0) { boxContainer.innerHTML = `<p class="p-5 text-center text-rose-600 font-extrabold text-xs">Data siswa di kelas ini belum di-upload!</p>`; return; }
+      const muridFilter = DATA_CACHE_CONTAINER.siswa.filter(s => s.kelas === kelasPilihan);
+      if(muridFilter.length === 0) { box.innerHTML = `<p class="p-6 text-center text-rose-600 font-extrabold text-sm">Data nama murid untuk kelas ini masih kosong!</p>`; return; }
       
-      let buildHtml = "";
-      filterSiswa.forEach((siswa, idx) => {
-        buildHtml += `
-          <div class="card-row-siswa-absen bg-white p-4 rounded-2xl border border-slate-200/90 flex flex-col gap-3 shadow-2xs" data-nama="${siswa.nama}">
-            <div class="flex items-center gap-2.5">
-              <span class="bg-blue-950 text-white font-black text-[10px] w-6 h-6 flex items-center justify-center rounded-xl shrink-0 shadow-3xs">${idx + 1}</span>
-              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide truncate break-words">${siswa.nama}</span>
+      let html = "";
+      muridFilter.forEach((murid, index) => {
+        html += `
+          <div class="card-row-siswa-absen bg-white p-4 rounded-2xl border-2 border-slate-200 flex flex-col gap-3 shadow-3xs" data-nama="${murid.nama}">
+            <div class="flex items-center gap-3">
+              <span class="bg-blue-900 text-white font-black text-xs w-7 h-7 flex items-center justify-center rounded-xl shrink-0">${index + 1}</span>
+              <span class="text-judul-kartu font-black text-slate-900 uppercase tracking-wide truncate">${murid.nama}</span>
             </div>
-            <div class="flex gap-2 font-black text-xs text-center">
-              <label class="w-full cursor-pointer btn-haptic-feedback">
-                <input type="radio" name="radio-abs-row-${idx}" value="H" checked onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 shadow-3xs font-extrabold transition">Hadir</span>
+            <!-- Pilihan Status Raksasa yang Mudah Ditekan Jari -->
+            <div class="grid grid-cols-4 gap-2 font-black text-center">
+              <label class="cursor-pointer btn-klik-besar">
+                <input type="radio" name="radio-abs-row-${index}" value="H" checked onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-500 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-black text-base transition shadow-3xs">H</span>
               </label>
-              <label class="w-full cursor-pointer btn-haptic-feedback">
-                <input type="radio" name="radio-abs-row-${idx}" value="S" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 shadow-3xs font-extrabold transition">Sakit</span>
+              <label class="cursor-pointer btn-klik-besar">
+                <input type="radio" name="radio-abs-row-${index}" value="S" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-500 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 font-black text-base transition shadow-3xs">S</span>
               </label>
-              <label class="w-full cursor-pointer btn-haptic-feedback">
-                <input type="radio" name="radio-abs-row-${idx}" value="I" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 shadow-3xs font-extrabold transition">Izin</span>
+              <label class="cursor-pointer btn-klik-besar">
+                <input type="radio" name="radio-abs-row-${index}" value="I" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-500 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 font-black text-base transition shadow-3xs">I</span>
               </label>
-              <label class="w-full cursor-pointer btn-haptic-feedback">
-                <input type="radio" name="radio-abs-row-${idx}" value="A" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 shadow-3xs font-extrabold transition">Alpha</span>
+              <label class="cursor-pointer btn-klik-besar">
+                <input type="radio" name="radio-abs-row-${index}" value="A" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-500 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 font-black text-base transition shadow-3xs">A</span>
               </label>
             </div>
           </div>`;
       });
-      boxContainer.innerHTML = buildHtml;
+      box.innerHTML = html;
       liveKalkulasiStatistikAbsen();
-    }
-
-    function setGlobalStatusAbsensi(charTarget) {
-      document.querySelectorAll('#wrapper-siswa-absensi input[type="radio"]').forEach(rad => {
-        if(rad.value === charTarget) rad.checked = true;
-      });
-      liveKalkulasiStatistikAbsen();
-      launchNotificationToast(`Semua siswa diset: ${charTarget}`, "info");
     }
 
     function liveKalkulasiStatistikAbsen() {
       let h = 0, s = 0, i = 0, a = 0;
-      document.querySelectorAll('#wrapper-siswa-absensi input[type="radio"]:checked').forEach(rad => {
-        if(rad.value === "H") h++;
-        if(rad.value === "S") s++;
-        if(rad.value === "I") i++;
-        if(rad.value === "A") a++;
+      document.querySelectorAll('#wrapper-siswa-absensi input[type="radio"]:checked').forEach(r => {
+        if(r.value === "H") h++; if(r.value === "S") s++; if(r.value === "I") i++; if(r.value === "A") a++;
       });
       document.getElementById("live-h").innerText = h;
       document.getElementById("live-s").innerText = s;
       document.getElementById("live-i").innerText = i;
       document.getElementById("live-a").innerText = a;
       
-      // Auto-Fill Kolom Jumlah Hadir & Absen di Tab Jurnal Agenda secara otomatis
       if(document.getElementById("form-age-hadir")) {
         document.getElementById("form-age-hadir").value = h;
         document.getElementById("form-age-absen").value = (s + i + a);
@@ -697,10 +650,10 @@
     }
 
     function liveFilterNamaSiswaAbsen() {
-      const kataKunci = document.getElementById("search-bar-abs").value.toLowerCase();
-      document.querySelectorAll(".card-row-siswa-absen").forEach(box => {
-        const targetNama = box.getAttribute("data-nama").toLowerCase();
-        box.style.display = targetNama.includes(kataKunci) ? "flex" : "none";
+      const kunci = document.getElementById("search-bar-abs").value.toLowerCase();
+      document.querySelectorAll(".card-row-siswa-absen").forEach(c => {
+        const nama = c.getAttribute("data-nama").toLowerCase();
+        c.style.display = nama.includes(kunci) ? "flex" : "none";
       });
     }
 
@@ -711,35 +664,33 @@
       const gru = document.getElementById("form-abs-guru").value;
       const act = document.getElementById("form-abs-kegiatan").value;
 
-      if(!kls || !gru) return alert("Peringatan Gagal: Kolom Kelas & Nama Guru pengampu wajib ditentukan!");
+      if(!kls || !gru) return alert("Gagal: Kolom Pilihan Kelas & Nama Guru Wajib Ditentukan!");
       
-      let listDataSiswa = [];
-      document.querySelectorAll(".card-row-siswa-absen").forEach(box => {
-        const nama = box.getAttribute("data-nama");
-        const status = box.querySelector('input[type="radio"]:checked').value;
-        listDataSiswa.push({ nama: nama, status: status });
+      let dataSiswa = [];
+      document.querySelectorAll(".card-row-siswa-absen").forEach(c => {
+        dataSiswa.push({
+          nama: c.getAttribute("data-nama"),
+          status: c.querySelector('input[type="radio"]:checked').value
+        });
       });
 
-      if(listDataSiswa.length === 0) return alert("Data absensi murid masih kosong.");
-
-      const payloadData = { action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: listDataSiswa };
+      const dataPaket = { action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: dataSiswa };
 
       triggerLoadingScreen(true);
-      fetch(API_URL, { method: "POST", body: JSON.stringify(payloadData) })
-      .then(res => res.json())
-      .then(output => {
+      fetch(API_URL, { method: "POST", body: JSON.stringify(dataPaket) })
+      .then(r => r.json())
+      .then(res => {
         triggerLoadingScreen(false);
-        launchNotificationToast(output.message || "Presensi sukses tersimpan di cloud!", "success");
-        if(output.success) {
-          document.getElementById("wrapper-siswa-absensi").innerHTML = `<p class="p-6 text-center text-emerald-600 font-extrabold text-xs"><i class="fa-solid fa-circle-check mr-2"></i>Data aman terkunci di Server Cloud.</p>`;
+        launchNotificationToast(res.message || "Presensi Kelas Berhasil Tersimpan!", "success");
+        if(res.success) {
+          document.getElementById("wrapper-siswa-absensi").innerHTML = `<p class="p-8 text-center text-emerald-600 font-extrabold text-sm"><i class="fa-solid fa-circle-check mr-2"></i>Data absen terkunci aman di Server Cloud.</p>`;
         }
-      }).catch(() => {
+      })
+      .catch(() => {
         triggerLoadingScreen(false);
-        
-        // BACKUP PROTEKSI OFFLINE BUFFER JIKA INTERNET MATI
-        localStorage.setItem("SIMAK_BUFFER_OFFLINE", JSON.stringify(payloadData));
+        localStorage.setItem("SIMAK_BUFFER_OFFLINE", JSON.stringify(dataPaket));
         document.getElementById("offline-buffer-banner").classList.remove("hidden");
-        launchNotificationToast("Sinyal internet hilang! Data diamankan di memori lokal HP.", "error");
+        launchNotificationToast("Sinyal lembur! Data diamankan di internal HP.", "error");
       });
     }
 
@@ -750,78 +701,76 @@
     }
 
     function uploadOfflineBufferToServer() {
-      const rawData = localStorage.getItem("SIMAK_BUFFER_OFFLINE");
-      if(!rawData) return;
+      const internalData = localStorage.getItem("SIMAK_BUFFER_OFFLINE");
+      if(!internalData) return;
       triggerLoadingScreen(true);
-      fetch(API_URL, { method: "POST", body: rawData })
+      fetch(API_URL, { method: "POST", body: internalData })
       .then(r => r.json())
-      .then(output => {
+      .then(res => {
         triggerLoadingScreen(false);
-        if(output.success) {
+        if(res.success) {
           localStorage.removeItem("SIMAK_BUFFER_OFFLINE");
           document.getElementById("offline-buffer-banner").classList.add("hidden");
-          launchNotificationToast("Data offline cadangan berhasil masuk ke cloud server!", "success");
+          launchNotificationToast("Data cadangan offline sukses masuk cloud!", "success");
         } else {
-          alert("Penolakan server pusat: " + output.message);
+          alert("Ditolak server pusat: " + res.message);
         }
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Server cloud masih sibuk/offline.", "error"); });
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Koneksi cloud masih terganggu.", "error"); });
     }
 
-    // ================= LOGIK ENGINE INPUT NILAI AKADEMIK =================
+    // ================= ENGINE INPUT NILAI AKADEMIK =================
     function renderLembarNilaiSiswa() {
-      const pickedKelas = document.getElementById("form-nil-kelas").value;
-      const boxContainer = document.getElementById("wrapper-siswa-nilai");
-      if(!pickedKelas) { boxContainer.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Silakan pilih kelas terlebih dahulu...</p>`; return; }
+      const kls = document.getElementById("form-nil-kelas").value;
+      const box = document.getElementById("wrapper-siswa-nilai");
+      if(!kls) { box.innerHTML = `<p class="p-4 text-center italic text-sm text-slate-400">Silakan tentukan pilihan kelas terlebih dahulu...</p>`; return; }
       
-      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === pickedKelas);
-      let buildHtml = "";
-      filterSiswa.forEach((siswa, idx) => {
-        buildHtml += `
-          <div class="card-row-siswa-nilai bg-white p-3 rounded-xl border border-slate-200/80 flex items-center justify-between gap-3 shadow-3xs" data-nama="${siswa.nama}">
+      const muridFilter = DATA_CACHE_CONTAINER.siswa.filter(s => s.kelas === kls);
+      let html = "";
+      muridFilter.forEach((murid, i) => {
+        html += `
+          <div class="card-row-siswa-nilai bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between gap-3 shadow-3xs" data-nama="${murid.nama}">
             <div class="flex items-center gap-2 truncate">
-              <span class="bg-slate-700 text-white font-black text-[10px] w-5 h-5 flex items-center justify-center rounded-lg shrink-0">${idx + 1}</span>
-              <span class="text-xs font-bold text-slate-800 uppercase truncate break-words">${siswa.nama}</span>
+              <span class="bg-slate-700 text-white font-black text-[11px] w-6 h-6 flex items-center justify-center rounded-lg shrink-0">${i + 1}</span>
+              <span class="text-sm font-bold text-slate-800 uppercase truncate">${murid.nama}</span>
             </div>
-            <input type="number" min="0" max="100" value="80" class="input-skor-nilai-item w-20 p-2.5 rounded-xl border border-slate-300 text-center font-black bg-slate-50 text-blue-950 text-base focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <input type="number" min="0" max="100" value="80" class="input-skor-nilai-item w-24 p-3 rounded-xl border-2 border-slate-300 text-center font-black bg-slate-50 text-blue-950 text-lg focus:outline-none focus:border-blue-600">
           </div>`;
       });
-      boxContainer.innerHTML = buildHtml || `<p class="p-4 text-center italic text-xs text-slate-400">Kelas tidak memiliki data siswa.</p>`;
+      box.innerHTML = html || `<p class="p-4 text-center text-slate-400">Belum ada data murid.</p>`;
     }
 
     function setGlobalAngkaNilaiMasal() {
-      document.querySelectorAll(".input-skor-nilai-item").forEach(inp => inp.value = 80);
-      launchNotificationToast("Semua nilai diset ke angka: 80", "info");
+      document.querySelectorAll(".input-skor-nilai-item").forEach(i => i.value = 80);
+      launchNotificationToast("Semua nilai disetel ke angka standar 80", "info");
     }
 
     function submitNilaiKeCloudServer() {
-      const judul = document.getElementById("form-nil-tugas").value.trim();
+      const jdl = document.getElementById("form-nil-tugas").value.trim();
       const kls = document.getElementById("form-nil-kelas").value;
       const mpl = document.getElementById("form-nil-mapel").value;
       const gru = document.getElementById("form-nil-guru").value;
 
-      if(!judul || !kls || !mpl || !gru) return alert("Peringatan Gagal: Mohon lengkapi kolom nama tugas, kelas, mapel, dan guru!");
+      if(!jdl || !kls || !mpl || !gru) return alert("Gagal: Mohon lengkapi isian Nama Tugas, Kelas, Mapel, dan Guru Penguji!");
 
-      let listDataNilai = [];
-      document.querySelectorAll(".card-row-siswa-nilai").forEach(box => {
-        const nama = box.getAttribute("data-nama");
-        const nilai = box.querySelector(".input-skor-nilai-item").value;
-        listDataNilai.push({ nama: nama, nilai: nilai });
+      let dataNilai = [];
+      document.querySelectorAll(".card-row-siswa-nilai").forEach(c => {
+        dataNilai.push({ nama: c.getAttribute("data-nama"), nilai: c.querySelector(".input-skor-nilai-item").value });
       });
 
       triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: listDataNilai })
+        body: JSON.stringify({ action: "submitNilai", judulTugas: jdl, kelas: kls, mapel: mpl, guru: gru, dataNilai: dataNilai })
       })
-      .then(res => res.json())
-      .then(output => {
+      .then(r => r.json())
+      .then(res => {
         triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) renderLembarNilaiSiswa();
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Error gagal menyimpan nilai.", "error"); });
+        launchNotificationToast(res.message, "success");
+        if(res.success) renderLembarNilaiSiswa();
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal menyimpan nilai.", "error"); });
     }
 
-    // ================= LOGIK ENGINE JURNAL AGENDA HARIAN =================
+    // ================= ENGINE JURNAL AGENDA HARIAN =================
     function submitAgendaKeCloudServer() {
       const tgl = document.getElementById("form-age-tanggal").value;
       const kls = document.getElementById("form-age-kelas").value;
@@ -831,32 +780,31 @@
       const abs = document.getElementById("form-age-absen").value;
       const gru = document.getElementById("form-age-guru").value;
 
-      if(!mat) return alert("Peringatan Gagal: Isian Jurnal rangkuman bahasan materi wajib ditulis!");
+      if(!mat) return alert("Gagal: Kolom Catatan Materi Pokok tidak boleh kosong!");
 
       triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mat, statusKelas: sts, hadir: hdr, absen: abs, guru: gru })
       })
-      .then(res => res.json())
-      .then(output => {
+      .then(r => r.json())
+      .then(res => {
         triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) document.getElementById("form-age-materi").value = "";
+        launchNotificationToast(res.message, "success");
+        if(res.success) document.getElementById("form-age-materi").value = "";
       })
-      .catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal menyimpan data agenda.", "error"); });
+      .catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal memproses jurnal.", "error"); });
     }
 
-    // ================= LOGIK ENGINE BIMBINGAN KONSELING (BK) =================
+    // ================= MANAJEMEN DATA REKAP & BACKYARD =================
     function syncSiswaDropdownUntukBK() {
-      const targetKelas = document.getElementById("form-bk-kelas").value;
-      const dropdownSiswa = document.getElementById("form-bk-siswa");
-      if(!targetKelas) { dropdownSiswa.innerHTML = `<option value="">-- Pilih Nama Siswa --</option>`; return; }
-      
-      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === targetKelas);
-      let rawHtml = "";
-      filterSiswa.forEach(siswa => { rawHtml += `<option value="${siswa.nama}">${siswa.nama}</option>`; });
-      dropdownSiswa.innerHTML = rawHtml || `<option value="">Siswa Kosong</option>`;
+      const kls = document.getElementById("form-bk-kelas").value;
+      const drop = document.getElementById("form-bk-siswa");
+      if(!kls) { drop.innerHTML = `<option value="">-- Pilih Nama Siswa --</option>`; return; }
+      const filter = DATA_CACHE_CONTAINER.siswa.filter(s => s.kelas === kls);
+      let html = "";
+      filter.forEach(s => { html += `<option value="${s.nama}">${s.nama}</option>`; });
+      drop.innerHTML = html || `<option value="">Siswa Kosong</option>`;
     }
 
     function submitKasusBKKeCloud() {
@@ -868,183 +816,118 @@
       const sol = document.getElementById("form-bk-solusi").value.trim();
       const gru = document.getElementById("form-bk-guru").value;
 
-      if(!sis || !mas || !sol) return alert("Peringatan: Semua data baris isian kasus BK wajib dilengkapi!");
+      if(!sis || !mas || !sol) return alert("Peringatan: Semua data kasus BK wajib dilengkapi!");
 
       triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "submitBimbingan", tanggal: tgl, kelas: kls, namaSiswa: sis, kategori: kat, masalah: mas, solusi: sol, guru: gru })
       })
-      .then(res => res.json())
-      .then(output => {
+      .then(r => r.json())
+      .then(res => {
         triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) {
+        launchNotificationToast(res.message, "success");
+        if(res.success) {
           document.getElementById("form-bk-masalah").value = "";
           document.getElementById("form-bk-solusi").value = "";
         }
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Koneksi cloud BK error.", "error"); });
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Koneksi gagal.", "error"); });
     }
 
-    // ================= LOGIK UTILLITAS LAINNYA =================
     function pullHistoryLogFromServer() {
-      const menu = document.getElementById("log-param-menu").value;
-      const kelas = document.getElementById("log-param-kelas").value;
-      const bulan = document.getElementById("log-param-bulan").value;
-      const tahun = document.getElementById("log-param-tahun").value;
-      const tbody = document.getElementById("table-body-log-rows");
+      const mnu = document.getElementById("log-param-menu").value;
+      const kls = document.getElementById("log-param-kelas").value;
+      const bln = document.getElementById("log-param-bulan").value;
+      const thn = document.getElementById("log-param-tahun").value;
+      const tbd = document.getElementById("table-body-log-rows");
 
-      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Sedang membuka arsip log server cloud...</td></tr>`;
-      
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, tahun: tahun })
-      })
-      .then(res => res.json())
-      .then(output => {
-        if(!output.success || !output.rows || output.rows.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Data log histori kosong / tidak ditemukan.</td></tr>`;
-          return;
+      tbd.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Membuka lembar riwayat cloud...</td></tr>`;
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getRekapBulanan", menu: mnu, kelas: kls, bulan: bln, tahun: thn }) })
+      .then(r => r.json())
+      .then(res => {
+        if(!res.success || !res.rows || res.rows.length === 0) {
+          tbd.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Riwayat data kosong.</td></tr>`; return;
         }
-        let buildHtml = "";
-        output.rows.forEach((row, i) => {
-          buildHtml += `
-            <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
-              <td class="p-2.5 text-center font-bold text-slate-400">${i + 1}</td>
-              <td class="p-2.5 font-bold text-slate-800 whitespace-nowrap">${row[1] || ''}</td>
-              <td class="p-2.5 text-slate-600">${row[2] || ''}</td>
-              <td class="p-2.5 text-slate-600">${row[3] || ''}</td>
-              <td class="p-2.5 font-extrabold text-slate-700 uppercase tracking-wide">${row[4] || ''}</td>
-              <td class="p-2.5"><span class="px-2 py-0.5 rounded-md font-bold text-[9px] bg-slate-100 text-slate-600">${row[5] || ''}</span></td>
+        let html = "";
+        res.rows.forEach((row, i) => {
+          html += `
+            <tr class="border-b border-slate-200">
+              <td class="p-2 font-bold text-slate-400 text-center">${i + 1}</td>
+              <td class="p-2 font-bold text-slate-800">${row[1] || ''}</td>
+              <td class="p-2 text-slate-600">${row[2] || ''}</td>
+              <td class="p-2 text-slate-600">${row[3] || ''}</td>
+              <td class="p-2 font-bold text-slate-700">${row[4] || ''}</td>
             </tr>`;
         });
-        tbody.innerHTML = buildHtml;
-      }).catch(() => { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-600 text-center font-bold">Gagal mengambil database log histori server.</td></tr>`; });
+        tbd.innerHTML = html;
+      }).catch(() => { tbd.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-600 font-bold">Gagal mengambil riwayat database.</td></tr>`; });
     }
 
     function generateMatrixDocumentHtml() {
-      const tipe = document.getElementById("matrix-param-tipe").value;
-      const kelas = document.getElementById("matrix-param-kelas").value;
-      const mapel = document.getElementById("matrix-param-mapel").value;
-      const guru = document.getElementById("matrix-param-guru").value;
-      const bulan = document.getElementById("matrix-param-bulan").value;
-      const tahun = document.getElementById("matrix-param-tahun").value;
-      const hari = document.getElementById("matrix-param-hari").value;
-      const previewWrapper = document.getElementById("wrapper-matrix-preview");
+      const tip = document.getElementById("matrix-param-tipe").value;
+      const kls = document.getElementById("matrix-param-kelas").value;
+      const mpl = document.getElementById("matrix-param-mapel").value;
+      const gru = document.getElementById("matrix-param-guru").value;
+      const bln = document.getElementById("matrix-param-bulan").value;
+      const thn = document.getElementById("matrix-param-tahun").value;
+      const wrap = document.getElementById("wrapper-matrix-preview");
 
-      if(!kelas) return alert("Pilih kelas terlebih dahulu!");
-      previewWrapper.innerHTML = `<p class="p-4 text-slate-500 italic text-center"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Membangun dokumen susunan matriks...</p>`;
+      if(!kls) return alert("Pilih kelas terlebih dahulu!");
+      wrap.innerHTML = `<p class="p-4 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menyusun data dokumen...</p>`;
 
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, mapel: mapel, guru: guru, bulan: bulan, tahun: tahun, hari: hari })
-      })
-      .then(res => res.json())
-      .then(output => {
-        if(!output.success) return previewWrapper.innerHTML = `<p class="p-2 text-rose-600 font-bold">Gagal: ${output.error}</p>`;
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getHistoriBulanan", tipe: tip, kelas: kls, mapel: mpl, guru: gru, bulan: bln, tahun: thn }) })
+      .then(r => r.json())
+      .then(res => {
+        if(!res.success) return wrap.innerHTML = `<p class="p-2 text-rose-600 font-bold">Gagal memuat data matrix.</p>`;
+        const hds = res.headers; const mtx = res.matrix;
+        if(!hds || hds.length === 0) { wrap.innerHTML = `<p class="p-4 text-slate-400 italic text-center">Data aktivitas tidak ditemukan.</p>`; return; }
         
-        const headers = output.headers;
-        const matrix = output.matrix;
-        if(!headers || headers.length === 0) {
-          previewWrapper.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Data aktivitas di cloud kosong.</p>`;
-          return;
-        }
+        let tbl = `<table class="w-full text-[10px] border-collapse border border-slate-300">`;
+        tbl += `<thead><tr class="bg-slate-200"><th class="border border-slate-300 p-2 text-left">Nama Siswa</th>`;
+        hds.forEach(h => { tbl += `<th class="border border-slate-300 p-1 text-center font-black">${h.split('-')[2] || h}</th>`; });
+        tbl += `</tr></thead><tbody>`;
         
-        let buildTableHtml = `<table class="w-full text-[9px] border-collapse border border-slate-300">`;
-        buildTableHtml += `<thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1.5 text-left text-slate-700">Nama Siswa</th>`;
-        headers.forEach(h => { buildTableHtml += `<th class="border border-slate-300 p-1 text-center font-black">${h.split('-')[2] || h}</th>`; });
-        buildTableHtml += `</tr></thead><tbody>`;
-        
-        Object.keys(matrix).sort().forEach(siswa => {
-          buildTableHtml += `<tr class="hover:bg-slate-50"><td class="border border-slate-300 p-1.5 font-bold text-slate-800 uppercase">${siswa}</td>`;
-          headers.forEach(h => {
-            let skorVal = matrix[siswa][h] || "";
-            let colorClass = skorVal === "H" ? "text-emerald-600" : skorVal === "A" ? "text-rose-600" : "text-slate-800";
-            buildTableHtml += `<td class="border border-slate-300 p-1 text-center font-black ${colorClass}">${skorVal}</td>`;
-          });
-          buildTableHtml += `</tr>`;
-        });
-        buildTableHtml += `</tbody></table>`;
+        Object.keys(mtx).sort().forEach(s => {
+          tbl += `<tr><td class="border border-slate-300 p-2 font-bold text-slate-800 uppercase">${s}</td>`;
+          hds.forEach(h => {
+            let val = mtx[s][h] || "";
+            let clr = val === "H" ? "text-emerald-600" : val === "A" ? "text-rose-600" : "text-slate-800";
+            tbl += `<td class="border border-slate-300 p-1 text-center font-black ${clr}">${val}</td>`;
+          }); tbl += `</tr>`;
+        }); tbl += `</tbody></table>`;
 
-        // Masukkan Hasil ke Layar HP & Layar Cetak Print-Out Kertas
-        document.getElementById("print-injection-table-target").innerHTML = buildTableHtml;
-        previewWrapper.innerHTML = `
-          <div class="p-1 font-bold text-slate-700 mb-2 border-b border-slate-200">Pratinjau Dokumen Berhasil Dibuat.</div>
-          ${buildTableHtml}
-          <button onclick="window.print()" class="w-full mt-3 bg-purple-700 text-white font-extrabold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback"><i class="fa-solid fa-print mr-2"></i>Cetak Dokumen Sekarang</button>`;
-      }).catch(() => { previewWrapper.innerHTML = `<p class="p-2 text-rose-600 font-bold">Gagal memproses rekapitulasi data.</p>`; });
-    }
-
-    function adjustMatrixFilterMapelView() {
-      const tipe = document.getElementById("matrix-param-tipe").value;
-      document.getElementById("matrix-param-mapel").style.display = (tipe === "Layanan BK") ? "none" : "block";
+        document.getElementById("print-injection-table-target").innerHTML = tbl;
+        wrap.innerHTML = `${tbl}<button onclick="window.print()" class="w-full mt-4 bg-purple-700 text-white font-extrabold py-3 rounded-xl uppercase tracking-wide btn-klik-besar">Cetak Dokumen Sekarang</button>`;
+      }).catch(() => { wrap.innerHTML = `<p class="p-2 text-rose-600 text-center">Gagal memproses data matriks.</p>`; });
     }
 
     function submitUploadMassalSiswaKeCloud() {
       const kls = document.getElementById("form-upl-kelas").value;
-      const rawText = document.getElementById("form-upl-siswa-list").value;
-      if(!kls || !rawText.trim()) return alert("Gagal: Kolom kelas atau isian nama murid tidak boleh kosong!");
+      const txt = document.getElementById("form-upl-siswa-list").value;
+      if(!kls || !txt.trim()) return alert("Gagal: Isian data nama siswa kosong!");
       
-      const arrayNamaSiswa = rawText.split('\n').map(item => item.trim()).filter(Boolean);
-
+      const arrSiswa = txt.split('\n').map(i => i.trim()).filter(Boolean);
       triggerLoadingScreen(true);
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswa: arrayNamaSiswa })
-      })
-      .then(res => res.json())
-      .then(output => {
-        triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) {
-          document.getElementById("form-upl-siswa-list").value = "";
-          initMasterDatabase();
-        }
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal memproses impor massal.", "error"); });
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswa: arrSiswa }) })
+      .then(r => r.json())
+      .then(res => {
+        triggerLoadingScreen(false); launchNotificationToast(res.message, "success");
+        if(res.success) { document.getElementById("form-upl-siswa-list").value = ""; initMasterDatabase(); }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal upload.", "error"); });
     }
 
-    // ================= SINKRONISASI FILE MASTER MANDIRI VIA HP =================
-    function submitSingleMasterItem(act, inputDomId) {
-      const el = document.getElementById(inputDomId);
-      const val = el.value.trim();
-      if(!val) return alert("Kolom isian entri data kosong.");
-      
-      let listParam = val.split('\n').map(item => item.trim()).filter(Boolean);
-      if(listParam.length === 0) return alert("Format data tidak valid.");
+    function submitSingleMasterItem(act, idInp) {
+      const el = document.getElementById(idInp); const val = el.value.trim();
+      if(!val) return alert("Kolom pengisian kosong.");
+      let prm = val.split('\n').map(i => i.trim()).filter(Boolean);
       
       triggerLoadingScreen(true);
-      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: listParam }) })
-      .then(res => res.json())
-      .then(output => {
-        triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) {
-          el.value = "";
-          initMasterDatabase();
-        }
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Error master saving.", "error"); });
-    }
-
-    function submitMasterMapelPintarSpesifik() {
-      const nama = document.getElementById("mst-mapel-nama").value.trim();
-      const jur = document.getElementById("mst-mapel-jurusan").value.trim();
-      if(!nama) return alert("Nama mata pelajaran tidak boleh kosong!");
-
-      triggerLoadingScreen(true);
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "tambahMasterMapelPintar", namaMapel: nama, jurusan: jur })
-      })
-      .then(res => res.json())
-      .then(output => {
-        triggerLoadingScreen(false);
-        launchNotificationToast(output.message, "success");
-        if(output.success) {
-          document.getElementById("mst-mapel-nama").value = "";
-          document.getElementById("mst-mapel-jurusan").value = "";
-          initMasterDatabase();
-        }
-      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal menyimpan mapel pintar.", "error"); });
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: prm }) })
+      .then(r => r.json())
+      .then(res => {
+        triggerLoadingScreen(false); launchNotificationToast(res.message, "success");
+        if(res.success) { el.value = ""; initMasterDatabase(); }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal memperbarui item master.", "error"); });
     }
   </script>
 </body>
