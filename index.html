@@ -89,7 +89,7 @@
       <section class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
         <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
           <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center font-bold">
-            <i class="fa-solid fa-chart-simple"></i>
+            <i class="fa-solid fa-award"></i>
           </div>
           <div>
             <h2 class="text-xs font-black text-slate-800 uppercase">Analisis Nilai Siswa</h2>
@@ -119,6 +119,107 @@
 
         <button onclick="submitScores()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-md shadow-rose-200 flex justify-center items-center gap-2">
           <i class="fa-solid fa-lock"></i> Kunci & Simpan Nilai Massal
+        </button>
+      </section>
+
+      <section class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <div>
+            <h2 class="text-xs font-black text-slate-800 uppercase">Jurnal Agenda KBM</h2>
+            <p class="text-[10px] text-slate-400">Laporan ringkasan materi harian</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Tanggal</label>
+            <input type="date" id="agenda-tanggal" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold focus:outline-hidden">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Kelas</label>
+            <select id="agenda-kelas" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold focus:outline-hidden select-kelas-sync">
+              <option value="">-- Pilih --</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">Uraian Ringkasan Materi</label>
+          <textarea id="agenda-materi" rows="2" placeholder="Tulis bab atau pembahasan materi..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-medium focus:outline-hidden"></textarea>
+        </div>
+
+        <div class="grid grid-cols-3 gap-1.5">
+          <div>
+            <label class="block text-[9px] font-bold text-slate-500 mb-1">Status Kelas</label>
+            <select id="agenda-status" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 text-[11px] font-semibold focus:outline-hidden">
+              <option>Kondusif</option>
+              <option>Kurang Kondusif</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-500 mb-1">Jml Hadir</label>
+            <input type="number" id="agenda-hadir" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold focus:outline-hidden">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-500 mb-1">Jml Absen</label>
+            <input type="number" id="agenda-absen" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-1.5 text-xs text-center font-bold focus:outline-hidden">
+          </div>
+        </div>
+
+        <button onclick="submitAgenda()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-md shadow-emerald-200 flex justify-center items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Dokumen Agenda
+        </button>
+      </section>
+
+      <section class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+          <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+          <div>
+            <h2 class="text-xs font-black text-slate-800 uppercase">Catatan Kasus BK</h2>
+            <p class="text-[10px] text-slate-400">Rekam tindakan pembinaan siswa</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Pilih Kelas</label>
+            <select id="bk-kelas" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold focus:outline-hidden select-kelas-sync">
+              <option value="">-- Pilih --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Kategori Masalah</label>
+            <select id="bk-kategori" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold focus:outline-hidden">
+              <option>Sosial & Perilaku</option>
+              <option>Pelanggaran Kedisiplinan</option>
+              <option>Konsultasi Prestasi Akademik</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">Nama Lengkap Murid</label>
+          <input type="text" id="bk-nama" placeholder="Masukkan Nama Siswa..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-semibold focus:outline-hidden">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Detail Masalah</label>
+            <textarea id="bk-masalah" rows="2" placeholder="Kronologi..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-medium focus:outline-hidden"></textarea>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Solusi / Tindakan</label>
+            <textarea id="bk-solusi" rows="2" placeholder="Tindakan..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs font-medium focus:outline-hidden"></textarea>
+          </div>
+        </div>
+
+        <button onclick="submitBimbingan()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-md shadow-purple-200 flex justify-center items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation"></i> Kunci Laporan Kasus BK
         </button>
       </section>
 
@@ -170,8 +271,8 @@
   </div>
 
   <script>
-    // ⚠️ GANTI DENGAN URL WEB APP (DEPLOYMENT) GOOGLE APPS SCRIPT ANDA KANAN ATAS
-    const API_URL = "https://script.google.com/macros/s/AKfycbxrvDavKt9D2m4_R51RdRpdObReuz4iXC7Pugfj96KpqPipoFHmuYZb2uLrunSMBOCN/exec";
+    // ⚠️ GANTI DENGAN URL WEB APP (DEPLOYMENT) GOOGLE APPS SCRIPT ANDA
+    const API_URL = "https://script.google.com/macros/s/AKfycbyw-BOBcRUjsOZNsbOMYLoyFkGNFhXHZgxPbArDs6R4mHSQDt7rUS9yliqOboXaFcTv/exec";
 
     function showLoading(state) {
       const overlay = document.getElementById("loading-overlay");
@@ -179,7 +280,10 @@
       else overlay.classList.add("hidden");
     }
 
-    // 1. LOAD DATA MASTER SETIAP KALI PORTAL DIBUKA
+    // Set Default Date hari ini
+    document.getElementById("agenda-tanggal").value = new Date().toISOString().split('T')[0];
+
+    // 1. LOAD DATA MASTER SETIAP KALI PORTAL DI BUKA
     window.addEventListener("DOMContentLoaded", () => {
       showLoading(true);
       fetch(API_URL, {
@@ -208,7 +312,7 @@
       });
     });
 
-    // 2. FUNGSI UTAMA SINKRONISASI OTOMATIS SISWA BERDASARKAN KELAS
+    // 2. FUNGSI UTAMA SINKRONISASI OTOMATIS SISWA BERDASARKAN KELAS (ANTI DATA HILANG)
     function autoLoadSiswaSync(prefix) {
       const kelasVal = document.getElementById(`${prefix}-kelas`).value;
       const container = document.getElementById(`${prefix}-list-area`);
@@ -227,38 +331,37 @@
       .then(res => res.json())
       .then(resObj => {
         if (!resObj.success || resObj.siswa.length === 0) {
-          container.innerHTML = `<p class="text-center py-4 text-rose-600 font-medium text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Siswa kosong. Isi tab 'MasterSiswa' di Excel terlebih dahulu.</p>`;
+          container.innerHTML = `<p class="text-center py-4 text-rose-600 font-medium text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Murid Kosong! Harap isi tab 'MasterSiswa' di Google Sheets terlebih dahulu.</p>`;
           return;
         }
         
         container.innerHTML = "";
-        container.className = "space-y-2 max-h-80 overflow-y-auto border border-slate-200 p-3 bg-slate-50/50 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-2 custom-scroll";
+        container.className = "space-y-2 max-h-60 overflow-y-auto border border-slate-200 p-2 bg-slate-50/50 rounded-xl custom-scroll";
         
         if (prefix === 'nilai') {
-          // Template Input Nilai Massal
+          // Template Isian Nilai Angka
           resObj.siswa.forEach((nama, idx) => {
             const row = document.createElement('div');
-            row.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs hover:border-rose-300 transition mt-0!";
+            row.className = "flex justify-between items-center bg-white p-2 rounded-lg border border-slate-200 shadow-2xs";
             row.innerHTML = `
               <span class="font-semibold text-slate-700 text-xs truncate max-w-[70%]">${idx + 1}. ${nama}</span>
-              <input type="number" min="0" max="100" value="0" name="score_val_${idx}" 
-                class="w-14 bg-slate-50 border border-slate-300 rounded-lg p-1 text-center font-extrabold text-rose-600 focus:outline-rose-600 text-xs">
+              <input type="number" min="0" max="100" value="0" name="score_val_${idx}" class="w-12 bg-slate-50 border border-slate-300 rounded-md p-1 text-center font-extrabold text-rose-600 focus:outline-hidden text-xs">
             `;
             row.dataset.namaSiswa = nama;
             container.appendChild(row);
           });
         } else {
-          // Template Radio Checklist Presensi (H/S/I/A)
+          // Template Radio Button (H/S/I/A)
           resObj.siswa.forEach((nama, idx) => {
             const row = document.createElement('div');
-            row.className = "flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition mt-0!";
+            row.className = "flex justify-between items-center bg-white p-2 rounded-lg border border-slate-200 shadow-2xs";
             row.innerHTML = `
               <span class="font-semibold text-slate-700 text-xs truncate max-w-[50%]">${idx + 1}. ${nama}</span>
               <div class="flex space-x-1 shrink-0">
-                <label><input type="radio" name="${prefix}_s_${idx}" value="H" checked class="hidden peer"><span class="px-2 py-1 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-emerald-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">H</span></label>
-                <label><input type="radio" name="${prefix}_s_${idx}" value="S" class="hidden peer"><span class="px-2 py-1 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-blue-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">S</span></label>
-                <label><input type="radio" name="${prefix}_s_${idx}" value="I" class="hidden peer"><span class="px-2 py-1 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-amber-500 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">I</span></label>
-                <label><input type="radio" name="${prefix}_s_${idx}" value="A" class="hidden peer"><span class="px-2 py-1 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-rose-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">A</span></label>
+                <label><input type="radio" name="${prefix}_s_${idx}" value="H" checked class="hidden peer"><span class="px-2 py-0.5 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-emerald-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">H</span></label>
+                <label><input type="radio" name="${prefix}_s_${idx}" value="S" class="hidden peer"><span class="px-2 py-0.5 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-blue-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">S</span></label>
+                <label><input type="radio" name="${prefix}_s_${idx}" value="I" class="hidden peer"><span class="px-2 py-0.5 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-amber-500 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">I</span></label>
+                <label><input type="radio" name="${prefix}_s_${idx}" value="A" class="hidden peer"><span class="px-2 py-0.5 rounded-md border border-slate-200 text-slate-400 peer-checked:bg-rose-600 peer-checked:text-white font-black text-[10px] cursor-pointer transition select-none">A</span></label>
               </div>
             `;
             row.dataset.namaSiswa = nama;
@@ -276,10 +379,10 @@
       const container = document.getElementById(`${prefix}-list-area`);
       const rows = Array.from(container.children).filter(el => el.dataset && el.dataset.namaSiswa);
       
-      if (rows.length === 0) return alert("Gagal: Pilih kelas terlebih dahulu.");
+      if (rows.length === 0) return alert("Peringatan: Pilih kelas dan pastikan data siswa termuat.");
       
       const guruAktif = document.getElementById("global-guru-aktif").value;
-      if (!guruAktif) return alert("Peringatan: Tentukan Identitas Guru Pengguna terlebih dahulu di bagian atas!");
+      if (!guruAktif) return alert("Harap tentukan Identitas Guru Pengguna di bagian atas terlebih dahulu!");
       
       let act = "submitAbsensi";
       if (prefix === "pramuka") act = "submitPramuka";
@@ -295,7 +398,7 @@
       
       if (prefix === "kbm") {
         const mapel = document.getElementById("kbm-mapel").value;
-        if(!mapel) return alert("Gagal: Silakan tentukan Mata Pelajaran.");
+        if(!mapel) return alert("Harap tentukan Mata Pelajaran Terlebih dahulu.");
         packet.mapel = mapel;
       }
       
@@ -306,9 +409,7 @@
       
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify(packet) })
-      .then(res => res.json()).then(resObj => { 
-        showLoading(false); alert(resObj.message); 
-      }).catch(() => { showLoading(false); alert("Gagal mengirim data."); });
+      .then(res => res.json()).then(resObj => { showLoading(false); alert(resObj.message); }).catch(() => { showLoading(false); alert("Gagal mengirim data."); });
     }
 
     // 4. KIRIM DATA NILAI KE SPREADSHEET CLOUD
@@ -318,8 +419,8 @@
       const container = document.getElementById("nilai-list-area");
       const rows = Array.from(container.children).filter(el => el.dataset && el.dataset.namaSiswa);
       
-      if (!judul) return alert("Gagal: Masukkan Judul Tugas/Ulangan.");
-      if (rows.length === 0) return alert("Gagal: Pilih kelas terlebih dahulu.");
+      if (!judul) return alert("Harap masukkan Judul Tugas/Asesmen.");
+      if (rows.length === 0) return alert("Pilih kelas terlebih dahulu.");
       
       const packet = { action: "submitNilai", judulTugas: judul, kelas: kelas, dataNilai: [] };
       
@@ -331,10 +432,52 @@
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify(packet) })
       .then(res => res.json()).then(resObj => { 
-        showLoading(false); 
-        alert(resObj.message); 
+        showLoading(false); alert(resObj.message); 
         if(resObj.success) { document.getElementById("nilai-judul").value = ""; }
       }).catch(() => { showLoading(false); alert("Gagal menyimpan data."); });
+    }
+
+    // 5. KIRIM DATA AGENDA HARIAN
+    function submitAgenda() {
+      const tgl = document.getElementById("agenda-tanggal").value;
+      const kls = document.getElementById("agenda-kelas").value;
+      const mtr = document.getElementById("agenda-materi").value.trim();
+      const sts = document.getElementById("agenda-status").value;
+      const hdr = document.getElementById("agenda-hadir").value;
+      const abs = document.getElementById("agenda-absen").value;
+
+      if(!kls || !mtr) return alert("Lengkapi data Agenda (Kelas & Materi) sebelum menyimpan.");
+
+      showLoading(true);
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mtr, statusKelas: sts, jumlahHadir: hdr, jumlahAbsen: abs })
+      })
+      .then(res => res.json()).then(resObj => {
+        showLoading(false); alert(resObj.message);
+        if(resObj.success) { document.getElementById("agenda-materi").value = ""; }
+      }).catch(() => { showLoading(false); alert("Gagal mengirim Agenda."); });
+    }
+
+    // 6. KIRIM DATA LOG LAYANAN BK
+    function submitBimbingan() {
+      const kls = document.getElementById("bk-kelas").value;
+      const kat = document.getElementById("bk-kategori").value;
+      const nm = document.getElementById("bk-nama").value.trim();
+      const msl = document.getElementById("bk-masalah").value.trim();
+      const sol = document.getElementById("bk-solusi").value.trim();
+
+      if(!kls || !nm || !msl || !sol) return alert("Harap lengkapi formulir laporan BK.");
+
+      showLoading(true);
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "submitBimbingan", tanggal: new Date().toISOString().split('T')[0], kelas: kls, namaSiswa: nm, kategori: kat, masalah: msl, solusi: sol })
+      })
+      .then(res => res.json()).then(resObj => {
+        showLoading(false); alert(resObj.message);
+        if(resObj.success) { document.getElementById("bk-nama").value = ""; document.getElementById("bk-masalah").value = ""; document.getElementById("bk-solusi").value = ""; }
+      }).catch(() => { showLoading(false); alert("Gagal mengirim Log Kasus BK."); });
     }
   </script>
 </body>
