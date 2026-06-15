@@ -3,239 +3,305 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SIMAK v2.6 Enterprise - SMK N 1 SINGKIL UTARA</title>
-  <!-- Tailwind CSS v4 & FontAwesome Pro-Look -->
+  <title>SIMAK v2.6 Enterprise - PORTAL SMART E-GURU MULTIUSER</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    :root { --primary: #1e3a8a; --bg-global: #f8fafc; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-global); -webkit-tap-highlight-color: transparent; }
-    .panel { display: none; }
-    .panel.active { display: block; animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    input, select, textarea { font-size: 16px !important; } /* Mencegah auto-zoom yang mengganggu di iPhone */
+    :root {
+      --primary-color: #1e3a8a;
+      --secondary-color: #0f172a;
+      --accent-color: #2563eb;
+      --bg-global: #f8fafc;
+      --card-bg: #ffffff;
+    }
     
-    /* Efek Gelombang Sentuh Modern */
-    .btn-haptic:active { transform: scale(0.97); filter: brightness(0.9); }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-global);
+      color: var(--secondary-color);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Sistem Perpindahan Panel Halus */
+    .panel {
+      display: none;
+    }
+    .panel.active {
+      display: block;
+      animation: slideUpView 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     
+    @keyframes slideUpView {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Desain Input Anti Gagal Klik untuk Jari Guru Senior */
+    input, select, textarea {
+      font-size: 16px !important; /* Mengunci auto-zoom browser iOS/Android */
+    }
+    
+    .btn-haptic-feedback:active {
+      transform: scale(0.96);
+      filter: brightness(0.92);
+    }
+
+    /* Kustomisasi Scrollbar Internal */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    /* Aturan Cetak Kertas/PDF Resmi */
     @media print {
-      .no-print { display: none !important; }
-      body { background: white; color: black; }
-      table { width: 100% !important; border-collapse: collapse !important; }
-      th, td { border: 1px solid #000 !important; padding: 6px !important; }
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: #ffffff;
+        color: #000000;
+        padding: 0;
+      }
+      .print-container {
+        display: block !important;
+        width: 100% !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+      th, td {
+        border: 1px solid #000000 !important;
+        padding: 6px !important;
+        font-size: 11px !important;
+      }
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-28">
 
   <script>
-    // URL Backend Google Apps Script Anda
+    // URL Endpoint API Google Apps Script Deployment Anda
     const API_URL = "https://script.google.com/macros/s/AKfycbyN4cUNE6PMwPlPZvsYLrh4homfsVhJFKHj0ceUkX0B9AEP71BDd0_uaBl-IxpCyr3Y/exec";
   </script>
 
-  <!-- NOTIFIKASI TOAST (Sistem Pemberitahuan Pintar) -->
-  <div id="toast-notif" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transform scale-0 transition-all duration-300 pointer-events-none">
-    <div id="toast-bg" class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-semibold max-w-sm">
-      <i id="toast-icon" class="fa-solid fa-circle-info text-blue-400 text-base"></i>
-      <span id="toast-text">Pesan Sistem</span>
+  <div id="app-toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform scale-0 transition-all duration-300 pointer-events-none w-11/12 max-w-sm">
+    <div id="toast-body" class="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-slate-700">
+      <i id="toast-icon" class="fa-solid fa-circle-info text-blue-400 text-lg"></i>
+      <span id="toast-message">Notifikasi Berhasil</span>
     </div>
   </div>
 
-  <!-- GLOBAL LOADER (Sangat Indah & Premium) -->
-  <div id="global-loader" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex items-center justify-center z-50 hidden">
-    <div class="bg-white p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-4 max-w-xs text-center border border-slate-100">
-      <div class="relative w-12 h-12 flex items-center justify-center">
-        <div class="absolute inset-0 rounded-full border-4 border-slate-100 border-t-blue-700 animate-spin"></div>
-        <i class="fa-solid fa-cloud-arrow-up text-blue-700 animate-pulse text-sm"></i>
+  <div id="global-spinner" class="fixed inset-0 bg-slate-950/50 backdrop-blur-md flex items-center justify-center z-50 hidden">
+    <div class="bg-white p-7 rounded-3xl shadow-2xl flex flex-col items-center gap-4 max-w-xs text-center border border-slate-100">
+      <div class="relative w-14 h-14 flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border-4 border-slate-100 border-t-blue-800 animate-spin"></div>
+        <i class="fa-solid fa-cloud text-blue-700 animate-pulse text-base"></i>
       </div>
       <div>
-        <h4 class="text-base font-bold text-slate-800">Menghubungkan Cloud...</h4>
-        <p class="text-xs text-slate-500 mt-0.5">Mengamankan enkripsi data ke server pusat</p>
+        <h4 class="text-base font-extrabold text-slate-800">Sinkronisasi Server...</h4>
+        <p class="text-xs text-slate-400 mt-1">Mengamankan enkripsi jalur data ke sistem cloud pusat</p>
       </div>
     </div>
   </div>
 
-  <!-- APP BAR UTAMA -->
-  <header class="no-print bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-950 text-white shadow-md sticky top-0 z-30 px-5 py-4 flex items-center justify-between">
-    <div>
-      <h1 id="header-title" class="text-base font-extrabold tracking-wider uppercase">Dashboard Utama</h1>
-      <p class="text-[11px] text-indigo-200/80 font-medium">SIMAK v2.6 Enterprise • Smart Mobile System</p>
+  <header class="no-print bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-950 text-white shadow-lg sticky top-0 z-30 px-5 py-4 flex items-center justify-between">
+    <div class="truncate mr-2">
+      <h1 id="app-header-title" class="text-base font-extrabold tracking-wider uppercase truncate">Beranda Utama</h1>
+      <p class="text-[11px] text-blue-300/90 font-semibold tracking-wide truncate">SIMAK v2.6 • SMK NEGERI 1 SINGKIL UTARA</p>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="initMasterDatabase()" title="Sinkronkan Cloud" class="btn-haptic bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition">
-        <i class="fa-solid fa-rotate text-sm"></i>
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="initMasterDatabase()" title="Tarik Data Terbaru" class="btn-haptic-feedback bg-white/10 hover:bg-white/20 p-2.5 rounded-xl transition duration-200">
+        <i class="fa-solid fa-arrows-rotate text-sm"></i>
       </button>
-      <div id="status-badge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Cloud
+      <div id="network-badge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ONLINE
       </div>
     </div>
   </header>
 
-  <!-- KONTEN ADAPTIF (Fokus Pada Kenyamanan Layar Smartphone) -->
   <main class="p-4 max-w-md mx-auto w-full grow">
 
-    <!-- PANEL 1: DASHBOARD INFORMASI -->
-    <section id="panel-dashboard" class="panel active space-y-4">
-      <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
-        <div class="absolute -right-6 -bottom-6 text-white/5 text-8xl"><i class="fa-solid fa-graduation-cap"></i></div>
-        <span class="bg-amber-500 text-blue-950 font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-full">Sistem Presensi Digital</span>
-        <h3 class="text-lg font-extrabold mt-3 mb-1">Halo Bapak/Ibu Guru!</h3>
-        <p class="text-xs text-slate-200/90 leading-relaxed">Aplikasi telah dioptimalkan agar anti-salah pencet. Sentuh menu di bawah untuk mengelola kelas hari ini.</p>
+    <section id="view-dashboard" class="panel active space-y-4">
+      <div class="bg-gradient-to-br from-blue-900 to-indigo-950 text-white p-6 rounded-3xl shadow-md relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 text-white/5 text-9xl"><i class="fa-solid fa-school"></i></div>
+        <span class="bg-amber-500 text-blue-950 font-black text-[9px] uppercase px-2.5 py-1 rounded-full tracking-wider">Aplikasi E-Guru</span>
+        <h3 class="text-lg font-extrabold mt-4 mb-1">Selamat Bertugas, Bapak/Ibu!</h3>
+        <p class="text-xs text-slate-200/90 leading-relaxed">Aplikasi ini disempurnakan dengan teks besar dan tombol lapang agar nyaman digunakan oleh seluruh guru senior tanpa kendala mata lelah.</p>
       </div>
 
-      <!-- STATUS PENYIMPANAN OFFLINE -->
-      <div id="offline-alert" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5 text-base"></i>
+      <div id="offline-buffer-banner" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
         <div>
-          <h4 class="text-xs font-bold text-amber-900 uppercase">Mode Cadangan Offline Aktif</h4>
-          <p class="text-[11px] text-amber-700 mt-0.5">Ada data absensi lokal yang tersimpan di perangkat ini karena kendala jaringan internet sebelumnya.</p>
-          <button onclick="syncOfflineDataData()" class="mt-2 text-xs bg-amber-600 text-white font-bold px-3 py-1.5 rounded-lg">Kirim Sekarang</button>
+          <h4 class="text-xs font-bold text-amber-900 uppercase">Ada Data Belum Terkirim</h4>
+          <p class="text-[11px] text-amber-700 mt-1">Sistem mendeteksi ada data presensi yang tersimpan di memori lokal HP saat Anda kehilangan sinyal internet tadi.</p>
+          <button onclick="uploadOfflineBufferToServer()" class="mt-2.5 text-xs bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-4 py-2 rounded-xl transition shadow-xs">Kirim Ulang ke Cloud Sekarang</button>
         </div>
       </div>
 
-      <!-- GRID STATISTIK -->
       <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 shrink-0"><i class="fa-solid fa-door-open text-base"></i></div>
-          <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Kelas</p><h3 id="dash-total-kelas" class="text-xl font-extrabold text-slate-800">0</h3></div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 shrink-0"><i class="fa-solid fa-landmark text-lg"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kelas</p>
+            <h3 id="stat-box-kelas" class="text-xl font-black text-slate-800">0</h3>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-700 shrink-0"><i class="fa-solid fa-user-tie text-base"></i></div>
-          <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Guru</p><h3 id="dash-total-guru" class="text-xl font-extrabold text-slate-800">0</h3></div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-purple-700 shrink-0"><i class="fa-solid fa-user-tie text-lg"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Guru</p>
+            <h3 id="stat-box-guru" class="text-xl font-black text-slate-800">0</h3>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700 shrink-0"><i class="fa-solid fa-book text-base"></i></div>
-          <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mata Pelajaran</p><h3 id="dash-total-mapel" class="text-xl font-extrabold text-slate-800">0</h3></div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700 shrink-0"><i class="fa-solid fa-book-bookmark text-lg"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Mapel</p>
+            <h3 id="stat-box-mapel" class="text-xl font-black text-slate-800">0</h3>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700 shrink-0"><i class="fa-solid fa-users text-base"></i></div>
-          <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Siswa</p><h3 id="dash-total-siswa" class="text-xl font-extrabold text-slate-800">0</h3></div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700 shrink-0"><i class="fa-solid fa-users text-lg"></i></div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Siswa</p>
+            <h3 id="stat-box-siswa" class="text-xl font-black text-slate-800">0</h3>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- PANEL 2: PRESENSI / ABSENSI (DEWA DESIGN) -->
-    <section id="panel-absensi" class="panel space-y-4">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3">
-        <div class="grid grid-cols-2 gap-2">
+    <section id="view-absensi" class="panel space-y-4">
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3.5">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Hari Ini</label>
-            <input type="date" id="abs-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tanggal Absen</label>
+            <input type="date" id="form-abs-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-blue-600 focus:outline-none">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pilih Kelas</label>
-            <select id="abs-kelas" onchange="loadSiswaUntukAbsen()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-extrabold text-blue-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"></select>
+            <select id="form-abs-kelas" onchange="renderLembarAbsensiSiswa()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-black text-blue-900 focus:ring-2 focus:ring-blue-600 focus:outline-none"></select>
           </div>
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-          <select id="abs-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+          <select id="form-abs-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Guru Pengampu</label>
-          <select id="abs-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Guru Pembina</label>
+          <select id="form-abs-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Jenis Agenda Kegiatan Sekolah</label>
-          <select id="abs-kegiatan" class="w-full text-xs p-3 rounded-xl border border-amber-200 bg-amber-50/50 text-amber-900 font-bold focus:outline-none">
-            <option value="submitAbsensi">Kegiatan Belajar Mengajar (KBM)</option>
-            <option value="submitPramuka">Ekstrakurikuler Pramuka Wajib</option>
-            <option value="submitSholat">Sholat Berjamaah / Keagamaan</option>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Jenis Kegiatan / Modul Aplikasi</label>
+          <select id="form-abs-kegiatan" class="w-full text-xs p-3 rounded-xl border border-amber-200 bg-amber-50/50 text-amber-900 font-bold focus:outline-none">
+            <option value="submitAbsensi">Kegiatan Belajar Mengajar Harian (KBM)</option>
+            <option value="submitPramuka">Laporan Ekstrakurikuler Pramuka</option>
+            <option value="submitSholat">Monitoring Sholat Berjamaah</option>
           </select>
         </div>
       </div>
 
-      <!-- LEMBAR ABSENSI DIGITAL -->
-      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden">
         <div class="p-4 bg-slate-50 border-b border-slate-100 space-y-3">
           <div class="flex justify-between items-center">
-            <span class="text-[11px] font-extrabold text-slate-600 uppercase tracking-wide">Daftar Siswa Kelas</span>
-            <button onclick="setGlobalStatus('H')" class="text-[11px] px-3 py-1.5 bg-emerald-600 text-white font-bold rounded-lg shadow-xs btn-haptic">Semua Hadir (H)</button>
+            <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Lembar Pengisian</span>
+            <button onclick="setGlobalStatusAbsensi('H')" class="text-[11px] px-3.5 py-2 bg-emerald-600 text-white font-bold rounded-xl shadow-xs btn-haptic-feedback">Set Semua Hadir (H)</button>
           </div>
           
-          <!-- SMART FILTER INPUT -->
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" id="search-absen" oninput="filterDaftarSiswa()" placeholder="Ketik nama murid untuk mencari..." class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <input type="text" id="search-bar-abs" oninput="liveFilterNamaSiswaAbsen()" placeholder="Ketik nama murid untuk memfilter..." class="w-full pl-9 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600">
           </div>
 
-          <!-- KOTAK STATISTIK INPUT HARI INI -->
-          <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-bold pt-1">
-            <div class="bg-emerald-50 text-emerald-700 p-1.5 rounded-lg border border-emerald-100">Hadir: <span id="stat-h">0</span></div>
-            <div class="bg-blue-50 text-blue-700 p-1.5 rounded-lg border border-blue-100">Sakit: <span id="stat-s">0</span></div>
-            <div class="bg-amber-50 text-amber-700 p-1.5 rounded-lg border border-amber-100">Izin: <span id="stat-i">0</span></div>
-            <div class="bg-rose-50 text-rose-700 p-1.5 rounded-lg border border-rose-100">Alpha: <span id="stat-a">0</span></div>
+          <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-black pt-1">
+            <div class="bg-emerald-50 text-emerald-700 p-2 rounded-xl border border-emerald-100">H: <span id="live-h">0</span></div>
+            <div class="bg-blue-50 text-blue-700 p-2 rounded-xl border border-blue-100">S: <span id="live-s">0</span></div>
+            <div class="bg-amber-50 text-amber-700 p-2 rounded-xl border border-amber-100">I: <span id="live-i">0</span></div>
+            <div class="bg-rose-50 text-rose-700 p-2 rounded-xl border border-rose-100">A: <span id="live-a">0</span></div>
           </div>
         </div>
         
-        <!-- Wadah Kartu Nama Murid -->
-        <div id="container-siswa-absen" class="p-3 space-y-2.5 max-h-[380px] overflow-y-auto bg-slate-50/50">
-          <p class="p-6 text-center text-slate-400 italic text-xs">Silakan pilih kelas terlebih dahulu...</p>
+        <div id="wrapper-siswa-absensi" class="p-3 space-y-3 max-h-[360px] overflow-y-auto bg-slate-50/40 custom-scroll">
+          <p class="p-6 text-center text-slate-400 italic text-xs">Silakan pilih kelas di atas terlebih dahulu...</p>
         </div>
 
         <div class="p-4 bg-white border-t border-slate-100">
-          <button onclick="submitAbsensiCloud()" class="w-full bg-blue-700 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md cursor-pointer transition btn-haptic uppercase tracking-wider"><i class="fa-solid fa-shield-checkmark mr-2 text-sm"></i>Simpan & Kunci Absensi</button>
+          <button onclick="submitAbsensiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md cursor-pointer transition uppercase tracking-wider btn-haptic-feedback"><i class="fa-solid fa-cloud-arrow-up mr-2 text-sm"></i>Simpan & Kunci Presensi</button>
         </div>
       </div>
     </section>
 
-    <!-- PANEL 3: INPUT NILAI MASSAL -->
-    <section id="panel-nilai" class="panel space-y-4">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+    <section id="view-nilai" class="panel space-y-4">
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-xs space-y-3.5">
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Tugas / Penilaian</label>
-          <input type="text" id="nil-tugas" placeholder="Misal: Penilaian Harian Bab 1" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Tugas / Jenis Ulangan</label>
+          <input type="text" id="form-nil-tugas" placeholder="Contoh: Ulangan Harian Bab 1 Hidrolik" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
         </div>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pilih Kelas</label>
-            <select id="nil-kelas" onchange="loadSiswaUntukNilai()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none"></select>
+            <select id="form-nil-kelas" onchange="renderLembarNilaiSiswa()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold focus:outline-none"></select>
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-            <select id="nil-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+            <select id="form-nil-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Guru Pengampu</label>
-          <select id="nil-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama Guru Penguji</label>
+          <select id="form-nil-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
         </div>
-        <button onclick="setGlobalNilai()" class="w-full bg-slate-800 text-white font-bold text-[11px] py-2 rounded-xl btn-haptic"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Set Standar Semua Nilai (80)</button>
+        <button onclick="setGlobalAngkaNilaiMasal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] py-2.5 rounded-xl btn-haptic-feedback"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Isi Standar Nilai Massal (80)</button>
       </div>
 
-      <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <div id="container-siswa-nilai" class="p-3 space-y-2 max-h-[350px] overflow-y-auto bg-slate-50/30">
-          <p class="p-6 text-center text-slate-400 italic text-xs">Pilih kelas terlebih dahulu...</p>
+      <div class="bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden">
+        <div id="wrapper-siswa-nilai" class="p-3 space-y-2 max-h-[350px] overflow-y-auto bg-slate-50/40 custom-scroll">
+          <p class="p-6 text-center text-slate-400 italic text-xs">Silakan pilih kelas terlebih dahulu...</p>
         </div>
         <div class="p-4 bg-white border-t border-slate-100">
-          <button onclick="submitNilaiCloud()" class="w-full bg-blue-700 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md btn-haptic uppercase tracking-wider"><i class="fa-solid fa-floppy-disk mr-2"></i>Kirim Semua Nilai ke Cloud</button>
+          <button onclick="submitNilaiKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md btn-haptic-feedback uppercase tracking-wider"><i class="fa-solid fa-floppy-disk mr-2"></i>Kirim Nilai ke Cloud</button>
         </div>
       </div>
     </section>
 
-    <!-- PANEL 4: JURNAL AGENDA MENGAJAR -->
-    <section id="panel-agenda" class="panel">
-      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-3">
-        <div class="grid grid-cols-2 gap-2">
+    <section id="view-agenda" class="panel">
+      <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-md space-y-3.5">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tanggal Agenda</label>
-            <input type="date" id="age-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tanggal Kegiatan</label>
+            <input type="date" id="form-age-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kelas Mengajar</label>
-            <select id="age-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"></select>
+            <select id="form-age-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"></select>
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Materi Pokok / Pembahasan Bab</label>
-          <textarea id="age-materi" rows="4" placeholder="Tulis ringkasan materi pelajaran atau sub-bab hari ini dengan jelas..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none"></textarea>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rangkuman Pembahasan Materi Pokok</label>
+          <textarea id="form-age-materi" rows="4" placeholder="Tulis detail sub-bab pokok bahasan materi pelajaran yang diajarkan hari ini..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
         </div>
         <div class="grid grid-cols-3 gap-2">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kondisi</label>
-            <select id="age-status" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kondisi Kelas</label>
+            <select id="form-age-status" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
               <option value="Kondusif / Lancar">Lancar</option>
               <option value="Ada Kendala Teknik">Kendala</option>
               <option value="Guru Piket / Tugas">Tugas</option>
@@ -243,585 +309,742 @@
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Siswa Hadir</label>
-            <input type="number" id="age-hadir" value="30" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
+            <input type="number" id="form-age-hadir" value="30" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Siswa Absen</label>
-            <input type="number" id="age-absen" value="0" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
+            <input type="number" id="form-age-absen" value="0" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50">
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tanda Tangan Guru</label>
-          <select id="age-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Guru Mengajar</label>
+          <select id="form-age-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
         </div>
-        <button onclick="submitAgendaCloud()" class="w-full bg-blue-700 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md mt-2 btn-haptic uppercase tracking-wider"><i class="fa-solid fa-bookmark mr-2"></i>Simpan Jurnal Agenda</button>
+        <button onclick="submitAgendaKeCloudServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-xs py-4 rounded-2xl shadow-md mt-2 btn-haptic-feedback uppercase tracking-wider"><i class="fa-solid fa-bookmark mr-2"></i>Simpan Jurnal Agenda</button>
       </div>
     </section>
 
-    <!-- PANEL 5: FITUR ADVANCED LAINNYA -->
-    <section id="panel-more" class="panel space-y-4">
+    <section id="view-more" class="panel space-y-4">
+      
       <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-2">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">Peralatan Lanjutan & Admin</h3>
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-1">Menu Lanjutan & Admin</h3>
         
-        <button onclick="switchPanelInternal('rekap-log')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic">
-          <span><i class="fa-solidxl fa-clock-rotate-left mr-3 text-blue-700 text-sm"></i>Lihat Log Bulanan Server</span><i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+        <button onclick="toggleSubPanelMenu('rekap-log')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
+          <span><i class="fa-solid fa-clock-rotate-left mr-3 text-blue-700 text-sm"></i>Lihat Log Bulanan Server</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
         </button>
-        <button onclick="switchPanelInternal('rekap-matrix')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic">
-          <span><i class="fa-solid fa-table-cells mr-3 text-purple-700 text-sm"></i>Cetak Laporan Matrix Dokumen</span><i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+        
+        <button onclick="toggleSubPanelMenu('rekap-matrix')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
+          <span><i class="fa-solid fa-table-cells mr-3 text-purple-700 text-sm"></i>Cetak Laporan Cetak Matrix</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
         </button>
-        <button onclick="switchPanelInternal('bk')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic">
-          <span><i class="fa-solid fa-handshake-angle mr-3 text-rose-600 text-sm"></i>Catat Kasus Bimbingan Konseling</span><i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+        
+        <button onclick="toggleSubPanelMenu('bk')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
+          <span><i class="fa-solid fa-handshake-angle mr-3 text-rose-600 text-sm"></i>Catat Bimbingan Konseling (BK)</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
         </button>
-        <button onclick="switchPanelInternal('upload-massal')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic">
-          <span><i class="fa-solid fa-users-line mr-3 text-emerald-600 text-sm"></i>Upload Siswa Baru Massal</span><i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+        
+        <button onclick="toggleSubPanelMenu('upload-massal')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
+          <span><i class="fa-solid fa-users-viewfinder mr-3 text-emerald-600 text-sm"></i>Upload Siswa Massal Per Kelas</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+        </button>
+
+        <button onclick="toggleSubPanelMenu('manajemen-master')" class="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 text-left btn-haptic-feedback">
+          <span><i class="fa-solid fa-gears mr-3 text-amber-600 text-sm"></i>Kelola File Master Sekolah</span><i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
         </button>
       </div>
 
-      <!-- Sub-Panel Lanjutan 1: Log Bulanan -->
-      <div id="sub-panel-rekap-log" class="hidden bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-bold text-blue-900 uppercase"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Log Histori Server</h4>
+      <div id="sub-panel-rekap-log" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+        <h4 class="text-xs font-extrabold text-blue-900 uppercase"><i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Log Histori Database</h4>
         <div class="space-y-2 text-xs">
-          <select id="log-menu" class="w-full p-2.5 rounded-lg border border-slate-200 font-semibold"><option value="KBM Harian">Log Presensi KBM</option><option value="Daftar Nilai Tugas">Log Nilai</option><option value="Agenda">Log Agenda</option></select>
-          <select id="log-kelas" class="w-full p-2.5 rounded-lg border border-slate-200 font-semibold"><option value="">Semua Kelas</option></select>
+          <select id="log-param-menu" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="KBM Harian">Log Presensi KBM</option><option value="Daftar Nilai Tugas">Log Nilai Tugas</option><option value="Agenda">Log Jurnal Agenda</option></select>
+          <select id="log-param-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="">Semua Kelas</option></select>
           <div class="grid grid-cols-2 gap-2">
-            <select id="log-bulan" class="p-2.5 rounded-lg border border-slate-200 font-semibold"><option value="6" selected>Juni</option></select>
-            <select id="log-tahun" class="p-2.5 rounded-lg border border-slate-200 font-semibold"><option value="2026" selected>2026</option></select>
+            <select id="log-param-bulan" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+              <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option><option value="4">April</option><option value="5">Mei</option><option value="6" selected>Juni</option>
+              <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+            </select>
+            <select id="log-param-tahun" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="2026" selected>2026</option><option value="2027">2027</option></select>
           </div>
-          <button onclick="fetchMonthlyLogDashboard()" class="w-full bg-blue-700 text-white font-bold p-3 rounded-xl text-xs">Tarik Arsip</button>
+          <button onclick="pullHistoryLogFromServer()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Tarik Data Log</button>
         </div>
-        <div class="overflow-x-auto pt-2">
-          <table class="w-full text-[10px] text-left border-collapse min-w-[400px]">
-            <thead><tr class="bg-slate-100"><th class="p-2">No</th><th class="p-2">Kolom 1</th><th class="p-2">Kolom 2</th><th class="p-2">Kolom 3</th><th class="p-2">Kolom 4</th><th class="p-2">Kolom 5</th></tr></thead>
-            <tbody id="container-log-rows" class="divide-y divide-slate-200"><tr><td colspan="6" class="p-4 text-center italic text-slate-400">Belum ada data.</td></tr></tbody>
+        <div class="overflow-x-auto pt-2 custom-scroll">
+          <table class="w-full text-[10px] text-left border-collapse min-w-[420px]">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th class="p-2">No</th><th class="p-2">Kolom 1</th><th class="p-2">Kolom 2</th><th class="p-2">Kolom 3</th><th class="p-2">Kolom 4</th><th class="p-2">Kolom 5</th>
+              </tr>
+            </thead>
+            <tbody id="table-body-log-rows" class="divide-y divide-slate-100 text-slate-600 font-medium">
+              <tr><td colspan="6" class="p-4 text-center italic text-slate-400">Belum ada pencarian.</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Sub-Panel Lanjutan 2: Cetak Matrix -->
-      <div id="sub-panel-rekap-matrix" class="hidden bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-bold text-purple-900 uppercase"><i class="fa-solid fa-table-cells mr-1"></i> Buat Laporan Cetak Matrix</h4>
+      <div id="sub-panel-rekap-matrix" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+        <h4 class="text-xs font-extrabold text-purple-900 uppercase"><i class="fa-solid fa-table-cells mr-1.5"></i> Dokumen Rekap Cetak Matrix</h4>
         <div class="space-y-2 text-xs">
-          <select id="arsip-tipe" onchange="adjustMatrixFilterView()" class="w-full p-2.5 rounded-lg border border-slate-200"><option value="KBM Harian">Matrix KBM Harian</option><option value="Daftar Nilai">Matrix Daftar Nilai</option></select>
-          <select id="arsip-kelas" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
-          <select id="arsip-mapel" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
-          <select id="arsip-guru" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
+          <select id="matrix-param-tipe" onchange="adjustMatrixFilterMapelView()" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="KBM Harian">Matrix KBM Harian</option><option value="Daftar Nilai">Matrix Daftar Nilai</option></select>
+          <select id="matrix-param-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <select id="matrix-param-mapel" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <select id="matrix-param-guru" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
           <div class="grid grid-cols-2 gap-2">
-            <select id="arsip-bulan" class="p-2.5 rounded-lg border border-slate-200"><option value="06" selected>Juni</option></select>
-            <select id="arsip-tahun" class="p-2.5 rounded-lg border border-slate-200"><option value="2026" selected>2026</option></select>
+            <select id="matrix-param-bulan" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="06" selected>Juni</option></select>
+            <select id="matrix-param-tahun" class="p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"><option value="2026" selected>2026</option></select>
           </div>
-          <input type="text" id="arsip-hari" placeholder="Filter Hari (Opsional)" class="w-full p-2.5 rounded-lg border border-slate-200">
-          <button onclick="fetchMonthlyHistoryMatrix()" class="w-full bg-purple-700 text-white font-bold p-3 rounded-xl text-xs">Build Dokumen Matrix</button>
+          <input type="text" id="matrix-param-hari" placeholder="Filter Hari Tertentu (Opsional)" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium">
+          <button onclick="generateMatrixDocumentHtml()" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Generate Matrix</button>
         </div>
-        <div id="matrix-preview-container" class="bg-white p-2 rounded border border-slate-200 overflow-x-auto text-[9px]">
-          <p class="p-4 text-center text-slate-400 italic">Pratinjau dokumen...</p>
-        </div>
-      </div>
-
-      <!-- Sub-Panel Lanjutan 3: Kasus BK -->
-      <div id="sub-panel-bk" class="hidden bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-bold text-rose-800 uppercase">Input Kasus Kedisiplinan/BK</h4>
-        <div class="space-y-2 text-xs">
-          <input type="date" id="bk-tanggal" class="w-full p-2.5 rounded-lg border border-slate-200">
-          <select id="bk-kelas" onchange="loadSiswaUntukBK()" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
-          <select id="bk-siswa" class="w-full p-2.5 rounded-lg border border-slate-200"><option value="">-- Pilih Siswa --</option></select>
-          <select id="bk-kategori" class="w-full p-2.5 rounded-lg border border-slate-200"><option value="Pelanggaran Kedisiplinan">Pelanggaran Kedisiplinan</option><option value="Keterlambatan Masuk Sekolah">Keterlambatan Masuk Sekolah</option></select>
-          <textarea id="bk-masalah" placeholder="Uraian Masalah Kedisiplinan Murid..." class="w-full p-2.5 rounded-lg border border-slate-200"></textarea>
-          <textarea id="bk-solusi" placeholder="Tindak Lanjut / Solusi Guru..." class="w-full p-2.5 rounded-lg border border-slate-200"></textarea>
-          <select id="bk-guru" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
-          <button onclick="submitBKCloud()" class="w-full bg-rose-700 text-white font-bold p-3 rounded-xl text-xs">Kunci Rekam Medis BK</button>
+        <div id="wrapper-matrix-preview" class="bg-white p-2 rounded-xl border border-slate-200 overflow-x-auto text-[9px] custom-scroll">
+          <p class="p-4 text-center text-slate-400 italic">Pratinjau rekap laporan akan muncul di sini...</p>
         </div>
       </div>
 
-      <!-- Sub-Panel Lanjutan 4: Upload Siswa Massal -->
-      <div id="sub-panel-upload-massal" class="hidden bg-white p-4 rounded-2xl border border-slate-100 shadow-xs space-y-3">
-        <h4 class="text-xs font-bold text-slate-800 uppercase">Upload Siswa Per Kelas (Salin Tempel)</h4>
+      <div id="sub-panel-bk" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+        <h4 class="text-xs font-extrabold text-rose-800 uppercase"><i class="fa-solid fa-handshake-angle mr-1.5"></i> Pencatatan Kasus Siswa / BK</h4>
         <div class="space-y-2 text-xs">
-          <select id="upl-kelas" class="w-full p-2.5 rounded-lg border border-slate-200"></select>
-          <textarea id="upl-siswa-list" rows="6" placeholder="Masukkan nama siswa baru, pisahkan dengan baris baru..." class="w-full p-2.5 rounded-lg border border-slate-200 font-mono"></textarea>
-          <button onclick="submitUploadMassalSiswa()" class="w-full bg-slate-900 text-white font-bold p-3 rounded-xl text-xs">Kirim Massal</button>
+          <input type="date" id="form-bk-tanggal" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold">
+          <select id="form-bk-kelas" onchange="syncSiswaDropdownUntukBK()" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <select id="form-bk-siswa" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"><option value="">-- Pilih Nama Siswa --</option></select>
+          <select id="form-bk-kategori" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold">
+            <option value="Pelanggaran Kedisiplinan">Pelanggaran Kedisiplinan</option>
+            <option value="Keterlambatan Masuk Sekolah">Keterlambatan Masuk Sekolah</option>
+            <option value="Siswa Bermasalah KBM">Siswa Bermasalah KBM</option>
+          </select>
+          <textarea id="form-bk-masalah" placeholder="Uraikan detail masalah atau pelanggaran..." class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none"></textarea>
+          <textarea id="form-bk-solusi" placeholder="Solusi / Tindak Lanjut Penanganan Guru..." class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-medium focus:outline-none"></textarea>
+          <select id="form-bk-guru" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold"></select>
+          <button onclick="submitKasusBKKeCloud()" class="w-full bg-rose-700 hover:bg-rose-800 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Simpan Catatan BK</button>
+        </div>
+      </div>
+
+      <div id="sub-panel-upload-massal" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+        <h4 class="text-xs font-extrabold text-emerald-800 uppercase"><i class="fa-solid fa-users-viewfinder mr-1.5"></i> Upload Siswa Massal</h4>
+        <div class="space-y-2 text-xs">
+          <select id="form-upl-kelas" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-bold"></select>
+          <textarea id="form-upl-siswa-list" rows="6" placeholder="Ketik atau paste nama murid per baris. Contoh:&#10;ACHMAD DHANI&#10;BUDI UTOMO&#10;CHELSEA OLLIVIA" class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 font-mono focus:outline-none"></textarea>
+          <button onclick="submitUploadMassalSiswaKeCloud()" class="w-full bg-slate-900 hover:bg-slate-950 text-white font-bold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback">Kirim Massal Ke Cloud</button>
+        </div>
+      </div>
+
+      <div id="sub-panel-manajemen-master" class="hidden bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-4">
+        <h4 class="text-xs font-extrabold text-amber-800 uppercase border-b border-slate-200 pb-2"><i class="fa-solid fa-gears mr-1.5"></i> Pengaturan Data Master Sekolah</h4>
+        
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase">Tambah Kelas Baru</label>
+          <div class="flex gap-2">
+            <input type="text" id="mst-input-kelas" placeholder="Contoh: XII-TKJ-1" class="w-full p-2.5 text-xs border border-slate-200 bg-slate-50 rounded-xl font-bold uppercase">
+            <button onclick="submitSingleMasterItem('tambahMasterKelas', 'mst-input-kelas')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 text-xs rounded-xl btn-haptic-feedback">Simpan</button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase">Tambah Nama Guru</label>
+          <div class="flex gap-2">
+            <input type="text" id="mst-input-guru" placeholder="Contoh: Budi Santoso, S.Pd." class="w-full p-2.5 text-xs border border-slate-200 bg-slate-50 rounded-xl font-semibold">
+            <button onclick="submitSingleMasterItem('tambahMasterGuru', 'mst-input-guru')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 text-xs rounded-xl btn-haptic-feedback">Simpan</button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 p-3 bg-amber-50/50 border border-amber-200 rounded-2xl space-y-2">
+          <label class="block text-[10px] font-bold text-amber-900 uppercase">Tambah Mata Pelajaran Pintar</label>
+          <input type="text" id="mst-mapel-nama" placeholder="Nama Mapel (Contoh: Sistem Kemudi)" class="w-full p-2.5 text-xs border border-slate-200 bg-white rounded-xl font-semibold">
+          <input type="text" id="mst-mapel-jurusan" placeholder="Kompetensi Keahlian (Contoh: TKR / Umum)" class="w-full p-2.5 text-xs border border-slate-200 bg-white rounded-xl font-semibold">
+          <button onclick="submitMasterMapelPintarSpesifik()" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2.5 text-xs rounded-xl btn-haptic-feedback uppercase tracking-wider">Kunci Mapel Baru</button>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- BOTTOM NAVIGATION BAR (SANGAT NYAMAN UNTUK JEMPOL GURU) -->
-  <nav class="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl z-40 flex justify-around items-center py-2.5 px-2">
-    <button onclick="switchPanel('dashboard')" class="nav-btn flex flex-col items-center gap-1.5 text-center w-full py-1 text-blue-900 font-bold">
-      <i class="fa-solid fa-grip-vertical text-xl"></i>
-      <span class="text-[10px] tracking-tight font-medium">Dashboard</span>
+  <nav class="no-print fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl z-40 flex justify-around items-center py-3 px-2">
+    <button onclick="handleTabNavigationTransition('dashboard')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-blue-900 font-extrabold">
+      <i class="fa-solid fa-chart-pie text-xl"></i>
+      <span class="text-[10px] tracking-tight">Beranda</span>
     </button>
-    <button onclick="switchPanel('absensi')" class="nav-btn flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400">
-      <i class="fa-solid fa-id-card-clip text-xl"></i>
-      <span class="text-[10px] tracking-tight font-medium">Presensi</span>
+    <button onclick="handleTabNavigationTransition('absensi')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
+      <i class="fa-solid fa-address-card text-xl"></i>
+      <span class="text-[10px] tracking-tight">Presensi</span>
     </button>
-    <button onclick="switchPanel('nilai')" class="nav-btn flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400">
-      <i class="fa-solid fa-star text-xl"></i>
-      <span class="text-[10px] tracking-tight font-medium">Nilai</span>
+    <button onclick="handleTabNavigationTransition('nilai')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
+      <i class="fa-solid fa-graduation-cap text-xl"></i>
+      <span class="text-[10px] tracking-tight">Nilai</span>
     </button>
-    <button onclick="switchPanel('agenda')" class="nav-btn flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400">
-      <i class="fa-solid fa-pen-to-square text-xl"></i>
-      <span class="text-[10px] tracking-tight font-medium">Jurnal</span>
+    <button onclick="handleTabNavigationTransition('agenda')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
+      <i class="fa-solid fa-book-open text-xl"></i>
+      <span class="text-[10px] tracking-tight">Jurnal</span>
     </button>
-    <button onclick="switchPanel('more')" class="nav-btn flex flex-col items-center gap-1.5 text-center w-full py-1 text-slate-400">
-      <i class="fa-solid fa-sliders text-xl"></i>
-      <span class="text-[10px] tracking-tight font-medium">Lainnya</span>
+    <button onclick="handleTabNavigationTransition('more')" class="nav-btn-link flex flex-col items-center gap-1 text-center w-full py-0.5 text-slate-400 font-medium">
+      <i class="fa-solid fa-ellipsis-h text-xl"></i>
+      <span class="text-[10px] tracking-tight">Lainnya</span>
     </button>
   </nav>
 
-  <!-- LOGIK SISTEM DEWA (OFFLINE & SINKRONISASI INTEGRASI) -->
-  <script>
-    let CACHE_MASTER = { kelas: [], mapel: [], guru: [], siswa: [] };
+  <div class="print-container hidden p-4">
+    <center>
+      <h2 class="text-md font-bold uppercase">Laporan Dokumen Matriks Sekolah</h2>
+      <p class="text-xs">SMK NEGERI 1 SINGKIL UTARA</p>
+    </center>
+    <hr class="my-3 border-black">
+    <div id="print-injection-table-target"></div>
+  </div>
 
+  <script>
+    // Penampung File Sinkronisasi Global
+    let DATA_CACHE_CONTAINER = { kelas: [], mapel: [], guru: [], siswa: [] };
+
+    // Inisialisasi Pertama Saat Aplikasi Dibuka
     window.addEventListener("DOMContentLoaded", () => {
-      const today = new Date().toISOString().split('T')[0];
-      if(document.getElementById("abs-tanggal")) document.getElementById("abs-tanggal").value = today;
-      if(document.getElementById("age-tanggal")) document.getElementById("age-tanggal").value = today;
-      if(document.getElementById("bk-tanggal")) document.getElementById("bk-tanggal").value = today;
+      const formatHariIni = new Date().toISOString().split('T')[0];
+      if(document.getElementById("form-abs-tanggal")) document.getElementById("form-abs-tanggal").value = formatHariIni;
+      if(document.getElementById("form-age-tanggal")) document.getElementById("form-age-tanggal").value = formatHariIni;
+      if(document.getElementById("form-bk-tanggal")) document.getElementById("form-bk-tanggal").value = formatHariIni;
       
       initMasterDatabase();
-      checkOfflineDataBuffer();
+      scanLocalStorageOfflineBuffer();
     });
 
-    function triggerToast(text, type = "info") {
-      const toast = document.getElementById("toast-notif");
-      const bg = document.getElementById("toast-bg");
+    // Pemicu Toast Pemberitahuan Unik
+    function launchNotificationToast(msg, category = "info") {
+      const box = document.getElementById("app-toast");
+      const body = document.getElementById("toast-body");
       const icon = document.getElementById("toast-icon");
-      const textEl = document.getElementById("toast-text");
+      const txt = document.getElementById("toast-message");
 
-      textEl.innerText = text;
-      bg.className = type === "success" ? "bg-emerald-900 text-emerald-100 px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-semibold max-w-sm border border-emerald-500/30" : 
-                   type === "error" ? "bg-rose-900 text-rose-100 px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-semibold max-w-sm border border-rose-500/30" : 
-                   "bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-semibold max-w-sm";
+      txt.innerText = msg;
       
-      icon.className = type === "success" ? "fa-solid fa-circle-check text-emerald-400 text-base" : 
-                      type === "error" ? "fa-solid fa-circle-xmark text-rose-400 text-base" : 
-                      "fa-solid fa-circle-info text-blue-400 text-base";
+      if(category === "success") {
+        body.className = "bg-emerald-950 text-emerald-100 p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-emerald-600";
+        icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+      } else if(category === "error") {
+        body.className = "bg-rose-950 text-rose-100 p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-rose-600";
+        icon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
+      } else {
+        body.className = "bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 text-sm font-semibold border border-slate-700";
+        icon.className = "fa-solid fa-circle-info text-blue-400 text-lg";
+      }
 
-      toast.classList.remove("scale-0");
-      toast.classList.add("scale-100");
-      setTimeout(() => { toast.classList.remove("scale-100"); toast.classList.add("scale-0"); }, 3000);
+      box.classList.remove("scale-0");
+      box.classList.add("scale-100");
+      setTimeout(() => { box.classList.remove("scale-100"); box.classList.add("scale-0"); }, 3500);
     }
 
-    function showLoading(status) {
-      document.getElementById("global-loader").style.display = status ? "flex" : "none";
+    // Loader Kontrol Animasi
+    function triggerLoadingScreen(visible) {
+      document.getElementById("global-spinner").style.display = visible ? "flex" : "none";
     }
 
-    function switchPanel(panelId) {
+    // Manajemen Tab Menu Utama Atas-Bawah
+    function handleTabNavigationTransition(targetTabId) {
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".nav-btn").forEach(b => {
-        b.classList.remove("text-blue-900", "font-bold");
-        b.classList.add("text-slate-400");
+      document.querySelectorAll(".nav-btn-link").forEach(btn => {
+        btn.classList.remove("text-blue-900", "font-extrabold");
+        btn.classList.add("text-slate-400", "font-medium");
       });
       
-      document.getElementById("panel-" + panelId).classList.add("active");
+      document.getElementById("view-" + targetTabId).classList.add("active");
       
-      const titles = {
-        'dashboard': 'Dashboard Utama', 'absensi': 'Presensi Siswa', 
+      const setTitles = {
+        'dashboard': 'Beranda Utama', 'absensi': 'Presensi Siswa', 
         'nilai': 'Input Nilai Massal', 'agenda': 'Jurnal Mengajar', 'more': 'Peralatan Sistem'
       };
-      document.getElementById("header-title").innerText = titles[panelId] || "SIMAK";
+      document.getElementById("app-header-title").innerText = setTitles[targetTabId] || "SIMAK";
       
-      const activeBtn = Array.from(document.querySelectorAll(".nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
-      if(activeBtn) {
-        activeBtn.classList.remove("text-slate-400");
-        activeBtn.classList.add("text-blue-900", "font-bold");
+      const searchButtonMatch = Array.from(document.querySelectorAll(".nav-btn-link")).find(btn => btn.getAttribute("onclick").includes(targetTabId));
+      if(searchButtonMatch) {
+        searchButtonMatch.classList.remove("text-slate-400", "font-medium");
+        searchButtonMatch.classList.add("text-blue-900", "font-extrabold");
       }
     }
 
-    function switchPanelInternal(subId) {
-      const el = document.getElementById("sub-panel-" + subId);
-      el.classList.toggle("hidden");
+    // Kontrol Buka Tutup Sub-Panel di Menu Utilitas "Lainnya"
+    function toggleSubPanelMenu(subElementId) {
+      document.getElementById("sub-panel-" + subElementId).classList.toggle("hidden");
     }
 
+    // Pengambilan Pertama File Database Utama (Master)
     function initMasterDatabase() {
-      showLoading(true);
+      triggerLoadingScreen(true);
       fetch(`${API_URL}?action=getMasterData`)
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false);
-        if(!res.success) return triggerToast("Gagal mengambil data database cloud", "error");
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        if(!output.success) return launchNotificationToast("Cloud API bermasalah: " + output.error, "error");
         
-        CACHE_MASTER = res.data;
+        DATA_CACHE_CONTAINER = output.data;
         
-        document.getElementById("dash-total-kelas").innerText = CACHE_MASTER.kelas.length;
-        document.getElementById("dash-total-guru").innerText = CACHE_MASTER.guru.length;
-        document.getElementById("dash-total-mapel").innerText = CACHE_MASTER.mapel.length;
-        document.getElementById("dash-total-siswa").innerText = CACHE_MASTER.siswa.length;
+        // Update Tampilan Kotak Statistik Beranda
+        document.getElementById("stat-box-kelas").innerText = DATA_CACHE_CONTAINER.kelas.length;
+        document.getElementById("stat-box-guru").innerText = DATA_CACHE_CONTAINER.guru.length;
+        document.getElementById("stat-box-mapel").innerText = DATA_CACHE_CONTAINER.mapel.length;
+        document.getElementById("stat-box-siswa").innerText = DATA_CACHE_CONTAINER.siswa.length;
         
-        populateSelectOptions("abs-kelas", CACHE_MASTER.kelas, true, "-- Pilih Kelas --");
-        populateSelectOptions("abs-mapel", CACHE_MASTER.mapel, false);
-        populateSelectOptions("abs-guru", CACHE_MASTER.guru, false);
+        // Injeksi Konten Dropdown Form Absensi
+        buildSelectTagOptions("form-abs-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- Pilih Kelas --");
+        buildSelectTagOptions("form-abs-mapel", DATA_CACHE_CONTAINER.mapel, false);
+        buildSelectTagOptions("form-abs-guru", DATA_CACHE_CONTAINER.guru, false);
         
-        populateSelectOptions("nil-kelas", CACHE_MASTER.kelas, true, "-- Pilih Kelas --");
-        populateSelectOptions("nil-mapel", CACHE_MASTER.mapel); 
-        populateSelectOptions("nil-guru", CACHE_MASTER.guru);
+        // Injeksi Konten Dropdown Form Nilai
+        buildSelectTagOptions("form-nil-kelas", DATA_CACHE_CONTAINER.kelas, true, "-- Pilih Kelas --");
+        buildSelectTagOptions("form-nil-mapel", DATA_CACHE_CONTAINER.mapel); 
+        buildSelectTagOptions("form-nil-guru", DATA_CACHE_CONTAINER.guru);
         
-        populateSelectOptions("age-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("age-guru", CACHE_MASTER.guru);
+        // Injeksi Konten Dropdown Form Jurnal Agenda
+        buildSelectTagOptions("form-age-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectTagOptions("form-age-guru", DATA_CACHE_CONTAINER.guru);
         
-        populateSelectOptions("bk-kelas", CACHE_MASTER.kelas, true);
-        populateSelectOptions("bk-guru", CACHE_MASTER.guru);
+        // Injeksi Konten Dropdown Form Bimbingan Konseling (BK)
+        buildSelectTagOptions("form-bk-kelas", DATA_CACHE_CONTAINER.kelas, true);
+        buildSelectTagOptions("form-bk-guru", DATA_CACHE_CONTAINER.guru);
         
-        populateSelectOptions("log-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("upl-kelas", CACHE_MASTER.kelas);
+        // Injeksi Konten Dropdown Form Utilitas Pembantu
+        buildSelectTagOptions("log-param-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectTagOptions("form-upl-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectTagOptions("matrix-param-kelas", DATA_CACHE_CONTAINER.kelas);
+        buildSelectTagOptions("matrix-param-mapel", DATA_CACHE_CONTAINER.mapel, false, "-- Semua Mapel --");
+        buildSelectTagOptions("matrix-param-guru", DATA_CACHE_CONTAINER.guru, false, "-- Semua Guru --");
 
-        populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false, "-- Semua Mapel --");
-        populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false, "-- Semua Guru --");
+        // Set Label Jaringan Berhasil
+        document.getElementById("network-badge").className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5";
+        document.getElementById("network-badge").innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ONLINE`;
 
-        triggerToast("Database Cloud Berhasil Disinkronkan!", "success");
+        launchNotificationToast("Koneksi Sinkronisasi Cloud Sukses!", "success");
       }).catch(err => {
-        showLoading(false);
-        triggerToast("Gagal terhubung ke Cloud. Berjalan dalam mode offline.", "error");
-        document.getElementById("status-badge").className = "bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5";
-        document.getElementById("status-badge").innerHTML = "Offline Mode";
+        triggerLoadingScreen(false);
+        launchNotificationToast("Gagal tersambung ke cloud server. Berjalan offline.", "error");
+        
+        // Set Label Jaringan Rusak/Offline
+        document.getElementById("network-badge").className = "bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5";
+        document.getElementById("network-badge").innerHTML = "KONEKSI OFFLINE";
       });
     }
 
-    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false, customText = "-- Pilih --") {
-      const select = document.getElementById(elementId);
-      if(!select) return;
-      let html = triggerPlaceholder ? `<option value="">${customText}</option>` : "";
-      if(elementId === "log-kelas") html = `<option value="">Semua Kelas</option>`;
+    // Fungsi Injeksi Tag Opsi Dropdown Seleksi
+    function buildSelectTagOptions(idDom, dataArray, includePlaceholder = false, placeholderText = "-- Pilih --") {
+      const selectTarget = document.getElementById(idDom);
+      if(!selectTarget) return;
+      let rawHtml = includePlaceholder ? `<option value="">${placeholderText}</option>` : "";
+      if(idDom === "log-param-kelas") rawHtml = `<option value="">Semua Kelas</option>`;
       
-      arrayData.forEach(item => { html += `<option value="${item}">${item}</option>`; });
-      select.innerHTML = html;
+      dataArray.forEach(val => { rawHtml += `<option value="${val}">${val}</option>`; });
+      selectTarget.innerHTML = rawHtml;
     }
 
-    function loadSiswaUntukAbsen() {
-      const targetKelas = document.getElementById("abs-kelas").value;
-      const container = document.getElementById("container-siswa-absen");
-      if(!targetKelas) { container.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Silakan pilih kelas terlebih dahulu...</p>`; return; }
+    // ================= LOGIK ENGINE PRESENSI SISWA =================
+    function renderLembarAbsensiSiswa() {
+      const pickedKelas = document.getElementById("form-abs-kelas").value;
+      const boxContainer = document.getElementById("wrapper-siswa-absensi");
+      if(!pickedKelas) { boxContainer.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Silakan pilih kelas di atas terlebih dahulu...</p>`; return; }
       
-      const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      if(siswaTerfilter.length === 0) { container.innerHTML = `<p class="p-4 text-center text-rose-600 font-bold text-xs">Siswa tidak ditemukan dalam kelas ini.</p>`; return; }
+      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === pickedKelas);
+      if(filterSiswa.length === 0) { boxContainer.innerHTML = `<p class="p-5 text-center text-rose-600 font-extrabold text-xs">Data siswa di kelas ini belum di-upload!</p>`; return; }
       
-      let html = "";
-      siswaTerfilter.forEach((siswa, index) => {
-        html += `
-          <div class="siswa-row-absen bg-white p-3.5 rounded-2xl border border-slate-200/80 flex flex-col gap-3 shadow-xs transition duration-200" data-nama="${siswa.nama}">
+      let buildHtml = "";
+      filterSiswa.forEach((siswa, idx) => {
+        buildHtml += `
+          <div class="card-row-siswa-absen bg-white p-4 rounded-2xl border border-slate-200/90 flex flex-col gap-3 shadow-2xs" data-nama="${siswa.nama}">
             <div class="flex items-center gap-2.5">
-              <span class="bg-blue-950 text-white font-extrabold text-[10px] w-6 h-6 flex items-center justify-center rounded-xl shrink-0 shadow-xs">${index+1}</span>
-              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide truncate">${siswa.nama}</span>
+              <span class="bg-blue-950 text-white font-black text-[10px] w-6 h-6 flex items-center justify-center rounded-xl shrink-0 shadow-3xs">${idx + 1}</span>
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wide truncate break-words">${siswa.nama}</span>
             </div>
-            <div class="flex gap-2 font-bold text-xs">
-              <label class="w-full text-center cursor-pointer btn-haptic">
-                <input type="radio" name="rad-abs-${index}" value="H" checked onchange="hitungKalkulasiLiveStatistik()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 shadow-2xs font-extrabold">H</span>
+            <div class="flex gap-2 font-black text-xs text-center">
+              <label class="w-full cursor-pointer btn-haptic-feedback">
+                <input type="radio" name="radio-abs-row-${idx}" value="H" checked onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 shadow-3xs font-extrabold transition">Hadir</span>
               </label>
-              <label class="w-full text-center cursor-pointer btn-haptic">
-                <input type="radio" name="rad-abs-${index}" value="S" onchange="hitungKalkulasiLiveStatistik()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 shadow-2xs font-extrabold">S</span>
+              <label class="w-full cursor-pointer btn-haptic-feedback">
+                <input type="radio" name="radio-abs-row-${idx}" value="S" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 shadow-3xs font-extrabold transition">Sakit</span>
               </label>
-              <label class="w-full text-center cursor-pointer btn-haptic">
-                <input type="radio" name="rad-abs-${index}" value="I" onchange="hitungKalkulasiLiveStatistik()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 shadow-2xs font-extrabold">I</span>
+              <label class="w-full cursor-pointer btn-haptic-feedback">
+                <input type="radio" name="radio-abs-row-${idx}" value="I" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 shadow-3xs font-extrabold transition">Izin</span>
               </label>
-              <label class="w-full text-center cursor-pointer btn-haptic">
-                <input type="radio" name="rad-abs-${index}" value="A" onchange="hitungKalkulasiLiveStatistik()" class="hidden peer">
-                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 shadow-2xs font-extrabold">A</span>
+              <label class="w-full cursor-pointer btn-haptic-feedback">
+                <input type="radio" name="radio-abs-row-${idx}" value="A" onchange="liveKalkulasiStatistikAbsen()" class="hidden peer">
+                <span class="block py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 shadow-3xs font-extrabold transition">Alpha</span>
               </label>
             </div>
           </div>`;
       });
-      container.innerHTML = html;
-      hitungKalkulasiLiveStatistik();
+      boxContainer.innerHTML = buildHtml;
+      liveKalkulasiStatistikAbsen();
     }
 
-    function setGlobalStatus(statusChar) {
-      document.querySelectorAll('#container-siswa-absen input[type="radio"]').forEach(radio => {
-        if(radio.value === statusChar) radio.checked = true;
+    function setGlobalStatusAbsensi(charTarget) {
+      document.querySelectorAll('#wrapper-siswa-absensi input[type="radio"]').forEach(rad => {
+        if(rad.value === charTarget) rad.checked = true;
       });
-      hitungKalkulasiLiveStatistik();
-      triggerToast(`Seluruh baris diset: ${statusChar}`, "info");
+      liveKalkulasiStatistikAbsen();
+      launchNotificationToast(`Semua siswa diset: ${charTarget}`, "info");
     }
 
-    function hitungKalkulasiLiveStatistik() {
+    function liveKalkulasiStatistikAbsen() {
       let h = 0, s = 0, i = 0, a = 0;
-      document.querySelectorAll('#container-siswa-absen input[type="radio"]:checked').forEach(radio => {
-        if(radio.value === "H") h++;
-        if(radio.value === "S") s++;
-        if(radio.value === "I") i++;
-        if(radio.value === "A") a++;
+      document.querySelectorAll('#wrapper-siswa-absensi input[type="radio"]:checked').forEach(rad => {
+        if(rad.value === "H") h++;
+        if(rad.value === "S") s++;
+        if(rad.value === "I") i++;
+        if(rad.value === "A") a++;
       });
-      document.getElementById("stat-h").innerText = h;
-      document.getElementById("stat-s").innerText = s;
-      document.getElementById("stat-i").innerText = i;
-      document.getElementById("stat-a").innerText = a;
+      document.getElementById("live-h").innerText = h;
+      document.getElementById("live-s").innerText = s;
+      document.getElementById("live-i").innerText = i;
+      document.getElementById("live-a").innerText = a;
       
-      if(document.getElementById("panel-agenda").classList.contains("active") || true){
-         document.getElementById("age-hadir").value = h;
-         document.getElementById("age-absen").value = (s + i + a);
+      // Auto-Fill Kolom Jumlah Hadir & Absen di Tab Jurnal Agenda secara otomatis
+      if(document.getElementById("form-age-hadir")) {
+        document.getElementById("form-age-hadir").value = h;
+        document.getElementById("form-age-absen").value = (s + i + a);
       }
     }
 
-    function filterDaftarSiswa() {
-      const keyword = document.getElementById("search-absen").value.toLowerCase();
-      document.querySelectorAll(".siswa-row-absen").forEach(row => {
-        const nama = row.getAttribute("data-nama").toLowerCase();
-        if(nama.includes(keyword)) { row.style.display = "flex"; } else { row.style.display = "none"; }
+    function liveFilterNamaSiswaAbsen() {
+      const kataKunci = document.getElementById("search-bar-abs").value.toLowerCase();
+      document.querySelectorAll(".card-row-siswa-absen").forEach(box => {
+        const targetNama = box.getAttribute("data-nama").toLowerCase();
+        box.style.display = targetNama.includes(kataKunci) ? "flex" : "none";
       });
     }
 
-    function submitAbsensiCloud() {
-      const tgl = document.getElementById("abs-tanggal").value;
-      const kls = document.getElementById("abs-kelas").value;
-      const mpl = document.getElementById("abs-mapel").value;
-      const gru = document.getElementById("abs-guru").value;
-      const act = document.getElementById("abs-kegiatan").value;
+    function submitAbsensiKeCloudServer() {
+      const tgl = document.getElementById("form-abs-tanggal").value;
+      const kls = document.getElementById("form-abs-kelas").value;
+      const mpl = document.getElementById("form-abs-mapel").value;
+      const gru = document.getElementById("form-abs-guru").value;
+      const act = document.getElementById("form-abs-kegiatan").value;
 
-      if(!kls || !gru) return alert("Peringatan: Kelas & Nama Guru wajib ditentukan!");
+      if(!kls || !gru) return alert("Peringatan Gagal: Kolom Kelas & Nama Guru pengampu wajib ditentukan!");
       
-      let dataSiswa = [];
-      document.querySelectorAll(".siswa-row-absen").forEach(row => {
-        const nama = row.getAttribute("data-nama");
-        const status = row.querySelector('input[type="radio"]:checked').value;
-        dataSiswa.push({ nama: nama, status: status });
+      let listDataSiswa = [];
+      document.querySelectorAll(".card-row-siswa-absen").forEach(box => {
+        const nama = box.getAttribute("data-nama");
+        const status = box.querySelector('input[type="radio"]:checked').value;
+        listDataSiswa.push({ nama: nama, status: status });
       });
 
-      const paketData = { action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: dataSiswa };
+      if(listDataSiswa.length === 0) return alert("Data absensi murid masih kosong.");
 
-      showLoading(true);
-      fetch(API_URL, { method: "POST", body: JSON.stringify(paketData) })
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false);
-        triggerToast(res.message || "Data tersimpan permanen di cloud!", "success");
-        if(res.success) {
-          document.getElementById("container-siswa-absen").innerHTML = `<p class="p-6 text-center text-emerald-600 font-bold text-xs"><i class="fa-solid fa-circle-check mr-2"></i>Absensi Sukses Dikunci di Cloud Server.</p>`;
+      const payloadData = { action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: listDataSiswa };
+
+      triggerLoadingScreen(true);
+      fetch(API_URL, { method: "POST", body: JSON.stringify(payloadData) })
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message || "Presensi sukses tersimpan di cloud!", "success");
+        if(output.success) {
+          document.getElementById("wrapper-siswa-absensi").innerHTML = `<p class="p-6 text-center text-emerald-600 font-extrabold text-xs"><i class="fa-solid fa-circle-check mr-2"></i>Data aman terkunci di Server Cloud.</p>`;
         }
       }).catch(() => {
-        showLoading(false);
-        // ENGINE DETEKSI OFFLINE GURU SENIOR
-        localStorage.setItem("BUFFER_OFFLINE_ABSEN", JSON.stringify(paketData));
-        document.getElementById("offline-alert").classList.remove("hidden");
-        triggerToast("Internet bermasalah. Data diamankan di memori lokal HP!", "error");
+        triggerLoadingScreen(false);
+        
+        // BACKUP PROTEKSI OFFLINE BUFFER JIKA INTERNET MATI
+        localStorage.setItem("SIMAK_BUFFER_OFFLINE", JSON.stringify(payloadData));
+        document.getElementById("offline-buffer-banner").classList.remove("hidden");
+        launchNotificationToast("Sinyal internet hilang! Data diamankan di memori lokal HP.", "error");
       });
     }
 
-    function checkOfflineDataBuffer() {
-      if(localStorage.getItem("BUFFER_OFFLINE_ABSEN")) {
-        document.getElementById("offline-alert").classList.remove("hidden");
+    function scanLocalStorageOfflineBuffer() {
+      if(localStorage.getItem("SIMAK_BUFFER_OFFLINE")) {
+        document.getElementById("offline-buffer-banner").classList.remove("hidden");
       }
     }
 
-    function syncOfflineDataData() {
-      const raw = localStorage.getItem("BUFFER_OFFLINE_ABSEN");
-      if(!raw) return;
-      showLoading(true);
-      fetch(API_URL, { method: "POST", body: raw })
+    function uploadOfflineBufferToServer() {
+      const rawData = localStorage.getItem("SIMAK_BUFFER_OFFLINE");
+      if(!rawData) return;
+      triggerLoadingScreen(true);
+      fetch(API_URL, { method: "POST", body: rawData })
       .then(r => r.json())
-      .then(res => {
-        showLoading(false);
-        if(res.success) {
-          localStorage.removeItem("BUFFER_OFFLINE_ABSEN");
-          document.getElementById("offline-alert").classList.add("hidden");
-          triggerToast("Data offline sukses disinkronkan ke Cloud!", "success");
-        } else { alert("Penolakan server: " + res.message); }
-      }).catch(() => { showLoading(false); triggerToast("Koneksi cloud masih terganggu.", "error"); });
+      .then(output => {
+        triggerLoadingScreen(false);
+        if(output.success) {
+          localStorage.removeItem("SIMAK_BUFFER_OFFLINE");
+          document.getElementById("offline-buffer-banner").classList.add("hidden");
+          launchNotificationToast("Data offline cadangan berhasil masuk ke cloud server!", "success");
+        } else {
+          alert("Penolakan server pusat: " + output.message);
+        }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Server cloud masih sibuk/offline.", "error"); });
     }
 
-    function loadSiswaUntukNilai() {
-      const targetKelas = document.getElementById("nil-kelas").value;
-      const container = document.getElementById("container-siswa-nilai");
-      if(!targetKelas) { container.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Pilih kelas dahulu...</p>`; return; }
+    // ================= LOGIK ENGINE INPUT NILAI AKADEMIK =================
+    function renderLembarNilaiSiswa() {
+      const pickedKelas = document.getElementById("form-nil-kelas").value;
+      const boxContainer = document.getElementById("wrapper-siswa-nilai");
+      if(!pickedKelas) { boxContainer.innerHTML = `<p class="p-4 text-center italic text-xs text-slate-400">Silakan pilih kelas terlebih dahulu...</p>`; return; }
       
-      const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      let html = "";
-      siswaTerfilter.forEach((siswa, index) => {
-        html += `
-          <div class="siswa-row-nilai bg-white p-3 rounded-xl border border-slate-200/70 flex items-center justify-between gap-2" data-nama="${siswa.nama}">
+      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === pickedKelas);
+      let buildHtml = "";
+      filterSiswa.forEach((siswa, idx) => {
+        buildHtml += `
+          <div class="card-row-siswa-nilai bg-white p-3 rounded-xl border border-slate-200/80 flex items-center justify-between gap-3 shadow-3xs" data-nama="${siswa.nama}">
             <div class="flex items-center gap-2 truncate">
-              <span class="bg-slate-700 text-white font-extrabold text-[10px] w-5 h-5 flex items-center justify-center rounded-lg shrink-0">${index+1}</span>
-              <span class="text-xs font-bold text-slate-800 uppercase truncate">${siswa.nama}</span>
+              <span class="bg-slate-700 text-white font-black text-[10px] w-5 h-5 flex items-center justify-center rounded-lg shrink-0">${idx + 1}</span>
+              <span class="text-xs font-bold text-slate-800 uppercase truncate break-words">${siswa.nama}</span>
             </div>
-            <input type="number" min="0" max="100" value="80" class="inp-skor-nilai w-20 p-2 rounded-xl border border-slate-300 text-center font-extrabold bg-slate-50 text-blue-900 text-base focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <input type="number" min="0" max="100" value="80" class="input-skor-nilai-item w-20 p-2.5 rounded-xl border border-slate-300 text-center font-black bg-slate-50 text-blue-950 text-base focus:ring-2 focus:ring-blue-600 focus:outline-none">
           </div>`;
       });
-      container.innerHTML = html || `<p class="p-4 text-center italic text-slate-400">Kelas kosong.</p>`;
+      boxContainer.innerHTML = buildHtml || `<p class="p-4 text-center italic text-xs text-slate-400">Kelas tidak memiliki data siswa.</p>`;
     }
 
-    function setGlobalNilai() {
-      document.querySelectorAll(".inp-skor-nilai").forEach(inp => inp.value = 80);
-      triggerToast("Seluruh nilai diset ke 80", "info");
+    function setGlobalAngkaNilaiMasal() {
+      document.querySelectorAll(".input-skor-nilai-item").forEach(inp => inp.value = 80);
+      launchNotificationToast("Semua nilai diset ke angka: 80", "info");
     }
 
-    function submitNilaiCloud() {
-      const judul = document.getElementById("nil-tugas").value.trim();
-      const kls = document.getElementById("nil-kelas").value;
-      const mpl = document.getElementById("nil-mapel").value;
-      const gru = document.getElementById("nil-guru").value;
+    function submitNilaiKeCloudServer() {
+      const judul = document.getElementById("form-nil-tugas").value.trim();
+      const kls = document.getElementById("form-nil-kelas").value;
+      const mpl = document.getElementById("form-nil-mapel").value;
+      const gru = document.getElementById("form-nil-guru").value;
 
-      if(!judul || !kls || !mpl || !gru) return alert("Peringatan: Judul tugas, kelas, mapel, & guru wajib diisi!");
+      if(!judul || !kls || !mpl || !gru) return alert("Peringatan Gagal: Mohon lengkapi kolom nama tugas, kelas, mapel, dan guru!");
 
-      let dataNilai = [];
-      document.querySelectorAll(".siswa-row-nilai").forEach(row => {
-        const nama = row.getAttribute("data-nama");
-        const skor = row.querySelector(".inp-skor-nilai").value;
-        dataNilai.push({ nama: nama, nilai: skor });
+      let listDataNilai = [];
+      document.querySelectorAll(".card-row-siswa-nilai").forEach(box => {
+        const nama = box.getAttribute("data-nama");
+        const nilai = box.querySelector(".input-skor-nilai-item").value;
+        listDataNilai.push({ nama: nama, nilai: nilai });
       });
 
-      showLoading(true);
+      triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: dataNilai })
+        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: listDataNilai })
       })
-      .then(r => r.json())
-      .then(res => { showLoading(false); triggerToast(res.message, "success"); if(res.success) loadSiswaUntukNilai(); })
-      .catch(() => { showLoading(false); triggerToast("Ggal mengirim rekap nilai.", "error"); });
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) renderLembarNilaiSiswa();
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Error gagal menyimpan nilai.", "error"); });
     }
 
-    function submitAgendaCloud() {
-      const tgl = document.getElementById("age-tanggal").value;
-      const kls = document.getElementById("age-kelas").value;
-      const mat = document.getElementById("age-materi").value.trim();
-      const sts = document.getElementById("age-status").value;
-      const hdr = document.getElementById("age-hadir").value;
-      const abs = document.getElementById("age-absen").value;
-      const gru = document.getElementById("age-guru").value;
+    // ================= LOGIK ENGINE JURNAL AGENDA HARIAN =================
+    function submitAgendaKeCloudServer() {
+      const tgl = document.getElementById("form-age-tanggal").value;
+      const kls = document.getElementById("form-age-kelas").value;
+      const mat = document.getElementById("form-age-materi").value.trim();
+      const sts = document.getElementById("form-age-status").value;
+      const hdr = document.getElementById("form-age-hadir").value;
+      const abs = document.getElementById("form-age-absen").value;
+      const gru = document.getElementById("form-age-guru").value;
 
-      if(!mat) return alert("Uraian materi pembelajaran wajib diisi!");
+      if(!mat) return alert("Peringatan Gagal: Isian Jurnal rangkuman bahasan materi wajib ditulis!");
 
-      showLoading(true);
+      triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mat, statusKelas: sts, hadir: hdr, absen: abs, guru: gru })
       })
-      .then(r => r.json())
-      .then(res => { showLoading(false); triggerToast(res.message, "success"); if(res.success) document.getElementById("age-materi").value=""; })
-      .catch(() => { showLoading(false); triggerToast("Koneksi gagal.", "error"); });
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) document.getElementById("form-age-materi").value = "";
+      })
+      .catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal menyimpan data agenda.", "error"); });
     }
 
-    function loadSiswaUntukBK() {
-      const targetKelas = document.getElementById("bk-kelas").value;
-      const selectSiswa = document.getElementById("bk-siswa");
-      if(!targetKelas) { selectSiswa.innerHTML = `<option value="">-- Pilih Siswa --</option>`; return; }
+    // ================= LOGIK ENGINE BIMBINGAN KONSELING (BK) =================
+    function syncSiswaDropdownUntukBK() {
+      const targetKelas = document.getElementById("form-bk-kelas").value;
+      const dropdownSiswa = document.getElementById("form-bk-siswa");
+      if(!targetKelas) { dropdownSiswa.innerHTML = `<option value="">-- Pilih Nama Siswa --</option>`; return; }
       
-      const filterSiswa = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      let html = "";
-      filterSiswa.forEach(s => { html += `<option value="${s.nama}">${s.nama}</option>`; });
-      selectSiswa.innerHTML = html || `<option value="">Siswa Kosong</option>`;
+      const filterSiswa = DATA_CACHE_CONTAINER.siswa.filter(item => item.kelas === targetKelas);
+      let rawHtml = "";
+      filterSiswa.forEach(siswa => { rawHtml += `<option value="${siswa.nama}">${siswa.nama}</option>`; });
+      dropdownSiswa.innerHTML = rawHtml || `<option value="">Siswa Kosong</option>`;
     }
 
-    function submitBKCloud() {
-      const tgl = document.getElementById("bk-tanggal").value;
-      const kls = document.getElementById("bk-kelas").value;
-      const sis = document.getElementById("bk-siswa").value;
-      const kat = document.getElementById("bk-kategori").value;
-      const mas = document.getElementById("bk-masalah").value.trim();
-      const sol = document.getElementById("bk-solusi").value.trim();
-      const gru = document.getElementById("bk-guru").value;
+    function submitKasusBKKeCloud() {
+      const tgl = document.getElementById("form-bk-tanggal").value;
+      const kls = document.getElementById("form-bk-kelas").value;
+      const sis = document.getElementById("form-bk-siswa").value;
+      const kat = document.getElementById("form-bk-kategori").value;
+      const mas = document.getElementById("form-bk-masalah").value.trim();
+      const sol = document.getElementById("form-bk-solusi").value.trim();
+      const gru = document.getElementById("form-bk-guru").value;
 
-      if(!sis || !mas || !sol) return alert("Lengkapi data bimbingan!");
+      if(!sis || !mas || !sol) return alert("Peringatan: Semua data baris isian kasus BK wajib dilengkapi!");
 
-      showLoading(true);
+      triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "submitBimbingan", tanggal: tgl, kelas: kls, namaSiswa: sis, kategori: kat, masalah: mas, solusi: sol, guru: gru })
       })
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false); triggerToast(res.message, "success");
-        if(res.success) { document.getElementById("bk-masalah").value = ""; document.getElementById("bk-solusi").value = ""; }
-      }).catch(() => { showLoading(false); triggerToast("Gagal terkoneksi.", "error"); });
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) {
+          document.getElementById("form-bk-masalah").value = "";
+          document.getElementById("form-bk-solusi").value = "";
+        }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Koneksi cloud BK error.", "error"); });
     }
 
-    function fetchMonthlyLogDashboard() {
-      const menu = document.getElementById("log-menu").value;
-      const kelas = document.getElementById("log-kelas").value;
-      const bulan = document.getElementById("log-bulan").value;
-      const tahun = document.getElementById("log-tahun").value;
-      const tbody = document.getElementById("container-log-rows");
+    // ================= LOGIK UTILLITAS LAINNYA =================
+    function pullHistoryLogFromServer() {
+      const menu = document.getElementById("log-param-menu").value;
+      const kelas = document.getElementById("log-param-kelas").value;
+      const bulan = document.getElementById("log-param-bulan").value;
+      const tahun = document.getElementById("log-param-tahun").value;
+      const tbody = document.getElementById("table-body-log-rows");
 
-      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Membuka log server...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Sedang membuka arsip log server cloud...</td></tr>`;
       
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, tahun: tahun })
       })
-      .then(r => r.json())
-      .then(res => {
-        if(!res.success || !res.rows || res.rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Data tidak ditemukan.</td></tr>`; return; }
-        let html = "";
-        res.rows.forEach((row, i) => {
-          html += `
-            <tr class="hover:bg-slate-50 border-b border-slate-100 text-[11px]">
-              <td class="p-2 text-center font-bold text-slate-400">${i+1}</td>
-              <td class="p-2 font-semibold text-slate-800 whitespace-nowrap">${row[1] || ''}</td>
-              <td class="p-2 text-slate-600">${row[2] || ''}</td>
-              <td class="p-2 text-slate-600">${row[3] || ''}</td>
-              <td class="p-2 font-bold text-slate-700 uppercase">${row[4] || ''}</td>
-              <td class="p-2"><span class="px-1.5 py-0.5 rounded font-bold text-[9px] bg-slate-100">${row[5] || ''}</span></td>
+      .then(res => res.json())
+      .then(output => {
+        if(!output.success || !output.rows || output.rows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Data log histori kosong / tidak ditemukan.</td></tr>`;
+          return;
+        }
+        let buildHtml = "";
+        output.rows.forEach((row, i) => {
+          buildHtml += `
+            <tr class="hover:bg-slate-50 border-b border-slate-100 transition">
+              <td class="p-2.5 text-center font-bold text-slate-400">${i + 1}</td>
+              <td class="p-2.5 font-bold text-slate-800 whitespace-nowrap">${row[1] || ''}</td>
+              <td class="p-2.5 text-slate-600">${row[2] || ''}</td>
+              <td class="p-2.5 text-slate-600">${row[3] || ''}</td>
+              <td class="p-2.5 font-extrabold text-slate-700 uppercase tracking-wide">${row[4] || ''}</td>
+              <td class="p-2.5"><span class="px-2 py-0.5 rounded-md font-bold text-[9px] bg-slate-100 text-slate-600">${row[5] || ''}</span></td>
             </tr>`;
         });
-        tbody.innerHTML = html;
-      }).catch(() => tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-500 text-center font-semibold">Gagal memuat database log.</td></tr>`);
+        tbody.innerHTML = buildHtml;
+      }).catch(() => { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-600 text-center font-bold">Gagal mengambil database log histori server.</td></tr>`; });
     }
 
-    function fetchMonthlyHistoryMatrix() {
-      const tipe = document.getElementById("arsip-tipe").value;
-      const kelas = document.getElementById("arsip-kelas").value;
-      const mapel = document.getElementById("arsip-mapel").value;
-      const guru = document.getElementById("arsip-guru").value;
-      const bulan = document.getElementById("arsip-bulan").value;
-      const tahun = document.getElementById("arsip-tahun").value;
-      const hari = document.getElementById("arsip-hari").value;
-      const container = document.getElementById("matrix-preview-container");
+    function generateMatrixDocumentHtml() {
+      const tipe = document.getElementById("matrix-param-tipe").value;
+      const kelas = document.getElementById("matrix-param-kelas").value;
+      const mapel = document.getElementById("matrix-param-mapel").value;
+      const guru = document.getElementById("matrix-param-guru").value;
+      const bulan = document.getElementById("matrix-param-bulan").value;
+      const tahun = document.getElementById("matrix-param-tahun").value;
+      const hari = document.getElementById("matrix-param-hari").value;
+      const previewWrapper = document.getElementById("wrapper-matrix-preview");
 
       if(!kelas) return alert("Pilih kelas terlebih dahulu!");
-      container.innerHTML = `<p class="p-4 text-slate-500 italic text-center"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Sedang menyusun laporan matriks...</p>`;
+      previewWrapper.innerHTML = `<p class="p-4 text-slate-500 italic text-center"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Membangun dokumen susunan matriks...</p>`;
 
       fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, mapel: mapel, guru: guru, bulan: bulan, tahun: tahun, hari: hari })
       })
-      .then(r => r.json())
-      .then(res => {
-        if(!res.success) return container.innerHTML = `<p class="p-2 text-rose-600">Error: ${res.error}</p>`;
+      .then(res => res.json())
+      .then(output => {
+        if(!output.success) return previewWrapper.innerHTML = `<p class="p-2 text-rose-600 font-bold">Gagal: ${output.error}</p>`;
         
-        const headers = res.headers; const matrix = res.matrix;
-        if(!headers || headers.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Data rekam jejak kosong.</p>`; return; }
+        const headers = output.headers;
+        const matrix = output.matrix;
+        if(!headers || headers.length === 0) {
+          previewWrapper.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Data aktivitas di cloud kosong.</p>`;
+          return;
+        }
         
-        let html = `<div class="p-1 font-bold text-slate-700 mb-2 border-b border-slate-200">Pratinjau Berhasil Dibuat.</div>`;
-        html += `<table class="w-full text-[9px] border-collapse border border-slate-300"><thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1">Nama Siswa</th>`;
-        headers.forEach(h => { html += `<th class="border border-slate-300 p-0.5 text-center">${h.split('-')[2] || h}</th>`; });
-        html += `</tr></thead><tbody>`;
+        let buildTableHtml = `<table class="w-full text-[9px] border-collapse border border-slate-300">`;
+        buildTableHtml += `<thead><tr class="bg-slate-100"><th class="border border-slate-300 p-1.5 text-left text-slate-700">Nama Siswa</th>`;
+        headers.forEach(h => { buildTableHtml += `<th class="border border-slate-300 p-1 text-center font-black">${h.split('-')[2] || h}</th>`; });
+        buildTableHtml += `</tr></thead><tbody>`;
         
         Object.keys(matrix).sort().forEach(siswa => {
-          html += `<tr><td class="border border-slate-300 p-1 font-bold text-slate-800 uppercase">${siswa}</td>`;
+          buildTableHtml += `<tr class="hover:bg-slate-50"><td class="border border-slate-300 p-1.5 font-bold text-slate-800 uppercase">${siswa}</td>`;
           headers.forEach(h => {
-            let val = matrix[siswa][h] || "";
-            html += `<td class="border border-slate-300 p-0.5 text-center font-bold">${val}</td>`;
+            let skorVal = matrix[siswa][h] || "";
+            let colorClass = skorVal === "H" ? "text-emerald-600" : skorVal === "A" ? "text-rose-600" : "text-slate-800";
+            buildTableHtml += `<td class="border border-slate-300 p-1 text-center font-black ${colorClass}">${skorVal}</td>`;
           });
-          html += `</tr>`;
+          buildTableHtml += `</tr>`;
         });
-        html += `</tbody></table><button onclick="window.print()" class="w-full mt-3 bg-purple-700 text-white font-bold p-2.5 rounded-xl text-xs"><i class="fa-solid fa-print mr-2"></i>Cetak Laporan</button>`;
-        container.innerHTML = html;
-      }).catch(() => container.innerHTML = `<p class="p-2 text-rose-600">Gagal menyusun data matrix.</p>`);
+        buildTableHtml += `</tbody></table>`;
+
+        // Masukkan Hasil ke Layar HP & Layar Cetak Print-Out Kertas
+        document.getElementById("print-injection-table-target").innerHTML = buildTableHtml;
+        previewWrapper.innerHTML = `
+          <div class="p-1 font-bold text-slate-700 mb-2 border-b border-slate-200">Pratinjau Dokumen Berhasil Dibuat.</div>
+          ${buildTableHtml}
+          <button onclick="window.print()" class="w-full mt-3 bg-purple-700 text-white font-extrabold p-3 rounded-xl text-xs uppercase tracking-wider btn-haptic-feedback"><i class="fa-solid fa-print mr-2"></i>Cetak Dokumen Sekarang</button>`;
+      }).catch(() => { previewWrapper.innerHTML = `<p class="p-2 text-rose-600 font-bold">Gagal memproses rekapitulasi data.</p>`; });
     }
 
-    function adjustMatrixFilterView() {
-      const tipe = document.getElementById("arsip-tipe").value;
-      document.getElementById("arsip-mapel").style.display = (tipe === "Layanan BK") ? "none" : "block";
+    function adjustMatrixFilterMapelView() {
+      const tipe = document.getElementById("matrix-param-tipe").value;
+      document.getElementById("matrix-param-mapel").style.display = (tipe === "Layanan BK") ? "none" : "block";
     }
 
-    function submitUploadMassalSiswa() {
-      const kls = document.getElementById("upl-kelas").value;
-      const rawText = document.getElementById("upl-siswa-list").value;
-      if(!kls || !rawText.trim()) return alert("Data tidak boleh ada yang kosong!");
-      const arrSiswa = rawText.split('\n').map(s => s.trim()).filter(Boolean);
+    function submitUploadMassalSiswaKeCloud() {
+      const kls = document.getElementById("form-upl-kelas").value;
+      const rawText = document.getElementById("form-upl-siswa-list").value;
+      if(!kls || !rawText.trim()) return alert("Gagal: Kolom kelas atau isian nama murid tidak boleh kosong!");
+      
+      const arrayNamaSiswa = rawText.split('\n').map(item => item.trim()).filter(Boolean);
 
-      showLoading(true);
+      triggerLoadingScreen(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswa: arrSiswa })
+        body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswa: arrayNamaSiswa })
       })
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false); triggerToast(res.message, "success");
-        if(res.success) { document.getElementById("upl-siswa-list").value = ""; initMasterDatabase(); }
-      }).catch(() => { showLoading(false); triggerToast("Gagal melakukan impor data.", "error"); });
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) {
+          document.getElementById("form-upl-siswa-list").value = "";
+          initMasterDatabase();
+        }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal memproses impor massal.", "error"); });
+    }
+
+    // ================= SINKRONISASI FILE MASTER MANDIRI VIA HP =================
+    function submitSingleMasterItem(act, inputDomId) {
+      const el = document.getElementById(inputDomId);
+      const val = el.value.trim();
+      if(!val) return alert("Kolom isian entri data kosong.");
+      
+      let listParam = val.split('\n').map(item => item.trim()).filter(Boolean);
+      if(listParam.length === 0) return alert("Format data tidak valid.");
+      
+      triggerLoadingScreen(true);
+      fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: listParam }) })
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) {
+          el.value = "";
+          initMasterDatabase();
+        }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Error master saving.", "error"); });
+    }
+
+    function submitMasterMapelPintarSpesifik() {
+      const nama = document.getElementById("mst-mapel-nama").value.trim();
+      const jur = document.getElementById("mst-mapel-jurusan").value.trim();
+      if(!nama) return alert("Nama mata pelajaran tidak boleh kosong!");
+
+      triggerLoadingScreen(true);
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "tambahMasterMapelPintar", namaMapel: nama, jurusan: jur })
+      })
+      .then(res => res.json())
+      .then(output => {
+        triggerLoadingScreen(false);
+        launchNotificationToast(output.message, "success");
+        if(output.success) {
+          document.getElementById("mst-mapel-nama").value = "";
+          document.getElementById("mst-mapel-jurusan").value = "";
+          initMasterDatabase();
+        }
+      }).catch(() => { triggerLoadingScreen(false); launchNotificationToast("Gagal menyimpan mapel pintar.", "error"); });
     }
   </script>
 </body>
