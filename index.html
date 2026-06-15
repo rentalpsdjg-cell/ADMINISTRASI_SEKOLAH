@@ -8,18 +8,36 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #3b82f6; --bg: #f8fafc; }
     body { 
       font-family: 'Plus Jakarta Sans', sans-serif; 
-      background-color: #f1f5f9; 
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       color: #0f172a; 
       -webkit-tap-highlight-color: transparent;
     }
-    .panel { display: none; }
-    .panel.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     
-    /* Custom Scrollbar */
+    /* Smooth Panel Animations */
+    .panel { display: none; }
+    .panel.active { 
+      display: block; 
+      animation: cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s slideUp; 
+    }
+    @keyframes slideUp { 
+      from { opacity: 0; transform: translateY(24px) scale(0.98); } 
+      to { opacity: 1; transform: translateY(0) scale(1); } 
+    }
+    
+    /* Neon Glow & Premium Cards */
+    .premium-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+    }
+
+    .glow-blue { shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4); }
+
+    /* Custom Hide Scrollbar */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -34,139 +52,154 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row relative pb-20 md:pb-0 overflow-x-hidden">
+<body class="min-h-screen flex flex-col md:flex-row relative pb-28 md:pb-0 overflow-x-hidden">
 
-  <!-- Loader Premium -->
-  <div id="global-loader" class="fixed inset-0 bg-slate-900/20 backdrop-blur-md flex items-center justify-center z-50 hidden">
-    <div class="bg-white/90 p-5 rounded-2xl shadow-xl flex flex-col items-center gap-3 border border-white/20 animate-bounce">
-      <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <span class="text-xs font-bold text-slate-700">Menyinkronkan Cloud...</span>
+  <!-- Loader Premium Futuristik -->
+  <div id="global-loader" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xl flex items-center justify-center z-50 hidden">
+    <div class="premium-card p-6 rounded-3xl flex flex-col items-center gap-4 border border-white/40 max-w-xs text-center mx-4">
+      <div class="relative w-12 h-12">
+        <div class="absolute inset-0 border-4 border-blue-500/20 rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+      <div>
+        <span class="text-xs font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">MENGHUBUNGKAN KE AWAN</span>
+        <p class="text-[10px] text-slate-400 mt-0.5">Sinkronisasi data real-time...</p>
+      </div>
     </div>
   </div>
 
-  <!-- SIDEBAR DESKTOP (Tersembunyi di Mobile) -->
-  <aside id="main-sidebar" class="no-print bg-slate-900 text-slate-300 w-64 shrink-0 hidden md:flex flex-col border-r border-slate-800 sticky top-0 h-screen">
-    <div class="p-5 border-b border-slate-800 flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-black text-base shadow-lg shadow-blue-500/30">S</div>
+  <!-- SIDEBAR DESKTOP -->
+  <aside id="main-sidebar" class="no-print bg-slate-950 text-slate-300 w-64 shrink-0 hidden md:flex flex-col border-r border-slate-900 sticky top-0 h-screen">
+    <div class="p-6 border-b border-slate-900 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-violet-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-500/20">S</div>
       <div>
         <h1 class="text-xs font-black text-white tracking-wider">SIMAK CLOUD</h1>
-        <p class="text-[10px] text-slate-500 font-bold">Engine Version 2.6</p>
+        <p class="text-[10px] text-slate-500 font-bold">Engine v2.6</p>
       </div>
     </div>
     
-    <nav class="p-4 flex flex-col gap-1 overflow-y-auto grow no-scrollbar">
-      <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold px-3 mb-2">Menu Utama</p>
-      <button onclick="switchPanel('dashboard')" class="nav-btn active flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-chart-pie w-4 text-base"></i>Dashboard</button>
-      <button onclick="switchPanel('absensi')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-user-check w-4 text-base"></i>Presensi Kelas</button>
-      <button onclick="switchPanel('nilai')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-graduation-cap w-4 text-base"></i>Daftar Nilai</button>
-      <button onclick="switchPanel('agenda')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-book-open w-4 text-base"></i>Jurnal Agenda</button>
-      <button onclick="switchPanel('bk')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-handshake-angle w-4 text-base"></i>Kasus BK</button>
+    <nav class="p-4 flex flex-col gap-1.5 overflow-y-auto grow no-scrollbar">
+      <p class="text-[10px] uppercase tracking-widest text-slate-600 font-extrabold px-3 mb-2">Menu Utama</p>
+      <button onclick="switchPanel('dashboard')" class="nav-btn active flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-chart-pie w-4 text-base"></i>Dashboard</button>
+      <button onclick="switchPanel('absensi')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-user-check w-4 text-base"></i>Presensi Kelas</button>
+      <button onclick="switchPanel('nilai')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-graduation-cap w-4 text-base"></i>Daftar Nilai</button>
+      <button onclick="switchPanel('agenda')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-book-open w-4 text-base"></i>Jurnal Agenda</button>
+      <button onclick="switchPanel('bk')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-handshake-angle w-4 text-base"></i>Kasus BK</button>
       
-      <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold px-3 mt-4 mb-2">Laporan & Utilitas</p>
-      <button onclick="switchPanel('rekap-log')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-clock-rotate-left w-4 text-base"></i>Log Bulanan</button>
-      <button onclick="switchPanel('rekap-matrix')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-table-cells w-4 text-base"></i>Cetak Laporan</button>
-      <button onclick="switchPanel('upload-massal')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-users-line w-4 text-base"></i>Upload Massal</button>
-      <button onclick="switchPanel('master')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-left w-full hover:bg-slate-800 transition-all"><i class="fa-solid fa-sliders w-4 text-base"></i>Master Data</button>
+      <p class="text-[10px] uppercase tracking-widest text-slate-600 font-extrabold px-3 mt-4 mb-2">Laporan & Utilitas</p>
+      <button onclick="switchPanel('rekap-log')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-clock-rotate-left w-4 text-base"></i>Log Bulanan</button>
+      <button onclick="switchPanel('rekap-matrix')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-table-cells w-4 text-base"></i>Cetak Laporan</button>
+      <button onclick="switchPanel('upload-massal')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-users-line w-4 text-base"></i>Upload Massal</button>
+      <button onclick="switchPanel('master')" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left w-full hover:bg-slate-900 transition-all"><i class="fa-solid fa-sliders w-4 text-base"></i>Master Data</button>
     </nav>
   </aside>
 
-  <!-- BOTTOM NAVIGATION BAR (Khusus Mobile HP) -->
-  <div id="bottom-nav" class="no-print fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-slate-200/80 h-16 flex items-center justify-around px-2 z-40 md:hidden shadow-lg shadow-slate-900/10">
-    <button onclick="switchPanel('dashboard')" class="mobile-nav-btn active flex flex-col items-center gap-1 text-slate-400 focus:outline-none grow py-2 transition-all">
-      <i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[9px] font-bold">Dash</span>
+  <!-- FLOATING BOTTOM NAVIGATION BAR (Khusus Mobile HP - Spektakuler Look) -->
+  <div id="bottom-nav" class="no-print fixed bottom-5 left-4 right-4 bg-slate-950/90 backdrop-blur-xl h-20 rounded-3xl flex items-center justify-around px-4 z-40 md:hidden shadow-2xl shadow-blue-950/40 border border-white/10">
+    <button onclick="switchPanel('dashboard')" class="mobile-nav-btn active flex flex-col items-center justify-center gap-1.5 text-slate-400 w-12 h-12 rounded-2xl transition-all duration-300">
+      <i class="fa-solid fa-chart-pie text-xl"></i><span class="text-[9px] font-extrabold tracking-tight">Dash</span>
     </button>
-    <button onclick="switchPanel('absensi')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 focus:outline-none grow py-2 transition-all">
-      <i class="fa-solid fa-user-check text-lg"></i><span class="text-[9px] font-bold">Absen</span>
+    <button onclick="switchPanel('absensi')" class="mobile-nav-btn flex flex-col items-center justify-center gap-1.5 text-slate-400 w-12 h-12 rounded-2xl transition-all duration-300">
+      <i class="fa-solid fa-user-check text-xl"></i><span class="text-[9px] font-extrabold tracking-tight">Absen</span>
     </button>
-    <button onclick="switchPanel('nilai')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 focus:outline-none grow py-2 transition-all">
-      <i class="fa-solid fa-graduation-cap text-lg"></i><span class="text-[9px] font-bold">Nilai</span>
+    <button onclick="switchPanel('nilai')" class="mobile-nav-btn flex flex-col items-center justify-center gap-1.5 text-slate-400 w-12 h-12 rounded-2xl transition-all duration-300">
+      <i class="fa-solid fa-graduation-cap text-xl"></i><span class="text-[9px] font-extrabold tracking-tight">Nilai</span>
     </button>
-    <button onclick="switchPanel('agenda')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 focus:outline-none grow py-2 transition-all">
-      <i class="fa-solid fa-book-open text-lg"></i><span class="text-[9px] font-bold">Jurnal</span>
+    <button onclick="switchPanel('agenda')" class="mobile-nav-btn flex flex-col items-center justify-center gap-1.5 text-slate-400 w-12 h-12 rounded-2xl transition-all duration-300">
+      <i class="fa-solid fa-book-open text-xl"></i><span class="text-[9px] font-extrabold tracking-tight">Jurnal</span>
     </button>
-    <!-- Menu Popover untuk Akses Fitur Lainnya di HP -->
-    <button onclick="toggleMobileMenuMore()" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 focus:outline-none grow py-2 transition-all relative">
-      <i class="fa-solid fa-ellipsis-hierarchy text-lg"></i><span class="text-[9px] font-bold">Menu</span>
-      <!-- Floating Quick Menu -->
-      <div id="mobile-more-menu" class="hidden absolute bottom-20 right-4 bg-white rounded-2xl shadow-2xl border border-slate-100 p-3 flex flex-col gap-2 w-48 text-left z-50">
-        <button onclick="switchPanel('bk')" class="flex items-center gap-3 p-2 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50"><i class="fa-solid fa-handshake-angle text-blue-500"></i>Kasus BK</button>
-        <button onclick="switchPanel('rekap-log')" class="flex items-center gap-3 p-2 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50"><i class="fa-solid fa-clock-rotate-left text-indigo-500"></i>Log Bulanan</button>
-        <button onclick="switchPanel('rekap-matrix')" class="flex items-center gap-3 p-2 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50"><i class="fa-solid fa-table-cells text-emerald-500"></i>Cetak Laporan</button>
-        <button onclick="switchPanel('upload-massal')" class="flex items-center gap-3 p-2 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50"><i class="fa-solid fa-users-line text-amber-500"></i>Upload Massal</button>
-        <button onclick="switchPanel('master')" class="flex items-center gap-3 p-2 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-50"><i class="fa-solid fa-sliders text-purple-500"></i>Master Data</button>
+    
+    <!-- Menu Selengkapnya Popover -->
+    <button onclick="toggleMobileMenuMore()" class="mobile-nav-btn flex flex-col items-center justify-center gap-1.5 text-slate-400 w-12 h-12 rounded-2xl transition-all duration-300 relative">
+      <i class="fa-solid fa-grid-2 text-xl"></i><span class="text-[9px] font-extrabold tracking-tight">Menu</span>
+      <!-- Floating Menu Container -->
+      <div id="mobile-more-menu" class="hidden absolute bottom-24 right-0 bg-slate-950 rounded-2xl shadow-2xl border border-white/10 p-3 flex flex-col gap-1 w-52 text-left z-50">
+        <button onclick="switchPanel('bk')" class="flex items-center gap-3 p-3 rounded-xl text-slate-300 text-xs font-bold hover:bg-white/5"><i class="fa-solid fa-handshake-angle text-blue-500 text-sm"></i>Kasus BK</button>
+        <button onclick="switchPanel('rekap-log')" class="flex items-center gap-3 p-3 rounded-xl text-slate-300 text-xs font-bold hover:bg-white/5"><i class="fa-solid fa-clock-rotate-left text-violet-500 text-sm"></i>Log Bulanan</button>
+        <button onclick="switchPanel('rekap-matrix')" class="flex items-center gap-3 p-3 rounded-xl text-slate-300 text-xs font-bold hover:bg-white/5"><i class="fa-solid fa-table-cells text-emerald-500 text-sm"></i>Cetak Laporan</button>
+        <button onclick="switchPanel('upload-massal')" class="flex items-center gap-3 p-3 rounded-xl text-slate-300 text-xs font-bold hover:bg-white/5"><i class="fa-solid fa-users-line text-amber-500 text-sm"></i>Upload Massal</button>
+        <button onclick="switchPanel('master')" class="flex items-center gap-3 p-3 rounded-xl text-slate-300 text-xs font-bold hover:bg-white/5"><i class="fa-solid fa-sliders text-fuchsia-500 text-sm"></i>Master Data</button>
       </div>
     </button>
   </div>
 
   <!-- KONTEN UTAMA -->
   <main class="grow flex flex-col min-w-0 w-full">
-    <!-- Header Elegan Transparan -->
-    <header id="main-header" class="no-print bg-white/70 backdrop-blur-md border-b border-slate-200/60 h-16 flex items-center px-4 md:px-6 justify-between shrink-0 sticky top-0 z-30">
-      <div class="flex items-center gap-2">
-        <h2 id="header-title" class="text-sm md:text-base font-extrabold text-slate-800 uppercase tracking-tight truncate max-w-[200px] sm:max-w-none">Dashboard Utama</h2>
+    <!-- Header Transparan Kaca -->
+    <header id="main-header" class="no-print bg-white/40 backdrop-blur-xl border-b border-white/40 h-20 flex items-center px-5 md:px-8 justify-between shrink-0 sticky top-0 z-30">
+      <div class="flex flex-col">
+        <p class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest hidden md:block">MANAJEMEN SISTEM</p>
+        <h2 id="header-title" class="text-base md:text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent uppercase tracking-tight truncate max-w-[220px] sm:max-w-none">Dashboard Utama</h2>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="initMasterDatabase()" title="Sinkron Cloud" class="w-9 h-9 text-slate-600 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 rounded-xl border border-slate-200/60 transition flex items-center justify-center active:scale-95">
+      <div class="flex items-center gap-2.5">
+        <button onclick="initMasterDatabase()" title="Sinkronisasi Cloud" class="w-10 h-10 text-slate-700 hover:text-blue-600 bg-white/80 hover:bg-blue-50 rounded-xl border border-slate-200 shadow-sm transition-all flex items-center justify-center active:scale-90">
           <i class="fa-solid fa-sync text-sm"></i>
         </button>
-        <div class="text-[10px] font-bold text-slate-600 bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-xl flex items-center shadow-xs">
+        <div class="text-[10px] font-extrabold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl flex items-center shadow-sm">
           <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></div><span>Online</span>
         </div>
       </div>
     </header>
 
     <!-- Konten Scroll Area -->
-    <div class="p-4 md:p-6 grow overflow-y-auto">
+    <div class="p-4 md:p-8 grow overflow-y-auto">
       
       <!-- PANEL DASHBOARD -->
       <section id="panel-dashboard" class="panel active">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col justify-between">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Database Kelas</span>
-            <h3 id="dash-total-kelas" class="text-2xl font-black text-slate-800 mt-2">0</h3>
+        <!-- Grid Stat Card Premium -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="premium-card p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-4 -bottom-4 text-blue-500/10 text-6xl font-black transition-all group-hover:scale-110"><i class="fa-solid fa-door-open"></i></div>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Total Kelas</span>
+            <h3 id="dash-total-kelas" class="text-3xl font-black text-slate-800 mt-2">0</h3>
           </div>
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col justify-between">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Guru Aktif</span>
-            <h3 id="dash-total-guru" class="text-2xl font-black text-slate-800 mt-2">0</h3>
+          <div class="premium-card p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-4 -bottom-4 text-violet-500/10 text-6xl font-black transition-all group-hover:scale-110"><i class="fa-solid fa-user-tie"></i></div>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Guru Aktif</span>
+            <h3 id="dash-total-guru" class="text-3xl font-black text-slate-800 mt-2">0</h3>
           </div>
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col justify-between">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Mata Pelajaran</span>
-            <h3 id="dash-total-mapel" class="text-2xl font-black text-slate-800 mt-2">0</h3>
+          <div class="premium-card p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-4 -bottom-4 text-emerald-500/10 text-6xl font-black transition-all group-hover:scale-110"><i class="fa-solid fa-book"></i></div>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Mata Pelajaran</span>
+            <h3 id="dash-total-mapel" class="text-3xl font-black text-slate-800 mt-2">0</h3>
           </div>
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col justify-between">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Siswa</span>
-            <h3 id="dash-total-siswa" class="text-2xl font-black text-slate-800 mt-2">0</h3>
+          <div class="premium-card p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-4 -bottom-4 text-rose-500/10 text-6xl font-black transition-all group-hover:scale-110"><i class="fa-solid fa-users"></i></div>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Total Siswa</span>
+            <h3 id="dash-total-siswa" class="text-3xl font-black text-slate-800 mt-2">0</h3>
           </div>
         </div>
-        <div class="bg-gradient-to-br from-slate-900 to-blue-950 text-slate-100 p-5 rounded-2xl shadow-xl border border-slate-800">
-          <h4 class="text-xs font-bold mb-1.5 flex items-center gap-2"><i class="fa-solid fa-sparkles text-amber-400"></i> SIMAK v2.6 Cloud Engine</h4>
-          <p class="text-[11px] text-slate-300 leading-relaxed">Portal administrasi terpadu multiuser. Kelola presensi, penilaian, jurnal mengajar, dan bimbingan siswa secara langsung dari genggaman Anda dengan sinkronisasi instan ke Google Sheets.</p>
+        <!-- Banner Premium -->
+        <div class="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white p-6 rounded-3xl shadow-xl shadow-blue-950/20 border border-slate-800 relative overflow-hidden">
+          <div class="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+          <h4 class="text-sm font-extrabold mb-2 flex items-center gap-2 text-blue-400"><i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> SIMAK v2.6 Enterprise Cloud</h4>
+          <p class="text-[11px] text-slate-300 leading-relaxed max-w-xl">Portal administrasi terpadu berbasis *multiuser*. Kelola presensi, skor penilaian, jurnal mengajar harian, serta bimbingan siswa secara langsung dari genggaman dengan sinkronisasi instan ke Google Sheets.</p>
         </div>
       </section>
 
       <!-- PANEL PRESENSI -->
       <section id="panel-absensi" class="panel">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs mb-4 flex flex-col gap-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="premium-card p-4 rounded-2xl mb-5 flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal</label>
-              <input type="date" id="abs-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:border-blue-500 focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tanggal</label>
+              <input type="date" id="abs-tanggal" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pilih Kelas</label>
-              <select id="abs-kelas" onchange="loadSiswaUntukAbsen()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:border-blue-500 focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Pilih Kelas</label>
+              <select id="abs-kelas" onchange="loadSiswaUntukAbsen()" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:border-blue-500 focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-              <select id="abs-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:border-blue-500 focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Mata Pelajaran</label>
+              <select id="abs-mapel" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:border-blue-500 focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Guru / Instruktur</label>
-              <select id="abs-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:border-blue-500 focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Guru / Instruktur</label>
+              <select id="abs-guru" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:border-blue-500 focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jenis Layanan Kegiatan</label>
-              <select id="abs-kegiatan" class="w-full text-xs p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 font-bold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Jenis Kegiatan</label>
+              <select id="abs-kegiatan" class="w-full text-xs p-3.5 rounded-xl border border-amber-200 bg-amber-500/10 text-amber-900 font-extrabold focus:outline-none">
                 <option value="submitAbsensi">KBM Harian</option>
                 <option value="submitPramuka">Pramuka Wajib</option>
                 <option value="submitSholat">Sholat Berjamaah</option>
@@ -174,143 +207,144 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Lembar Kehadiran</h5>
-            <button onclick="setGlobalStatus('H')" class="text-[10px] px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold rounded-lg active:scale-95 transition-all">Set Semua Hadir (H)</button>
+        
+        <div class="premium-card rounded-2xl overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white/50">
+            <h5 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Lembar Kehadiran</h5>
+            <button onclick="setGlobalStatus('H')" class="text-[10px] px-3 py-2 bg-emerald-500 text-white font-extrabold rounded-xl shadow-md shadow-emerald-500/10 active:scale-95 transition-all">Set Semua Hadir (H)</button>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[450px]">
+            <table class="w-full text-left border-collapse min-w-[340px]">
               <thead>
-                <tr class="bg-slate-50 text-slate-400 font-bold text-[10px] uppercase border-b border-slate-100">
-                  <th class="p-3 text-center w-12">No</th>
-                  <th class="p-3">Nama Siswa</th>
-                  <th class="p-3 text-center w-52">Opsi Kehadiran</th>
+                <tr class="bg-slate-50/50 text-slate-400 font-extrabold text-[10px] uppercase border-b border-slate-100">
+                  <th class="p-4 text-center w-12">No</th>
+                  <th class="p-4">Nama Siswa</th>
+                  <th class="p-4 text-center w-48">Status Kehadiran</th>
                 </tr>
               </thead>
               <tbody id="container-siswa-absen" class="divide-y divide-slate-100 text-xs">
-                <tr><td colspan="3" class="p-5 text-center text-slate-400 italic">Silakan tentukan parameter kelas di atas...</td></tr>
+                <tr><td colspan="3" class="p-6 text-center text-slate-400 italic font-medium">Tentukan parameter data kelas di atas terlebih dahulu...</td></tr>
               </tbody>
             </table>
           </div>
           <div class="p-4 bg-slate-50/50 border-t border-slate-100 text-right">
-            <button onclick="submitAbsensiCloud()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-3.5 rounded-xl shadow-lg shadow-blue-600/10 active:scale-95 transition-all"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Kunci & Kirim Presensi</button>
+            <button onclick="submitAbsensiCloud()" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"><i class="fa-solid fa-cloud-arrow-up mr-2"></i>Kunci & Kirim Presensi</button>
           </div>
         </div>
       </section>
 
       <!-- PANEL NILAI -->
       <section id="panel-nilai" class="panel">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs mb-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="premium-card p-4 rounded-2xl mb-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama Tugas / Ulangan</label>
-              <input type="text" id="nil-tugas" placeholder="Contoh: UH-1 Invers" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Nama Tugas / Ulangan</label>
+              <input type="text" id="nil-tugas" placeholder="Contoh: UH-1 Logika" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kelas Target</label>
-              <select id="nil-kelas" onchange="loadSiswaUntukNilai()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Kelas Target</label>
+              <select id="nil-kelas" onchange="loadSiswaUntukNilai()" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-              <select id="nil-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Mata Pelajaran</label>
+              <select id="nil-mapel" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Guru Pengampu</label>
-              <select id="nil-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Guru Pengampu</label>
+              <select id="nil-guru" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
             <div class="flex items-end">
-              <button onclick="setGlobalNilai()" class="w-full bg-slate-800 text-white font-bold text-xs p-3 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Set Nilai Rata (80)</button>
+              <button onclick="setGlobalNilai()" class="w-full bg-slate-900 text-white font-extrabold text-xs p-3.5 rounded-xl shadow-md active:scale-95 transition-all"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Set Rata (80)</button>
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
+        <div class="premium-card rounded-2xl overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[400px]">
+            <table class="w-full text-left border-collapse min-w-[340px]">
               <thead>
-                <tr class="bg-slate-50 text-slate-400 font-bold text-[10px] uppercase border-b border-slate-100">
-                  <th class="p-3 text-center w-12">No</th>
-                  <th class="p-3">Nama Siswa</th>
-                  <th class="p-3 text-center w-36">Skor (0-100)</th>
+                <tr class="bg-slate-50/50 text-slate-400 font-extrabold text-[10px] uppercase border-b border-slate-100">
+                  <th class="p-4 text-center w-12">No</th>
+                  <th class="p-4">Nama Siswa</th>
+                  <th class="p-4 text-center w-32">Skor Nilai</th>
                 </tr>
               </thead>
               <tbody id="container-siswa-nilai" class="divide-y divide-slate-100 text-xs">
-                <tr><td colspan="3" class="p-5 text-center text-slate-400 italic">Pilih kelas target untuk mengisi skor nilai...</td></tr>
+                <tr><td colspan="3" class="p-6 text-center text-slate-400 italic font-medium">Pilih kelas target untuk mengisi skor nilai...</td></tr>
               </tbody>
             </table>
           </div>
           <div class="p-4 bg-slate-50/50 border-t border-slate-100 text-right">
-            <button onclick="submitNilaiCloud()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-3.5 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-floppy-disk mr-2"></i>Simpan & Unggah Nilai</button>
+            <button onclick="submitNilaiCloud()" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-lg active:scale-95 transition-all"><i class="fa-solid fa-floppy-disk mr-2"></i>Simpan & Unggah Nilai</button>
           </div>
         </div>
       </section>
 
       <!-- PANEL AGENDA -->
       <section id="panel-agenda" class="panel">
-        <div class="max-w-xl bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-4">
-          <div class="grid grid-cols-2 gap-3">
+        <div class="max-w-xl premium-card p-5 rounded-3xl flex flex-col gap-4 mx-auto sm:mx-0">
+          <div class="grid grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal</label>
-              <input type="date" id="age-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tanggal</label>
+              <input type="date" id="age-tanggal" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kelas</label>
-              <select id="age-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Kelas</label>
+              <select id="age-kelas" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Materi Pembahasan Pokok</label>
-            <input type="text" id="age-materi" placeholder="Uraikan intisari materi KBM" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Materi Pembahasan Pokok</label>
+            <input type="text" id="age-materi" placeholder="Uraikan intisari pokok materi KBM" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status Kelas</label>
-              <select id="age-status" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Status Kelas</label>
+              <select id="age-status" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="Kondusif / Lancar">Kondusif / Lancar</option>
                 <option value="Ada Kendala Teknik">Ada Kendala Teknik</option>
                 <option value="Guru Piket / Tugas">Guru Piket / Tugas</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Hadir</label>
-              <input type="number" id="age-hadir" value="30" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Hadir</label>
+              <input type="number" id="age-hadir" value="32" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Absen</label>
-              <input type="number" id="age-absen" value="0" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Absen</label>
+              <input type="number" id="age-absen" value="0" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
             </div>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Guru Pengampu</label>
-            <select id="age-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Guru Pengampu</label>
+            <select id="age-guru" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
           </div>
-          <button onclick="submitAgendaCloud()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3.5 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-journal-whills mr-2"></i>Kunci Jurnal Agenda</button>
+          <button onclick="submitAgendaCloud()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs py-4 rounded-xl shadow-lg active:scale-95 transition-all"><i class="fa-solid fa-journal-whills mr-2"></i>Kunci Jurnal Agenda</button>
         </div>
       </section>
 
       <!-- PANEL BK -->
       <section id="panel-bk" class="panel">
-        <div class="max-w-xl bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-4">
-          <div class="grid grid-cols-2 gap-3">
+        <div class="max-w-xl premium-card p-5 rounded-3xl flex flex-col gap-4 mx-auto sm:mx-0">
+          <div class="grid grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal Kasus</label>
-              <input type="date" id="bk-tanggal" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tanggal Kejadian</label>
+              <input type="date" id="bk-tanggal" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kelas</label>
-              <select id="bk-kelas" onchange="loadSiswaUntukBK()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Kelas</label>
+              <select id="bk-kelas" onchange="loadSiswaUntukBK()" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama Siswa</label>
-              <select id="bk-siswa" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Nama Siswa</label>
+              <select id="bk-siswa" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="">-- Pilih Kelas --</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kategori Kasus</label>
-              <select id="bk-kategori" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Kategori Kasus</label>
+              <select id="bk-kategori" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="Pelanggaran Kedisiplinan">Pelanggaran Kedisiplinan</option>
                 <option value="Keterlambatan Masuk Sekolah">Keterlambatan Masuk Sekolah</option>
                 <option value="Atribut / Seragam Tidak Lengkap">Atribut Seragam Tidak Lengkap</option>
@@ -319,28 +353,28 @@
             </div>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Uraian Masalah</label>
-            <textarea id="bk-masalah" rows="2" placeholder="Detail kejadian..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></textarea>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Uraian Masalah</label>
+            <textarea id="bk-masalah" rows="2" placeholder="Detail kronologi kejadian..." class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></textarea>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Solusi / Tindak Lanjut</label>
-            <textarea id="bk-solusi" rows="2" placeholder="Kesepakatan solusi..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></textarea>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Solusi / Tindak Lanjut</label>
+            <textarea id="bk-solusi" rows="2" placeholder="Kesepakatan penyelesaian..." class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></textarea>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Konselor Penanggung Jawab</label>
-            <select id="bk-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Konselor Penanggung Jawab</label>
+            <select id="bk-guru" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
           </div>
-          <button onclick="submitBKCloud()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3.5 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-shield-halved mr-2"></i>Simpan Catatan Kasus BK</button>
+          <button onclick="submitBKCloud()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs py-4 rounded-xl shadow-lg active:scale-95 transition-all"><i class="fa-solid fa-shield-halved mr-2"></i>Simpan Catatan Kasus BK</button>
         </div>
       </section>
 
       <!-- PANEL LOG BULANAN -->
       <section id="panel-rekap-log" class="panel">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs mb-4 flex flex-col gap-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="premium-card p-4 rounded-2xl mb-5 flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Database Log</label>
-              <select id="log-menu" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Database Log</label>
+              <select id="log-menu" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="KBM Harian">Log Presensi KBM</option>
                 <option value="Pramuka">Log Presensi Pramuka</option>
                 <option value="Sholat">Log Presensi Sholat</option>
@@ -350,14 +384,14 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filter Kelas</label>
-              <select id="log-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Filter Kelas</label>
+              <select id="log-kelas" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="">Semua Kelas</option>
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Bulan</label>
-              <select id="log-bulan" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Bulan</label>
+              <select id="log-bulan" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
                 <option value="4">April</option><option value="5">Mei</option><option value="6" selected>Juni</option>
                 <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
@@ -365,31 +399,31 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tahun</label>
-              <select id="log-tahun" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tahun</label>
+              <select id="log-tahun" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
               </select>
             </div>
             <div class="flex items-end">
-              <button onclick="fetchMonthlyLogDashboard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs p-3.5 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-magnifying-glass mr-1.5"></i>Tarik Data</button>
+              <button onclick="fetchMonthlyLogDashboard()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs p-4 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-magnifying-glass mr-1.5"></i>Tarik Data</button>
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
+        <div class="premium-card rounded-2xl overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs min-w-[550px]">
+            <table class="w-full text-left border-collapse text-xs min-w-[500px]">
               <thead>
-                <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-100 text-[10px] uppercase">
-                  <th class="p-3 text-center w-12">No</th>
-                  <th class="p-3" id="th-col-1">Kolom 1</th>
-                  <th class="p-3" id="th-col-2">Kolom 2</th>
-                  <th class="p-3" id="th-col-3">Kolom 3</th>
-                  <th class="p-3" id="th-col-4">Kolom 4</th>
-                  <th class="p-3" id="th-col-5">Kolom 5</th>
+                <tr class="bg-slate-50/50 text-slate-400 font-extrabold border-b border-slate-100 text-[10px] uppercase">
+                  <th class="p-4 text-center w-12">No</th>
+                  <th class="p-4" id="th-col-1">Kolom 1</th>
+                  <th class="p-4" id="th-col-2">Kolom 2</th>
+                  <th class="p-4" id="th-col-3">Kolom 3</th>
+                  <th class="p-4" id="th-col-4">Kolom 4</th>
+                  <th class="p-4" id="th-col-5">Kolom 5</th>
                 </tr>
               </thead>
-              <tbody id="container-log-rows" class="divide-y divide-slate-100">
-                <tr><td colspan="6" class="p-5 text-center text-slate-400 italic">Klik tombol tarik data log untuk memuat...</td></tr>
+              <tbody id="container-log-rows" class="divide-y divide-slate-100 font-medium">
+                <tr><td colspan="6" class="p-6 text-center text-slate-400 italic">Klik tombol tarik data log untuk memuat riwayat...</td></tr>
               </tbody>
             </table>
           </div>
@@ -398,11 +432,11 @@
 
       <!-- PANEL CETAK MATRIX LAPORAN -->
       <section id="panel-rekap-matrix" class="panel">
-        <div class="no-print bg-white p-4 rounded-2xl border border-slate-200/60 shadow-xs mb-4 flex flex-col gap-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="no-print premium-card p-4 rounded-2xl mb-5 flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Format Cetak</label>
-              <select id="arsip-tipe" onchange="adjustMatrixFilterView()" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Format Cetak</label>
+              <select id="arsip-tipe" onchange="adjustMatrixFilterView()" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="KBM Harian">Matrix KBM Harian</option>
                 <option value="Pramuka">Matrix Pramuka Wajib</option>
                 <option value="Sholat">Matrix Sholat Berjamaah</option>
@@ -411,23 +445,23 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pilih Kelas</label>
-              <select id="arsip-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Pilih Kelas</label>
+              <select id="arsip-kelas" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
             <div id="wrapper-filter-mapel">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mata Pelajaran</label>
-              <select id="arsip-mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Mata Pelajaran</label>
+              <select id="arsip-mapel" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
             <div id="wrapper-filter-guru">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama Guru</label>
-              <select id="arsip-guru" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Nama Guru</label>
+              <select id="arsip-guru" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
             </div>
           </div>
           
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Bulan</label>
-              <select id="arsip-bulan" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Bulan</label>
+              <select id="arsip-bulan" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
                 <option value="04">April</option><option value="05">Mei</option><option value="06" selected>Juni</option>
                 <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
@@ -435,59 +469,59 @@
               </select>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tahun</label>
-              <select id="arsip-tahun" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+              <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Tahun</label>
+              <select id="arsip-tahun" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
                 <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
               </select>
             </div>
             <div class="flex gap-2 items-end">
               <div class="grow">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Filter Hari (Opsional)</label>
-                <input type="text" id="arsip-hari" placeholder="Contoh: 15" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
+                <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Filter Hari (Opsional)</label>
+                <input type="text" id="arsip-hari" placeholder="Contoh: 16" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
               </div>
-              <button onclick="fetchMonthlyHistoryMatrix()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 h-11 rounded-xl active:scale-95 transition-all flex items-center justify-center shrink-0"><i class="fa-solid fa-wand-magic mr-1"></i>Generate</button>
+              <button onclick="fetchMonthlyHistoryMatrix()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs px-5 h-12 rounded-xl active:scale-95 transition-all flex items-center justify-center shrink-0 shadow-md"><i class="fa-solid fa-wand-magic mr-1.5"></i>Generate</button>
             </div>
           </div>
         </div>
         
-        <div id="matrix-preview-container" class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200/60 shadow-xs overflow-x-auto">
-          <p class="p-8 text-slate-400 italic text-center">Silakan sesuaikan konfigurasi filter di atas lalu klik "Generate" untuk menyusun lembar laporan...</p>
+        <div id="matrix-preview-container" class="premium-card p-4 md:p-6 rounded-3xl overflow-x-auto">
+          <p class="p-8 text-slate-400 italic text-center font-medium">Sesuaikan konfigurasi filter di atas lalu klik "Generate" untuk menyusun lembar laporan...</p>
         </div>
       </section>
 
       <!-- PANEL UPLOAD MASSAL -->
       <section id="panel-upload-massal" class="panel">
-        <div class="max-w-xl bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-4">
+        <div class="max-w-xl premium-card p-5 rounded-3xl flex flex-col gap-4 mx-auto sm:mx-0">
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kelas Tujuan</label>
-            <select id="upl-kelas" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></select>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Kelas Tujuan</label>
+            <select id="upl-kelas" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></select>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Daftar Nama Siswa (Salin Tempel per Baris)</label>
-            <textarea id="upl-siswa-list" rows="8" placeholder="Contoh:&#10;ANDI WIJAYA&#10;BUDI SANTOSO" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-mono focus:outline-none"></textarea>
+            <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">Daftar Nama Siswa (Salin Tempel per Baris)</label>
+            <textarea id="upl-siswa-list" rows="7" placeholder="Contoh:&#10;BUDI UTOMO&#10;SITI AMINAH" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-mono focus:outline-none"></textarea>
           </div>
-          <button onclick="submitUploadMassalSiswa()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3.5 rounded-xl active:scale-95 transition-all"><i class="fa-solid fa-users-medical mr-2"></i>Sinkronkan Siswa Massal</button>
+          <button onclick="submitUploadMassalSiswa()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs py-4 rounded-xl shadow-lg active:scale-95 transition-all"><i class="fa-solid fa-users-medical mr-2"></i>Sinkronkan Siswa Massal</button>
         </div>
       </section>
 
-      <!-- PANEL UTAN UTILITIES / MASTER -->
+      <!-- PANEL UTILITIES MASTER -->
       <section id="panel-master" class="panel">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-3">
-            <h6 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-door-closed text-blue-500"></i>Tambah Kelas</h6>
-            <textarea id="mst-kelas-input" rows="3" placeholder="Contoh:&#10;X-TKRO-1" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></textarea>
-            <button onclick="saveMasterElement('tambahMasterKelas', 'mst-kelas-input')" class="w-full bg-slate-800 text-white font-bold text-xs py-2.5 rounded-xl active:scale-95 transition-all">Simpan Kelas</button>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div class="premium-card p-5 rounded-3xl flex flex-col gap-3.5">
+            <h6 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-door-closed text-blue-500"></i>Tambah Kelas</h6>
+            <textarea id="mst-kelas-input" rows="3" placeholder="Contoh:&#10;XI-RPL-2" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></textarea>
+            <button onclick="saveMasterElement('tambahMasterKelas', 'mst-kelas-input')" class="w-full bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl active:scale-95 transition-all">Simpan Kelas</button>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-3">
-            <h6 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-user-tie text-indigo-500"></i>Tambah Guru</h6>
-            <textarea id="mst-guru-input" rows="3" placeholder="Contoh:&#10;Drs. Ahmad Yani" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none"></textarea>
-            <button onclick="saveMasterElement('tambahMasterGuru', 'mst-guru-input')" class="w-full bg-slate-800 text-white font-bold text-xs py-2.5 rounded-xl active:scale-95 transition-all">Simpan Guru</button>
+          <div class="premium-card p-5 rounded-3xl flex flex-col gap-3.5">
+            <h6 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-user-tie text-violet-500"></i>Tambah Guru</h6>
+            <textarea id="mst-guru-input" rows="3" placeholder="Contoh:&#10;Prof. Slamet M.Kom" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none"></textarea>
+            <button onclick="saveMasterElement('tambahMasterGuru', 'mst-guru-input')" class="w-full bg-slate-900 text-white font-extrabold text-xs py-3 rounded-xl active:scale-95 transition-all">Simpan Guru</button>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-xs flex flex-col gap-3">
-            <h6 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-emerald-500"></i>Tambah Mapel</h6>
-            <input type="text" id="mst-mapel-nama" placeholder="Nama Mapel" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
-            <input type="text" id="mst-mapel-jurusan" placeholder="Jurusan (Opsional)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 font-semibold focus:outline-none">
-            <button onclick="saveMasterMapelPintar()" class="w-full bg-blue-600 text-white font-bold text-xs py-2.5 rounded-xl active:scale-95 transition-all">Simpan Mapel</button>
+          <div class="premium-card p-5 rounded-3xl flex flex-col gap-3.5">
+            <h6 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-emerald-500"></i>Tambah Mapel</h6>
+            <input type="text" id="mst-mapel-nama" placeholder="Nama Mapel" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
+            <input type="text" id="mst-mapel-jurusan" placeholder="Jurusan (Opsional)" class="w-full text-xs p-3.5 rounded-xl border border-slate-200 bg-white/80 font-bold focus:outline-none">
+            <button onclick="saveMasterMapelPintar()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-xs py-3 rounded-xl active:scale-95 transition-all">Simpan Mapel</button>
           </div>
         </div>
       </section>
@@ -495,7 +529,7 @@
     </div>
   </main>
 
-  <!-- SCRIPT ENGINE -->
+  <!-- SCRIPT ENGINE CORE -->
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyN4cUNE6PMwPlPZvsYLrh4homfsVhJFKHj0ceUkX0B9AEP71BDd0_uaBl-IxpCyr3Y/exec";
     let CACHE_MASTER = { kelas: [], mapel: [], guru: [], siswa: [] };
@@ -521,11 +555,13 @@
       document.getElementById("mobile-more-menu").classList.add("hidden");
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
       
-      // Reset status tombol navigasi desktop
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("bg-slate-800", "text-white"));
-      // Reset status tombol navigasi mobile
-      document.querySelectorAll(".mobile-nav-btn").forEach(b => b.classList.remove("text-blue-600"));
-      document.querySelectorAll(".mobile-nav-btn").forEach(b => b.classList.add("text-slate-400"));
+      // Reset sidebar desktop links
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("bg-slate-900", "text-white"));
+      // Reset mobile bottom buttons
+      document.querySelectorAll(".mobile-nav-btn").forEach(b => {
+        b.classList.remove("text-blue-500", "bg-white/10", "scale-110");
+        b.classList.add("text-slate-400");
+      });
       
       document.getElementById("panel-" + panelId).classList.add("active");
       
@@ -536,15 +572,13 @@
       };
       document.getElementById("header-title").innerText = titles[panelId] || "SIMAK";
       
-      // Aktivasi tombol desktop
       const activeBtn = Array.from(document.querySelectorAll(".nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
-      if(activeBtn) activeBtn.classList.add("bg-slate-800", "text-white");
+      if(activeBtn) activeBtn.classList.add("bg-slate-900", "text-white");
 
-      // Aktivasi tombol mobile
       const activeMobileBtn = Array.from(document.querySelectorAll(".mobile-nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
       if(activeMobileBtn) {
         activeMobileBtn.classList.remove("text-slate-400");
-        activeMobileBtn.classList.add("text-blue-600");
+        activeMobileBtn.classList.add("text-blue-500", "bg-white/10", "scale-110");
       }
     }
 
@@ -554,7 +588,7 @@
       .then(r => r.json())
       .then(res => {
         showLoading(false);
-        if(!res.success) return alert("Gagal mengambil data dari awan.");
+        if(!res.success) return alert("Gagal mengambil data database cloud.");
         
         CACHE_MASTER = res.data;
         document.getElementById("dash-total-kelas").innerText = CACHE_MASTER.kelas.length;
@@ -575,14 +609,14 @@
         populateSelectOptions("log-kelas", CACHE_MASTER.kelas);
         populateSelectOptions("upl-kelas", CACHE_MASTER.kelas);
         populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false, "-- Semua Mapel --");
-        populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false, "-- Semua Guru --");
+        populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false);
+        populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false);
       }).catch(() => { showLoading(false); alert("Server cloud bermasalah."); });
     }
 
-    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false, customText = "-- Pilih --") {
+    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false) {
       const select = document.getElementById(elementId); if(!select) return;
-      let html = triggerPlaceholder ? `<option value="">${customText}</option>` : "";
+      let html = triggerPlaceholder ? `<option value="">-- Pilih --</option>` : "";
       if(elementId === "log-kelas") html = `<option value="">Semua Kelas</option>`;
       if(elementId === "arsip-mapel") html = `<option value="">-- Semua Mapel --</option>`;
       if(elementId === "arsip-guru") html = `<option value="">-- Semua Guru --</option>`;
@@ -593,23 +627,23 @@
     function loadSiswaUntukAbsen() {
       const targetKelas = document.getElementById("abs-kelas").value;
       const tbody = document.getElementById("container-siswa-absen");
-      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas...</td></tr>`; return; }
+      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic font-medium">Pilih kelas...</td></tr>`; return; }
       
       const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 font-semibold">Siswa tidak ditemukan.</td></tr>`; return; }
+      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 font-bold">Siswa tidak ditemukan.</td></tr>`; return; }
       
       let html = "";
       siswaTerfilter.forEach((siswa, index) => {
         html += `
-          <tr class="siswa-row-absen hover:bg-slate-50/80" data-nama="${siswa.nama}">
-            <td class="p-3 text-center font-bold text-slate-400">${index+1}</td>
-            <td class="p-3 font-bold text-slate-700 uppercase break-words max-w-[130px]">${siswa.nama}</td>
-            <td class="p-3 text-center">
-              <div class="flex justify-center gap-1 font-bold text-xs">
-                <label><input type="radio" name="rad-abs-${index}" value="H" checked class="hidden peer"><span class="inline-block px-3 py-2 rounded-xl border border-slate-200 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all select-none">H</span></label>
-                <label><input type="radio" name="rad-abs-${index}" value="S" class="hidden peer"><span class="inline-block px-3 py-2 rounded-xl border border-slate-200 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all select-none">S</span></label>
-                <label><input type="radio" name="rad-abs-${index}" value="I" class="hidden peer"><span class="inline-block px-3 py-2 rounded-xl border border-slate-200 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500 transition-all select-none">I</span></label>
-                <label><input type="radio" name="rad-abs-${index}" value="A" class="hidden peer"><span class="inline-block px-3 py-2 rounded-xl border border-slate-200 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600 transition-all select-none">A</span></label>
+          <tr class="siswa-row-absen hover:bg-white/40 transition-colors" data-nama="${siswa.nama}">
+            <td class="p-4 text-center font-bold text-slate-400">${index+1}</td>
+            <td class="p-4 font-bold text-slate-700 uppercase break-words max-w-[120px]">${siswa.nama}</td>
+            <td class="p-4 text-center">
+              <div class="flex justify-center gap-1.5 font-black text-xs">
+                <label><input type="radio" name="rad-abs-${index}" value="H" checked class="hidden peer"><span class="inline-block w-9 h-9 leading-9 rounded-xl border border-slate-200 text-center peer-checked:bg-gradient-to-br peer-checked:from-emerald-500 peer-checked:to-teal-600 peer-checked:text-white peer-checked:border-emerald-500 transition-all shadow-sm select-none active:scale-90">H</span></label>
+                <label><input type="radio" name="rad-abs-${index}" value="S" class="hidden peer"><span class="inline-block w-9 h-9 leading-9 rounded-xl border border-slate-200 text-center peer-checked:bg-gradient-to-br peer-checked:from-blue-500 peer-checked:to-indigo-600 peer-checked:text-white peer-checked:border-blue-500 transition-all shadow-sm select-none active:scale-90">S</span></label>
+                <label><input type="radio" name="rad-abs-${index}" value="I" class="hidden peer"><span class="inline-block w-9 h-9 leading-9 rounded-xl border border-slate-200 text-center peer-checked:bg-gradient-to-br peer-checked:from-amber-400 peer-checked:to-orange-500 peer-checked:text-white peer-checked:border-amber-400 transition-all shadow-sm select-none active:scale-90">I</span></label>
+                <label><input type="radio" name="rad-abs-${index}" value="A" class="hidden peer"><span class="inline-block w-9 h-9 leading-9 rounded-xl border border-slate-200 text-center peer-checked:bg-gradient-to-br peer-checked:from-rose-500 peer-checked:to-red-600 peer-checked:text-white peer-checked:border-rose-500 transition-all shadow-sm select-none active:scale-90">A</span></label>
               </div>
             </td>
           </tr>`;
@@ -629,7 +663,7 @@
       const mpl = document.getElementById("abs-mapel").value;
       const gru = document.getElementById("abs-guru").value;
       const act = document.getElementById("abs-kegiatan").value;
-      if(!kls || !gru) return alert("Pilih kelas dan nama guru!");
+      if(!kls || !gru) return alert("Pilih kelas dan instruktur!");
       
       let dataSiswa = [];
       document.querySelectorAll(".siswa-row-absen").forEach(row => {
@@ -639,23 +673,23 @@
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: dataSiswa }) })
       .then(r => r.json()).then(res => { showLoading(false); alert(res.message); if(res.success) loadSiswaUntukAbsen(); })
-      .catch(() => { showLoading(false); alert("Gagal mengunci data."); });
+      .catch(() => { showLoading(false); alert("Gagal mengirim."); });
     }
 
     function loadSiswaUntukNilai() {
       const targetKelas = document.getElementById("nil-kelas").value;
       const tbody = document.getElementById("container-siswa-nilai");
-      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas...</td></tr>`; return; }
+      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic font-medium">Pilih kelas target...</td></tr>`; return; }
       
       const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
       let html = "";
       siswaTerfilter.forEach((siswa, index) => {
         html += `
-          <tr class="siswa-row-nilai hover:bg-slate-50" data-nama="${siswa.nama}">
-            <td class="p-3 text-center font-bold text-slate-400">${index+1}</td>
-            <td class="p-3 font-bold text-slate-700 uppercase">${siswa.nama}</td>
-            <td class="p-3 text-center">
-              <input type="number" min="0" max="100" value="80" class="inp-skor-nilai w-20 p-2.5 rounded-xl border border-slate-200 text-center font-bold bg-slate-50 text-slate-800 focus:outline-none">
+          <tr class="siswa-row-nilai hover:bg-white/40 transition-colors" data-nama="${siswa.nama}">
+            <td class="p-4 text-center font-bold text-slate-400">${index+1}</td>
+            <td class="p-4 font-bold text-slate-700 uppercase">${siswa.nama}</td>
+            <td class="p-4 text-center">
+              <input type="number" min="0" max="100" value="80" class="inp-skor-nilai w-20 p-2 rounded-xl border border-slate-200 text-center font-extrabold bg-white/90 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
             </td>
           </tr>`;
       });
@@ -671,7 +705,7 @@
       const kls = document.getElementById("nil-kelas").value;
       const mpl = document.getElementById("nil-mapel").value;
       const gru = document.getElementById("nil-guru").value;
-      if(!judul || !kls) return alert("Isi nama tugas dan kelas!");
+      if(!judul || !kls) return alert("Isi parameter nama tugas dan kelas target!");
 
       let dataNilai = [];
       document.querySelectorAll(".siswa-row-nilai").forEach(row => {
@@ -681,7 +715,7 @@
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: dataNilai }) })
       .then(r => r.json()).then(res => { showLoading(false); alert(res.message); })
-      .catch(() => { showLoading(false); alert("Error."); });
+      .catch(() => { showLoading(false); alert("Koneksi bermasalah."); });
     }
 
     function submitAgendaCloud() {
@@ -692,7 +726,7 @@
       const hdr = document.getElementById("age-hadir").value;
       const abs = document.getElementById("age-absen").value;
       const gru = document.getElementById("age-guru").value;
-      if(!mat) return alert("Materi tidak boleh kosong.");
+      if(!mat) return alert("Uraian materi KBM kosong.");
 
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mat, statusKelas: sts, hadir: hdr, absen: abs, guru: gru }) })
@@ -717,7 +751,7 @@
       const mas = document.getElementById("bk-masalah").value.trim();
       const sol = document.getElementById("bk-solusi").value.trim();
       const gru = document.getElementById("bk-guru").value;
-      if(!sis || !mas) return alert("Lengkapi deskripsi pelanggaran.");
+      if(!sis || !mas) return alert("Lengkapi data bimbingan.");
 
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "submitBimbingan", tanggal: tgl, kelas: kls, namaSiswa: sis, kategori: kat, masalah: mas, solusi: sol, guru: gru }) })
@@ -732,25 +766,25 @@
       const tahun = document.getElementById("log-tahun").value;
       const tbody = document.getElementById("container-log-rows");
 
-      tbody.innerHTML = `<tr><td colspan="6" class="p-5 text-center text-slate-400 italic">Memuat log dari awan server...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic font-medium">Menarik berkas log histori dari server...</td></tr>`;
       
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, tahun: tahun }) })
       .then(r => r.json()).then(res => {
-        if(!res.success || !res.rows || res.rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Arsip data kosong.</td></tr>`; return; }
+        if(!res.success || !res.rows || res.rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Arsip kosong.</td></tr>`; return; }
         let html = "";
         res.rows.forEach((row, i) => {
           html += `
-            <tr class="hover:bg-slate-50">
-              <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
-              <td class="p-3 font-semibold text-slate-700 whitespace-nowrap">${row[1]}</td>
-              <td class="p-3 text-slate-600">${row[2]}</td>
-              <td class="p-3 text-slate-600">${row[3]}</td>
-              <td class="p-3 font-bold text-slate-700 uppercase">${row[4]}</td>
-              <td class="p-3"><span class="px-2 py-1 rounded-lg font-bold text-[10px] bg-slate-100">${row[5]}</span></td>
+            <tr class="hover:bg-white/40">
+              <td class="p-4 text-center font-bold text-slate-400">${i+1}</td>
+              <td class="p-4 font-bold text-slate-700 whitespace-nowrap">${row[1]}</td>
+              <td class="p-4 text-slate-600">${row[2]}</td>
+              <td class="p-4 text-slate-600">${row[3]}</td>
+              <td class="p-4 font-bold text-slate-700 uppercase">${row[4]}</td>
+              <td class="p-4"><span class="px-2 py-1.5 rounded-lg font-bold text-[10px] bg-slate-100 border border-slate-200">${row[5]}</span></td>
             </tr>`;
         });
         tbody.innerHTML = html;
-      }).catch(() => tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-500 text-center font-bold">Koneksi gagal.</td></tr>`);
+      }).catch(() => tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-500 text-center font-bold">Koneksi internet bermasalah.</td></tr>`);
     }
 
     function adjustMatrixFilterView() {
@@ -768,12 +802,12 @@
       const hari = document.getElementById("arsip-hari").value;
       const container = document.getElementById("matrix-preview-container");
 
-      if(!kelas) return alert("Tentukan kelas target!");
-      container.innerHTML = `<p class="p-8 text-slate-400 italic text-center">Menyusun matrix data laporan...</p>`;
+      if(!kelas) return alert("Silakan pilih kelas!");
+      container.innerHTML = `<p class="p-8 text-slate-400 italic text-center font-medium">Sedang memproses & menyusun tabel matrix...</p>`;
 
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, mapel: mapel, guru: guru, bulan: bulan, tahun: tahun, hari: hari }) })
       .then(r => r.json()).then(res => {
-        if(!res.success) return container.innerHTML = `<p class="p-4 text-rose-600">Gagal memuat rekap matrix.</p>`;
+        if(!res.success) return container.innerHTML = `<p class="p-4 text-rose-600 font-bold">Gagal memproses rekap matrix laporan.</p>`;
         
         if (tipe === "Layanan BK") {
           let html = `<h2 class="text-xs font-black text-center mb-3">LAPORAN BK KELAS ${kelas}</h2><table class="w-full text-[10px] border border-slate-300"><tbody>`;
@@ -782,22 +816,22 @@
         }
 
         const headers = res.headers; const matrix = res.matrix;
-        let html = `<table class="w-full text-[9px] border border-slate-300"><thead class="bg-slate-50"><tr><th class="p-1 border">Nama Siswa</th>`;
-        headers.forEach(h => { html += `<th class="p-1 border">${tipe==='Daftar Nilai'?h:h.split('-')[2]}</th>`; });
+        let html = `<table class="w-full text-[9px] border border-slate-200"><thead class="bg-slate-50"><tr><th class="p-1.5 border font-extrabold text-slate-500">Nama Siswa</th>`;
+        headers.forEach(h => { html += `<th class="p-1.5 border font-extrabold text-slate-500">${tipe==='Daftar Nilai'?h:h.split('-')[2]}</th>`; });
         html += `</tr></thead><tbody>`;
         Object.keys(matrix).forEach(siswa => {
-          html += `<tr><td class="p-1 border font-bold uppercase">${siswa}</td>`;
-          headers.forEach(h => { html += `<td class="p-1 border text-center">${matrix[siswa][h]||'-'}</td>`; });
+          html += `<tr class="hover:bg-slate-50"><td class="p-1.5 border font-bold uppercase text-slate-700">${siswa}</td>`;
+          headers.forEach(h => { html += `<td class="p-1.5 border text-center font-semibold text-slate-600">${matrix[siswa][h]||'-'}</td>`; });
           html += `</tr>`;
         });
         container.innerHTML = html + "</tbody></table>";
-      });
+      }).catch(() => container.innerHTML = `<p class="p-4 text-rose-600 text-center font-bold">Gagal memuat rekap matrix dari Google Sheets.</p>`);
     }
 
     function submitUploadMassalSiswa() {
       const kls = document.getElementById("upl-kelas").value;
       const rawText = document.getElementById("upl-siswa-list").value;
-      if(!kls || !rawText.trim()) return alert("Data input kosong!");
+      if(!kls || !rawText.trim()) return alert("Kolom data input masih kosong!");
       const arrSiswa = rawText.split('\n').map(s => s.trim()).filter(Boolean);
 
       showLoading(true);
@@ -806,7 +840,7 @@
     }
 
     function saveMasterElement(act, id) {
-      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Input kosong.");
+      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Form input kosong.");
       let param = val.split('\n').map(item => item.trim()).filter(Boolean);
       
       showLoading(true);
@@ -817,7 +851,7 @@
     function saveMasterMapelPintar() {
       const nama = document.getElementById("mst-mapel-nama").value.trim();
       const jur = document.getElementById("mst-mapel-jurusan").value.trim();
-      if(!nama) return alert("Nama mapel kosong!");
+      if(!nama) return alert("Nama bidang mapel kosong!");
 
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "tambahMasterMapelPintar", namaMapel: nama, jurusan: jur }) })
