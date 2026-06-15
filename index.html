@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SIMAK v2.5 - Edisi Lengkap & Stabil</title>
+  <title>SMKN 1 SINGKUT - Sistem Informasi Manajemen Akademik</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* UTILITI ASAS & RESET - ACCELERATED FOR MOBILE */
+    /* UTILITY UTAMA & RESET - ACCELERATED FOR MOBILE HP KENTANG */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
     body { background-color: #f1f5f9; color: #1e293b; font-size: 14px; -webkit-tap-highlight-color: transparent; }
     
@@ -16,17 +16,17 @@
     .header-app h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
     .header-app p { font-size: 11px; color: #bae6fd; font-weight: bold; margin-top: 2px; }
 
-    /* Bar Status Awan / Cloud */
+    /* Bar Status Koneksi Cloud */
     .status-bar { padding: 6px; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; color: white; }
     .status-online { background-color: #10b981; }
     .status-offline { background-color: #ef4444; }
 
-    /* Kandungan Utama */
+    /* Layout Konten */
     .main-content { padding: 12px; max-width: 600px; margin: 0 auto; width: 100%; }
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* Kad & Elemen Borang */
+    /* Card & Form UI Element */
     .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .card-title { font-size: 13px; font-weight: 700; color: #1e3a8a; margin-bottom: 12px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
     
@@ -36,7 +36,7 @@
     .form-control:focus { border-color: #3b82f6; background-color: #fff; }
     textarea.form-control { resize: none; font-weight: 500; }
 
-    /* Butang Kawalan */
+    /* Tombol Utama */
     .btn-block { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
     .btn-block:active { opacity: 0.9; }
     .btn-success { background: #16a34a; }
@@ -44,13 +44,13 @@
     .btn-purple { background: #7c3aed; }
     .btn-dark { background: #1e293b; }
 
-    /* Reka Bentuk Jadual Siswa Skrin Kecil */
+    /* Desain Tabel Ringan Khusus Layar HP */
     .list-siswa-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     .list-siswa-table th { background: #f8fafc; padding: 10px 8px; font-size: 11px; font-weight: 700; text-align: left; color: #64748b; border-bottom: 2px solid #e2e8f0; }
     .list-siswa-table td { padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
     .siswa-name { font-weight: 700; color: #0f172a; }
 
-    /* Butang Status Kehadiran (Mesra Sentuhan Jari) */
+    /* Tombol Status Kehadiran Jempol-Friendly (44px) */
     .row-btn-group { display: flex; gap: 4px; justify-content: center; }
     .btn-status { width: 44px; height: 44px; border-radius: 6px; font-weight: 800; font-size: 13px; background: #e2e8f0; color: #475569; border: none; cursor: pointer; }
     .btn-status.active-h { background: #10b981 !important; color: white !important; }
@@ -58,17 +58,17 @@
     .btn-status.active-i { background: #3b82f6 !important; color: white !important; }
     .btn-status.active-a { background: #ef4444 !important; color: white !important; }
 
-    /* Menu Navigasi Bawah (Fixed Bottom) */
+    /* Navigasi Menu Bawah Sistem Geser/Scroll Horizontal jika Layar Sempit */
     .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; z-index: 999; overflow-x: auto; }
     .nav-item { flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; text-decoration: none; font-size: 9px; font-weight: 700; border: none; background: none; cursor: pointer; }
     .nav-item i { font-size: 16px; margin-bottom: 3px; }
     .nav-item.active { color: #1e3a8a; background: #f8fafc; }
 
-    /* Keputusan Carian Portal Wali */
+    /* Monitoring Wali Area */
     .wali-banner { background: #312e81; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
     .wali-card-log { background: #f8fafc; border-left: 4px solid #4f46e5; padding: 10px; border-radius: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Modal Pratonton Cetak KOP */
+    /* Modal Lembar Pratinjau KOP Resmi */
     #print-preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 10px; overflow-y: auto; }
     #print-preview-modal.show { display: block; }
     .modal-box { background: white; width: 100%; max-width: 550px; margin: 10px auto; border-radius: 8px; padding: 15px; }
@@ -87,12 +87,12 @@
   <div class="app-container">
     
     <header class="header-app no-print">
-      <h1>SIMAK v2.5 SYSTEM</h1>
-      <p>PORTAL ADMINISTRASI SEKOLAH LENGKAP</p>
+      <h1>SMKN 1 SINGKUT</h1>
+      <p>SISTEM INFORMASI MANAJEMEN AKADEMIK SEKOLAH</p>
     </header>
 
     <div id="connection-banner" class="status-bar status-offline no-print">
-      <i id="connection-icon" class="fa-solid fa-circle-notch fa-spin"></i> <span id="connection-text">Menghubungkan ke Cloud Database...</span>
+      <i id="connection-icon" class="fa-solid fa-circle-notch fa-spin"></i> <span id="connection-text">Menghubungkan ke Server Cloud...</span>
     </div>
 
     <main class="main-content">
@@ -186,7 +186,7 @@
           </div>
           <div class="form-group">
             <label>Materi Pembelajaran / Ringkasan</label>
-            <textarea id="age-materi" rows="3" class="form-control" placeholder="Tuliskan bab atau pokok bahasan..."></textarea>
+            <textarea id="age-materi" rows="3" class="form-control" placeholder="Tuliskan bab atau pokok bahasan materi hari ini..."></textarea>
           </div>
           <div class="form-group">
             <label>Status Keadaan Kelas</label>
@@ -198,11 +198,11 @@
           </div>
           <div style="display: flex; gap: 8px;">
             <div class="form-group" style="flex:1;">
-              <label>Jumlah Siswa Hadir</label>
+              <label>Siswa Hadir</label>
               <input type="number" id="age-hadir" value="0" class="form-control">
             </div>
             <div class="form-group" style="flex:1;">
-              <label>Siswa Absen (S/I/A)</label>
+              <label>Siswa Absen</label>
               <input type="number" id="age-absen" value="0" class="form-control">
             </div>
           </div>
@@ -236,11 +236,11 @@
           </div>
           <div class="form-group">
             <label>Uraian Permasalahan / Kasus</label>
-            <textarea id="bk-masalah" rows="2" class="form-control" placeholder="Contoh: Sering tidur di kelas..."></textarea>
+            <textarea id="bk-masalah" rows="2" class="form-control" placeholder="Contoh: Terlambat masuk sekolah atau sering bolos..."></textarea>
           </div>
           <div class="form-group">
             <label>Solusi / Tindak Lanjut</label>
-            <textarea id="bk-solusi" rows="2" class="form-control" placeholder="Contoh: Diberikan bimbingan personal..."></textarea>
+            <textarea id="bk-solusi" rows="2" class="form-control" placeholder="Contoh: Diberikan bimbingan personal dan peringatan tertulis..."></textarea>
           </div>
           <button onclick="kirimKasusBK()" class="btn-block btn-dark" style="margin-top:10px;">REKAM LOG KASUS BK</button>
         </div>
@@ -296,7 +296,7 @@
 
       <section id="pane-config" class="panel">
         <div class="card" style="background:#fef2f2; border-color:#fca5a5; display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:11px; font-weight:bold; color:#991b1b;">Penyimpanan Sistem Lokal</span>
+          <span style="font-size:11px; font-weight:bold; color:#991b1b;">Penyimpanan Sistem Lokal HP</span>
           <button onclick="resetSistemLokal()" class="btn-status" style="background:#dc2626; color:white; width:auto; height:auto; padding:5px 10px; font-size:10px;">RESET SEMUA</button>
         </div>
         <div class="card">
@@ -317,9 +317,9 @@
             <input type="text" id="add-item-value" placeholder="Nama item baru..." class="form-control">
           </div>
           <div style="display:flex; gap:4px;">
-            <button onclick="simpanMasterManual('Guru')" style="flex:1; padding:8px; font-size:11px; font-weight:bold;">+ GURU</button>
-            <button onclick="simpanMasterManual('Kelas')" style="flex:1; padding:8px; font-size:11px; font-weight:bold;">+ KELAS</button>
-            <button onclick="simpanMasterManual('Mapel')" style="flex:1; padding:8px; font-size:11px; font-weight:bold;">+ MAPEL</button>
+            <button onclick="simpanMasterManual('Guru')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ GURU</button>
+            <button onclick="simpanMasterManual('Kelas')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ KELAS</button>
+            <button onclick="simpanMasterManual('Mapel')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ MAPEL</button>
           </div>
         </div>
       </section>
@@ -334,7 +334,7 @@
       <button id="nav-bk" onclick="pindahMenu('bk')" class="nav-item"><i class="fa-solid fa-comments"></i>BK</button>
       <button id="nav-nilai" onclick="pindahMenu('nilai')" class="nav-item"><i class="fa-solid fa-star"></i>Nilai</button>
       <button id="nav-wali" onclick="pindahMenu('wali')" class="nav-item"><i class="fa-solid fa-id-card-user"></i>Wali</button>
-      <button id="nav-config" onclick="pindahMenu('config')" class="nav-item"><i class="fa-solid fa-gears"></i>Config</button>
+      <button id="nav-config" onclick="pindahMenu('config')" class="nav-item"><i class="fa-solid fa-gears"></i>Menu</button>
     </nav>
 
   </div>
@@ -342,7 +342,7 @@
   <div id="print-preview-modal">
     <div class="modal-box">
       <div style="display:flex; gap:6px; margin-bottom:15px;" class="no-print">
-        <button onclick="window.print()" style="flex:1; padding:10px; background:#16a34a; color:white; font-weight:bold; border:none; border-radius:4px;">CETAK SEKARANG</button>
+        <button onclick="window.print()" style="flex:1; padding:10px; background:#16a34a; color:white; font-weight:bold; border:none; border-radius:4px;">CETAK / PDF</button>
         <button onclick="document.getElementById('print-preview-modal').classList.remove('show')" style="padding:10px; background:#cbd5e1; border:none; border-radius:4px;">TUTUP</button>
       </div>
       <div id="print-area-content" style="font-family:'Times New Roman', serif; background:white; color:black; padding:10px;"></div>
@@ -350,10 +350,11 @@
   </div>
 
   <script>
+    // ⚠️ MASUKKAN URL GOOGLE SCRIPT WEB APP ANDA DI BAWAH INI
     const SCRIPT_URL_CLOUD = "https://script.google.com/macros/s/AKfycbwKu5AZ3VxxMFBIicOQg6NKBp7fgY-ykueONzrEWMokXO73aFtDVamv2ipMJgnMXivc/exec";
 
-    let localMaster = JSON.parse(localStorage.getItem('SIMAK_V25_MASTER')) || { kelas: [], mapel: [], guru: [] };
-    let localSiswa = JSON.parse(localStorage.getItem('SIMAK_V25_SISWA')) || {};
+    let localMaster = JSON.parse(localStorage.getItem('SMKN1_MASTER')) || { kelas: [], mapel: [], guru: [] };
+    let localSiswa = JSON.parse(localStorage.getItem('SMKN1_SISWA')) || {};
 
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().substring(0,10);
@@ -373,13 +374,13 @@
         const res = await r.json();
         if(res && res.success) {
           localMaster = res.data;
-          localStorage.setItem('SIMAK_V25_MASTER', JSON.stringify(localMaster));
+          localStorage.setItem('SMKN1_MASTER', JSON.stringify(localMaster));
           document.getElementById('connection-banner').className = "status-bar status-online no-print";
-          document.getElementById('connection-text').innerText = "Cloud Terhubung (Online)";
+          document.getElementById('connection-text').innerText = "Cloud Server Terhubung Aktif";
         }
       } catch(e) {
         document.getElementById('connection-banner').className = "status-bar status-offline no-print";
-        document.getElementById('connection-text').innerText = "Mode Lokal Aktif (Offline)";
+        document.getElementById('connection-text').innerText = "Mode Penyimpanan Lokal (Offline)";
       }
       renderDropdowns();
     }
@@ -410,7 +411,7 @@
       if(!kelas) { box?.classList.add('hidden'); return; }
       box?.classList.remove('hidden');
 
-      const list = localSiswa[kelas] || ["SISWA CONTOH INDRA", "SISWA CONTOH MAULANA"];
+      const list = localSiswa[kelas] || ["CONTOH NAMA SISWA A", "CONTOH NAMA SISWA B"];
       
       if(prefix === 'bk') {
         const sel = document.getElementById('bk-siswa');
@@ -441,24 +442,24 @@
     function eksekusiImporSiswa() {
       const k = document.getElementById('imp-kelas-tujuan').value;
       const txt = document.getElementById('imp-area-nama').value;
-      if(!k || !txt) return alert("Pilih kelas dan isi nama!");
+      if(!k || !txt) return alert("Pilih kelas rombel dan isi data nama siswa!");
       const arr = txt.split('\n').map(n => n.trim().toUpperCase()).filter(Boolean);
       localSiswa[k] = arr;
-      localStorage.setItem('SIMAK_V25_SISWA', JSON.stringify(localSiswa));
-      alert(`Berhasil mengimpor ${arr.length} siswa ke kelas ${k}`);
+      localStorage.setItem('SMKN1_SISWA', JSON.stringify(localSiswa));
+      alert(`Sukses mengimpor ${arr.length} siswa baru ke dalam kelas ${k}`);
       document.getElementById('imp-area-nama').value = "";
     }
 
     function simpanMasterManual(kat) {
       const val = document.getElementById('add-item-value').value.trim();
-      if(!val) return alert("Isi nilai master!");
+      if(!val) return alert("Isian master tidak boleh kosong!");
       const key = kat.toLowerCase();
       if(!localMaster[key].includes(val)) localMaster[key].push(val);
-      localStorage.setItem('SIMAK_V25_MASTER', JSON.stringify(localMaster));
+      localStorage.setItem('SMKN1_MASTER', JSON.stringify(localMaster));
       document.getElementById('add-item-value').value = "";
       renderDropdowns();
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({action:'tambahMaster'+kat, nama: val}) });
-      alert("Master ditambahkan!");
+      alert("Master " + kat + " berhasil diperbarui!");
     }
 
     function getPackData(tbodyId) {
@@ -473,7 +474,7 @@
 
     function kirimPresensiKBM() {
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({ action:"submitAbsensi", kelas: document.getElementById('abs-kelas').value, mapel: document.getElementById('abs-mapel').value, guru: document.getElementById('abs-guru').value, dataSiswa: getPackData('table-absen-body') }) })
-      .then(r=>r.json()).then(res => alert(res.message)).catch(()=>alert("Gagal koneksi, data tersimpan di memori HP."));
+      .then(r=>r.json()).then(res => alert(res.message)).catch(()=>alert("Koneksi bermasalah. Data Anda tetap aman di memori HP."));
     }
 
     function kirimPramuka() {
@@ -505,7 +506,7 @@
 
     function prosesTrackingWali() {
       const nama = document.getElementById('search-wali-nama').value.trim();
-      if(!nama) return alert("Ketik nama siswa!");
+      if(!nama) return alert("Ketik nama lengkap siswa terlebih dahulu!");
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({ action:"getWaliTracking", namaSiswa: nama }) })
       .then(r=>r.json()).then(res => {
         if(!res.success) return alert(res.message);
@@ -516,11 +517,11 @@
       });
     }
 
-    function resetSistemLokal() { if(confirm("Hapus semua data di HP?")) { localStorage.clear(); window.location.reload(); } }
+    function resetSistemLokal() { if(confirm("Hapus seluruh data yang terekam di HP ini?")) { localStorage.clear(); window.location.reload(); } }
 
     function bukaModalCetak(tipe) {
       const kelas = document.getElementById('abs-kelas').value;
-      if(!kelas) return alert("Pilih kelas dahulu!");
+      if(!kelas) return alert("Tampilkan daftar kelas terlebih dahulu!");
       let rows = "";
       document.querySelectorAll('#table-absen-body tr').forEach((r, i) => {
         rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:5px; text-align:center;">${i+1}</td><td style="padding:5px;">${r.querySelector('.siswa-name').innerText}</td><td style="padding:5px; text-align:center;">${r.querySelector('.btn-status[class*="active-"]').innerText}</td></tr>`;
@@ -528,11 +529,11 @@
 
       document.getElementById('print-area-content').innerHTML = `
         <div style="text-align:center; border-bottom:3px double #000; padding-bottom:5px; margin-bottom:10px;">
-          <h2 style="font-size:14px; margin:0;">PEMERINTAH PROVINSI / DINAS PENDIDIKAN</h2>
-          <h1 style="font-size:16px; margin:2px 0;">SMK NEGERI INSTANSI ANDA</h1>
-          <p style="font-size:10px; margin:0; font-style:italic;">Alamat Sekolah Lengkap, Kode Pos 12345</p>
+          <h2 style="font-size:14px; margin:0; font-weight:bold;">PEMERINTAH PROVINSI / DINAS PENDIDIKAN</h2>
+          <h1 style="font-size:16px; margin:2px 0; font-weight:bold;">SMK NEGERI 1 SINGKUT</h1>
+          <p style="font-size:10px; margin:0; font-style:italic;">Kec. Singkut, Kabupaten Sarolangun, Jambi</p>
         </div>
-        <h3 style="text-align:center; font-size:12px; text-transform:uppercase;">LAPORAN PRESENSI KBM HARIAN</h3>
+        <h3 style="text-align:center; font-size:12px; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">LAPORAN PRESENSI KBM HARIAN</h3>
         <p style="font-size:11px;">Kelas: ${kelas}<br>Mata Pelajaran: ${document.getElementById('abs-mapel').value || '-'}</p>
         <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:10px;" border="1">
           <thead><tr style="background:#cbd5e1;"><th>NO</th><th>NAMA LENGKAP SISWA</th><th>STATUS</th></tr></thead>
