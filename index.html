@@ -51,8 +51,15 @@
       </div>
       <h2 id="header-title" class="text-xs md:text-sm font-bold uppercase tracking-wide hidden sm:block">Dashboard Utama</h2>
     </div>
-    <div id="header-user" class="text-[10px] md:text-xs font-bold text-slate-300 bg-slate-800 md:text-slate-600 md:bg-slate-100 px-2.5 py-1 md:py-1.5 rounded-full border border-slate-700 md:border-slate-200">
-      <i class="fa-solid fa-wifi text-emerald-500 md:text-emerald-600 mr-1.5 animate-pulse"></i><span class="hidden xs:inline">Cloud Connected</span><span class="xs:hidden">Online</span>
+    
+    <div class="flex items-center gap-2">
+      <button onclick="window.location.reload()" class="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 active:bg-slate-700 text-slate-300 focus:outline-none cursor-pointer border border-slate-700 transition" title="Refresh Halaman">
+        <i class="fa-solid fa-rotate text-sm"></i>
+      </button>
+
+      <div id="header-user" class="text-[10px] md:text-xs font-bold text-slate-300 bg-slate-800 md:text-slate-600 md:bg-slate-100 px-2.5 py-1 md:py-1.5 rounded-full border border-slate-700 md:border-slate-200">
+        <i class="fa-solid fa-wifi text-emerald-500 md:text-emerald-600 mr-1.5 animate-pulse"></i><span class="hidden xs:inline">Cloud Connected</span><span class="xs:hidden">Online</span>
+      </div>
     </div>
   </header>
 
@@ -240,8 +247,7 @@
               <label class="block text-[10px] md:text-[11px] font-bold text-slate-600 uppercase mb-1">Status Kelas</label>
               <select id="age-status" class="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
                 <option value="Kondusif / Lancar">Kondusif / Lancar</option>
-                <option value="Ada Kendala Teknik">Ada Kendala Teknik</option>
-                <option value="Guru Piket / Tugas">Guru Piket / Tugas</option>
+                <option value="Ada Kendala Teknik">Ada Kendala Teknik</option> <option value="Guru Piket / Tugas">Guru Piket / Tugas</option>
               </select>
             </div>
             <div>
@@ -423,7 +429,6 @@
             </div>
           </div>
         </div>
-        
         <div id="matrix-preview-container" class="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm overflow-x-auto w-full">
           <p class="p-8 text-slate-400 italic text-center">Silakan sesuaikan konfigurasi filter di atas lalu klik "Generate Matrix" untuk membuat lembar cetak administrasi...</p>
         </div>
@@ -457,12 +462,16 @@
             <button onclick="saveMasterElement('tambahMasterGuru', 'mst-guru-input')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer transition">Simpan Guru</button>
           </div>
           <div class="bg-white p-4 md:p-5 rounded-xl border border-slate-200 shadow-xs">
-            <h6 class="text-xs font-bold text-slate-700 uppercase mb-3"><i class="fa-solid fa-book-bookmark mr-1.5 text-slate-400"></i>Tambah Mapel Pintar</h6>
-            <div class="flex flex-col gap-2 mb-3">
-              <input type="text" id="mst-mapel-nama" placeholder="Nama Mapel (Contoh: Matematika)" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold focus:outline-none">
-              <input type="text" id="mst-mapel-jurusan" placeholder="Jurusan (Opsional, Contoh: TKRO)" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold focus:outline-none">
+            <h6 class="text-xs font-bold text-slate-700 uppercase mb-3"><i class="fa-solid fa-book mr-1.5 text-slate-400"></i>Tambah Mata Pelajaran Cerdas</h6>
+            <div class="mb-2">
+              <label class="block text-[10px] text-slate-500 font-bold uppercase mb-0.5">Nama Mapel</label>
+              <input type="text" id="mst-mapel-nama" placeholder="Contoh: Matematika" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
             </div>
-            <button onclick="saveMasterMapelPintar()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer transition">Simpan Mapel Pintar</button>
+            <div class="mb-3">
+              <label class="block text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jurusan / Kompetensi (Kosongkan jika Umum)</label>
+              <input type="text" id="mst-mapel-jurusan" placeholder="Contoh: TKRO / Otomotif" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
+            </div>
+            <button onclick="saveMasterMapelPintar()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer transition">Simpan Mapel</button>
           </div>
         </div>
       </section>
@@ -470,166 +479,157 @@
     </div>
   </main>
 
-  <div id="mobile-bottom-nav" class="no-print md:hidden fixed bottom-0 inset-x-0 bg-slate-900 text-slate-400 h-16 border-t border-slate-800 flex items-center justify-around z-30 px-2">
-    <button onclick="switchPanel('dashboard')" class="mobile-nav-btn text-blue-500 flex flex-col items-center justify-center grow h-full text-[10px] font-bold"><i class="fa-solid fa-chart-pie text-lg mb-0.5"></i>Dash</button>
-    <button onclick="switchPanel('absensi')" class="mobile-nav-btn flex flex-col items-center justify-center grow h-full text-[10px] font-bold"><i class="fa-solid fa-user-check text-lg mb-0.5"></i>Absen</button>
-    <button onclick="switchPanel('nilai')" class="mobile-nav-btn flex flex-col items-center justify-center grow h-full text-[10px] font-bold"><i class="fa-solid fa-graduation-cap text-lg mb-0.5"></i>Nilai</button>
-    <button onclick="switchPanel('agenda')" class="mobile-nav-btn flex flex-col items-center justify-center grow h-full text-[10px] font-bold"><i class="fa-solid fa-book-open text-lg mb-0.5"></i>Jurnal</button>
-    <button onclick="switchPanel('bk')" class="mobile-nav-btn flex flex-col items-center justify-center grow h-full text-[10px] font-bold"><i class="fa-solid fa-handshake-angle text-lg mb-0.5"></i>Kasus BK</button>
-  </div>
+  <nav id="mobile-bottom-nav" class="no-print fixed bottom-0 inset-x-0 bg-slate-900 border-t border-slate-800 h-16 flex md:hidden items-center justify-around text-slate-400 z-30 px-2">
+    <button onclick="switchPanel('dashboard')" class="nav-mobile-btn active flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition cursor-pointer grow"><i class="fa-solid fa-chart-pie text-base"></i><span class="text-[9px] font-bold">Home</span></button>
+    <button onclick="switchPanel('absensi')" class="nav-mobile-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition cursor-pointer grow"><i class="fa-solid fa-user-check text-base"></i><span class="text-[9px] font-bold">Presensi</span></button>
+    <button onclick="switchPanel('nilai')" class="nav-mobile-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition cursor-pointer grow"><i class="fa-solid fa-graduation-cap text-base"></i><span class="text-[9px] font-bold">Nilai</span></button>
+    <button onclick="switchPanel('agenda')" class="nav-mobile-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition cursor-pointer grow"><i class="fa-solid fa-book-open text-base"></i><span class="text-[9px] font-bold">Jurnal</span></button>
+    <button onclick="toggleMobileSidebar()" class="flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white transition cursor-pointer grow"><i class="fa-solid fa-bars text-base"></i><span class="text-[9px] font-bold">Lainnya</span></button>
+  </nav>
 
   <script>
-    let CACHE_MASTER = { kelas: [], mapel: [], guru: [], siswa: [] };
+    let dbGlobal = { kelas: [], guru: [], mapel: [], siswa: {} };
 
     window.addEventListener("DOMContentLoaded", () => {
-      const hariIni = new Date().toISOString().split('T')[0];
-      if(document.getElementById("abs-tanggal")) document.getElementById("abs-tanggal").value = hariIni;
-      if(document.getElementById("age-tanggal")) document.getElementById("age-tanggal").value = hariIni;
-      if(document.getElementById("bk-tanggal")) document.getElementById("bk-tanggal").value = hariIni;
-      
+      const today = new Date().toISOString().split('T')[0];
+      if(document.getElementById("abs-tanggal")) document.getElementById("abs-tanggal").value = today;
+      if(document.getElementById("age-tanggal")) document.getElementById("age-tanggal").value = today;
+      if(document.getElementById("bk-tanggal")) document.getElementById("bk-tanggal").value = today;
       initMasterDatabase();
     });
 
-    function showLoading(stat) {
-      document.getElementById("global-loader").style.display = stat ? "flex" : "none";
+    function showLoading(s) {
+      const el = document.getElementById("global-loader");
+      if(el) { if(s) el.classList.remove("hidden"); else el.classList.add("hidden"); }
     }
 
-    // Toggle fungsi buka tutup menu sidebar khusus mobile
     function toggleMobileSidebar() {
-      const sidebar = document.getElementById("main-sidebar");
-      const overlay = document.getElementById("sidebar-overlay");
-      if (sidebar.classList.contains("-translate-x-full")) {
-        sidebar.classList.remove("-translate-x-full");
-        overlay.classList.remove("hidden");
+      const sb = document.getElementById("main-sidebar");
+      const ol = document.getElementById("sidebar-overlay");
+      if(sb.classList.contains("-translate-x-full")) {
+        sb.classList.remove("-translate-x-full"); ol.classList.remove("hidden");
       } else {
-        sidebar.classList.add("-translate-x-full");
-        overlay.classList.add("hidden");
+        sb.classList.add("-translate-x-full"); ol.classList.add("hidden");
       }
     }
 
-    function switchPanel(panelId) {
-      // Sembunyikan sidebar mobile setelah klik menu link
-      document.getElementById("main-sidebar").classList.add("-translate-x-full");
-      document.getElementById("sidebar-overlay").classList.add("hidden");
-
+    function switchPanel(id) {
       document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("bg-slate-800", "text-white"));
-      
-      document.getElementById("panel-" + panelId).classList.add("active");
-      
-      const titles = {
-        'dashboard': 'Dashboard Utama', 'absensi': 'Input Presensi Cloud', 'nilai': 'Daftar Nilai Massal',
-        'agenda': 'Jurnal Agenda Mengajar', 'bk': 'Kasus Bimbingan Konseling', 'rekap-log': 'Log Histori Bulanan',
-        'rekap-matrix': 'Cetak Laporan Matrix', 'upload-massal': 'Upload Siswa Massal', 'master': 'Kelola Master Data'
-      };
-      document.getElementById("header-title").innerText = titles[panelId] || "SIMAK PANEL";
-      
-      // Update state tombol aktif di sidebar desktop
-      const activeBtn = Array.from(document.querySelectorAll(".nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
-      if(activeBtn) activeBtn.classList.add("bg-slate-800", "text-white");
+      const target = document.getElementById("panel-" + id);
+      if(target) target.classList.add("active");
 
-      // Update state tombol aktif di bottom bar mobile
-      document.querySelectorAll(".mobile-nav-btn").forEach(mb => mb.classList.remove("text-blue-500"));
-      const activeMobileBtn = Array.from(document.querySelectorAll(".mobile-nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
-      if(activeMobileBtn) activeMobileBtn.classList.add("text-blue-500");
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("bg-slate-800", "text-white"));
+      document.querySelectorAll(".nav-mobile-btn").forEach(b => b.classList.remove("text-blue-500"));
+
+      const titleEl = document.getElementById("header-title");
+      if(titleEl) titleEl.innerText = id.replace("-", " ");
+
+      const sb = document.getElementById("main-sidebar");
+      const ol = document.getElementById("sidebar-overlay");
+      if(sb && !sb.classList.contains("-translate-x-full")) {
+        sb.classList.add("-translate-x-full"); ol.classList.add("hidden");
+      }
     }
 
     function initMasterDatabase() {
       showLoading(true);
-      fetch(`${API_URL}?action=getMasterData`)
-      .then(r => r.json())
-      .then(res => {
+      fetch(API_URL + "?action=loadMasterFull")
+      .then(r => r.json()).then(res => {
         showLoading(false);
-        if(!res.success) return alert("Koneksi gagal sinkronisasi: " + res.error);
+        if(!res.success) return alert("Gagal inisialisasi cloud database.");
+        dbGlobal = res.data;
         
-        CACHE_MASTER = res.data;
+        document.getElementById("dash-total-kelas").innerText = dbGlobal.kelas.length;
+        document.getElementById("dash-total-guru").innerText = dbGlobal.guru.length;
+        document.getElementById("dash-total-mapel").innerText = dbGlobal.mapel.length;
         
-        document.getElementById("dash-total-kelas").innerText = CACHE_MASTER.kelas.length;
-        document.getElementById("dash-total-guru").innerText = CACHE_MASTER.guru.length;
-        document.getElementById("dash-total-mapel").innerText = CACHE_MASTER.mapel.length;
-        document.getElementById("dash-total-siswa").innerText = CACHE_MASTER.siswa.length;
-        
-        populateSelectOptions("abs-kelas", CACHE_MASTER.kelas, true);
-        populateSelectOptions("abs-mapel", CACHE_MASTER.mapel);
-        populateSelectOptions("abs-guru", CACHE_MASTER.guru);
-        
-        populateSelectOptions("nil-kelas", CACHE_MASTER.kelas, true);
-        populateSelectOptions("nil-mapel", CACHE_MASTER.mapel);
-        populateSelectOptions("nil-guru", CACHE_MASTER.guru);
-        
-        populateSelectOptions("age-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("age-guru", CACHE_MASTER.guru);
-        
-        populateSelectOptions("bk-kelas", CACHE_MASTER.kelas, true);
-        populateSelectOptions("bk-guru", CACHE_MASTER.guru);
-        
-        populateSelectOptions("log-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("upl-kelas", CACHE_MASTER.kelas);
+        let totalSiswa = 0;
+        for(let k in dbGlobal.siswa) { totalSiswa += dbGlobal.siswa[k].length; }
+        document.getElementById("dash-total-siswa").innerText = totalSiswa;
 
-        populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false, "-- Semua Mapel --");
-        populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false, "-- Semua Guru --");
-      }).catch(err => {
-        showLoading(false);
-        alert("Server cloud offline: " + err);
-      });
+        populateSelectOptions("abs-kelas", dbGlobal.kelas, true);
+        populateSelectOptions("nil-kelas", dbGlobal.kelas, true);
+        populateSelectOptions("age-kelas", dbGlobal.kelas, false);
+        populateSelectOptions("bk-kelas", dbGlobal.kelas, true);
+        populateSelectOptions("upl-kelas", dbGlobal.kelas, false);
+        populateSelectOptions("arsip-kelas", dbGlobal.kelas, false);
+
+        let listLogKelas = document.getElementById("log-kelas");
+        if(listLogKelas) {
+          listLogKelas.innerHTML = '<option value="">Semua Kelas</option>';
+          dbGlobal.kelas.forEach(k => { listLogKelas.innerHTML += `<option value="${k}">${k}</option>`; });
+        }
+
+        populateSelectOptions("abs-guru", dbGlobal.guru, false);
+        populateSelectOptions("nil-guru", dbGlobal.guru, false);
+        populateSelectOptions("age-guru", dbGlobal.guru, false);
+        populateSelectOptions("bk-guru", dbGlobal.guru, false);
+        
+        let listArsipGuru = document.getElementById("arsip-guru");
+        if(listArsipGuru) {
+          listArsipGuru.innerHTML = '<option value="">-- Semua Guru --</option>';
+          dbGlobal.guru.forEach(g => { listArsipGuru.innerHTML += `<option value="${g}">${g}</option>`; });
+        }
+
+        buildMapelDropdown("abs-mapel", dbGlobal.mapel);
+        buildMapelDropdown("nil-mapel", dbGlobal.mapel);
+        
+        let listArsipMapel = document.getElementById("arsip-mapel");
+        if(listArsipMapel) {
+          listArsipMapel.innerHTML = '<option value="">-- Semua Mapel --</option>';
+          dbGlobal.mapel.forEach(m => {
+            let label = m.jurusan ? `${m.nama} (${m.jurusan})` : m.nama;
+            listArsipMapel.innerHTML += `<option value="${m.nama}">${label}</option>`;
+          });
+        }
+      })
+      .catch(() => { showLoading(false); alert("Error network cloud connection."); });
     }
 
-    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false, customText = "-- Pilih --") {
-      const select = document.getElementById(elementId);
-      if(!select) return;
-      let html = triggerPlaceholder ? `<option value="">${customText}</option>` : "";
-      if(elementId === "log-kelas") html = `<option value="">Semua Kelas</option>`;
-      if(elementId === "arsip-mapel") html = `<option value="">-- Semua Mapel --</option>`;
-      if(elementId === "arsip-guru") html = `<option value="">-- Semua Guru --</option>`;
-      
-      arrayData.forEach(item => {
-        html += `<option value="${item}">${item}</option>`;
-      });
-      select.innerHTML = html;
+    function populateSelectOptions(id, arr, trigger) {
+      const el = document.getElementById(id); if(!el) return;
+      el.innerHTML = trigger ? '<option value="">-- Pilih --</option>' : '';
+      arr.forEach(val => { el.innerHTML += `<option value="${val}">${val}</option>`; });
+      if(trigger) el.selectedIndex = 0;
     }
 
-    function adjustMatrixFilterView() {
-      const tipe = document.getElementById("arsip-tipe").value;
-      const wMapel = document.getElementById("wrapper-filter-mapel");
-      if(tipe === "Layanan BK" || tipe === "Pramuka" || tipe === "Sholat") {
-        wMapel.style.display = "none";
-      } else {
-        wMapel.style.display = "block";
-      }
+    function buildMapelDropdown(id, arr) {
+      const el = document.getElementById(id); if(!el) return; el.innerHTML = "";
+      arr.forEach(m => {
+        let text = m.jurusan ? `${m.nama} (${m.jurusan})` : m.nama;
+        el.innerHTML += `<option value="${m.nama}">${text}</option>`;
+      });
     }
 
     function loadSiswaUntukAbsen() {
-      const targetKelas = document.getElementById("abs-kelas").value;
+      const kelas = document.getElementById("abs-kelas").value;
       const tbody = document.getElementById("container-siswa-absen");
-      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas dahulu...</td></tr>`; return; }
+      if(!kelas) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Silakan pilih kelas terlebih dahulu untuk menarik data siswa cloud...</td></tr>'; return; }
       
-      const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">Database siswa kosong!</td></tr>`; return; }
-      
-      let html = "";
-      siswaTerfilter.forEach((siswa, index) => {
-        html += `
-          <tr class="siswa-row-absen hover:bg-slate-50" data-nama="${siswa.nama}">
-            <td class="p-3 text-center font-bold text-slate-400">${index+1}</td>
-            <td class="p-3 font-bold text-slate-800 uppercase text-[11px] md:text-xs">${siswa.nama}</td>
-            <td class="p-3 text-center">
-              <div class="flex justify-center gap-1 font-bold text-[10px] md:text-[11px]">
-                <label class="cursor-pointer"><input type="radio" name="rad-abs-${index}" value="H" checked class="hidden peer"><span class="px-2 py-1 rounded border border-slate-300 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600">H</span></label>
-                <label class="cursor-pointer"><input type="radio" name="rad-abs-${index}" value="S" class="hidden peer"><span class="px-2 py-1 rounded border border-slate-300 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600">S</span></label>
-                <label class="cursor-pointer"><input type="radio" name="rad-abs-${index}" value="I" class="hidden peer"><span class="px-2 py-1 rounded border border-slate-300 peer-checked:bg-amber-500 peer-checked:text-white peer-checked:border-amber-500">I</span></label>
-                <label class="cursor-pointer"><input type="radio" name="rad-abs-${index}" value="A" class="hidden peer"><span class="px-2 py-1 rounded border border-slate-300 peer-checked:bg-rose-600 peer-checked:text-white peer-checked:border-rose-600">A</span></label>
+      const list = dbGlobal.siswa[kelas] || [];
+      if(list.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-rose-500 font-semibold italic">Database siswa kelas ini masih kosong!</td></tr>'; return; }
+
+      tbody.innerHTML = "";
+      list.forEach((nama, i) => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition font-medium text-slate-700">
+            <td class="p-3 text-center text-slate-400 font-bold">${i+1}</td>
+            <td class="p-3 font-bold tracking-wide uppercase">${nama}</td>
+            <td class="p-3">
+              <div class="flex items-center justify-center gap-1">
+                <label class="grow text-center"><input type="radio" name="abs_rad_${i}" value="H" checked class="hidden peer"><span class="block py-1.5 rounded-lg font-black text-center bg-slate-100 text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white border border-transparent peer-checked:border-emerald-700 shadow-xs cursor-pointer text-[10px]">H</span></label>
+                <label class="grow text-center"><input type="radio" name="abs_rad_${i}" value="S" class="hidden peer"><span class="block py-1.5 rounded-lg font-black text-center bg-slate-100 text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white border border-transparent peer-checked:border-blue-700 shadow-xs cursor-pointer text-[10px]">S</span></label>
+                <label class="grow text-center"><input type="radio" name="abs_rad_${i}" value="I" class="hidden peer"><span class="block py-1.5 rounded-lg font-black text-center bg-slate-100 text-slate-600 peer-checked:bg-amber-500 peer-checked:text-white border border-transparent peer-checked:border-amber-600 shadow-xs cursor-pointer text-[10px]">I</span></label>
+                <label class="grow text-center"><input type="radio" name="abs_rad_${i}" value="A" class="hidden peer"><span class="block py-1.5 rounded-lg font-black text-center bg-slate-100 text-slate-600 peer-checked:bg-rose-600 peer-checked:text-white border border-transparent peer-checked:border-rose-700 shadow-xs cursor-pointer text-[10px]">A</span></label>
               </div>
+              <input type="hidden" class="abs-siswa-nama" value="${nama}">
             </td>
           </tr>`;
       });
-      tbody.innerHTML = html;
     }
 
-    function setGlobalStatus(statusChar) {
-      document.querySelectorAll('#container-siswa-absen input[type="radio"]').forEach(radio => {
-        if(radio.value === statusChar) radio.checked = true;
-      });
+    function setGlobalStatus(val) {
+      document.getElementById("container-siswa-absen").querySelectorAll(`input[type="radio"][value="${val}"]`).forEach(r => r.checked = true);
     }
 
     function submitAbsensiCloud() {
@@ -639,114 +639,114 @@
       const gru = document.getElementById("abs-guru").value;
       const act = document.getElementById("abs-kegiatan").value;
 
-      if(!kls || !gru) return alert("Variabel kelas atau guru tidak boleh kosong!");
+      if(!tgl || !kls || !mpl || !gru) return alert("Mohon lengkapi semua field parameter absensi!");
       
-      let dataSiswa = [];
-      document.querySelectorAll(".siswa-row-absen").forEach(row => {
-        const nama = row.getAttribute("data-nama");
-        const status = row.querySelector('input[type="radio"]:checked').value;
-        dataSiswa.push({ nama: nama, status: status });
-      });
+      const rows = document.getElementById("container-siswa-absen").querySelectorAll("tr");
+      if(rows.length <= 1 && rows[0].innerText.includes("pilih kelas")) return alert("Data siswa belum siap!");
 
-      if(dataSiswa.length === 0) return alert("Lembar absensi kosong.");
+      let paket = [];
+      rows.forEach((row, i) => {
+        let nama = row.querySelector(".abs-siswa-nama").value;
+        let rad = row.querySelector(`input[name="abs_rad_${i}"]:checked`);
+        let stat = rad ? rad.value : "H";
+        paket.push({ nama: nama, status: stat });
+      });
 
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, dataSiswa: dataSiswa })
+        body: JSON.stringify({ action: act, tanggal: tgl, kelas: kls, mapel: mpl, guru: gru, siswaData: paket })
       })
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false);
-        alert(res.message || "Presensi sukses dikunci!");
-        if(res.success) { document.getElementById("container-siswa-absen").innerHTML = `<tr><td colspan="3" class="p-4 text-center text-emerald-600 font-bold">Data aman terkunci di cloud.</td></tr>`; }
-      }).catch(() => { showLoading(false); alert("Error jaringan cloud."); });
+      .then(r => r.json()).then(res => {
+        showLoading(false); alert(res.message);
+      })
+      .catch(() => { showLoading(false); alert("Gagal mengunci absensi cloud."); });
     }
 
     function loadSiswaUntukNilai() {
-      const targetKelas = document.getElementById("nil-kelas").value;
+      const kelas = document.getElementById("nil-kelas").value;
       const tbody = document.getElementById("container-siswa-nilai");
-      if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas dahulu...</td></tr>`; return; }
-      
-      const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">Database siswa kelas ini masih kosong!</td></tr>`; return; }
-      
-      let html = "";
-      siswaTerfilter.forEach((siswa, index) => {
-        html += `
-          <tr class="siswa-row-nilai hover:bg-slate-50" data-nama="${siswa.nama}">
-            <td class="p-3 text-center font-bold text-slate-400">${index+1}</td>
-            <td class="p-3 font-bold text-slate-800 uppercase text-[11px] md:text-xs">${siswa.nama}</td>
-            <td class="p-3 text-center">
-              <input type="number" min="0" max="100" value="80" class="inp-skor-nilai w-16 md:w-24 p-1 rounded border border-slate-300 text-center font-bold bg-slate-50 text-blue-900">
+      if(!kelas) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas target untuk memasukkan daftar nilai massal...</td></tr>'; return; }
+
+      const list = dbGlobal.siswa[kelas] || [];
+      if(list.length === 0) { tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-rose-500 font-semibold italic">Database siswa kosong!</td></tr>'; return; }
+
+      tbody.innerHTML = "";
+      list.forEach((nama, i) => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition text-slate-700 font-medium">
+            <td class="p-3 text-center text-slate-400 font-bold">${i+1}</td>
+            <td class="p-3 font-bold uppercase tracking-wide">${nama}</td>
+            <td class="p-3">
+              <input type="number" min="0" max="100" value="80" class="nil-skor-field w-full text-center p-2 rounded-lg border border-slate-300 font-bold bg-slate-50 focus:bg-white focus:border-blue-600 focus:outline-none">
+              <input type="hidden" class="nil-siswa-nama" value="${nama}">
             </td>
           </tr>`;
       });
-      tbody.innerHTML = html;
     }
 
     function setGlobalNilai() {
-      document.querySelectorAll(".inp-skor-nilai").forEach(inp => inp.value = 80);
+      let v = prompt("Masukkan nilai massal (0-100):", "80");
+      if(v === null) return;
+      let num = parseInt(v); if(isNaN(num) || num < 0 || num > 100) return alert("Angka skor tidak valid!");
+      document.querySelectorAll(".nil-skor-field").forEach(input => input.value = num);
     }
 
     function submitNilaiCloud() {
-      const judul = document.getElementById("nil-tugas").value.trim();
+      const tgs = document.getElementById("nil-tugas").value.trim();
       const kls = document.getElementById("nil-kelas").value;
       const mpl = document.getElementById("nil-mapel").value;
       const gru = document.getElementById("nil-guru").value;
 
-      if(!judul || !kls || !mpl || !gru) return alert("Judul tugas, kelas, mapel, dan guru harus diisi lengkap!");
+      if(!tgs || !kls || !mpl || !gru) return alert("Mohon isi semua parameter penilaian!");
 
-      let dataNilai = [];
-      document.querySelectorAll(".siswa-row-nilai").forEach(row => {
-        const nama = row.getAttribute("data-nama");
-        const skor = row.querySelector(".inp-skor-nilai").value;
-        dataNilai.push({ nama: nama, nilai: skor });
+      const rows = document.getElementById("container-siswa-nilai").querySelectorAll("tr");
+      if(rows.length <= 1 && rows[0].innerText.includes("Pilih kelas")) return alert("Daftar siswa kosong!");
+
+      let paket = [];
+      rows.forEach(row => {
+        let nama = row.querySelector(".nil-siswa-nama").value;
+        let skor = parseInt(row.querySelector(".nil-skor-field").value) || 0;
+        paket.push({ nama: nama, skor: skor });
       });
 
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: dataNilai })
+        body: JSON.stringify({ action: "submitNilaiMassal", namaTugas: tgs, kelas: kls, mapel: mpl, guru: gru, nilaiData: paket })
       })
-      .then(r => r.json())
-      .then(res => {
-        showLoading(false);
-        alert(res.message);
-        if(res.success) loadSiswaUntukNilai();
-      }).catch(() => { showLoading(false); alert("Error transmisi data."); });
+      .then(r => r.json()).then(res => { showLoading(false); alert(res.message); })
+      .catch(() => { showLoading(false); alert("Gagal mengunggah database nilai."); });
     }
 
     function submitAgendaCloud() {
       const tgl = document.getElementById("age-tanggal").value;
       const kls = document.getElementById("age-kelas").value;
-      const mat = document.getElementById("age-materi").value.trim();
+      const mtr = document.getElementById("age-materi").value.trim();
       const sts = document.getElementById("age-status").value;
       const hdr = document.getElementById("age-hadir").value;
       const abs = document.getElementById("age-absen").value;
       const gru = document.getElementById("age-guru").value;
 
-      if(!mat) return alert("Deskripsi isi materi jurnal wajib ditulis!");
+      if(!tgl || !kls || !mtr || !gru) return alert("Lengkapi semua field agenda!");
 
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mat, statusKelas: sts, hadir: hdr, absen: abs, guru: gru })
+        body: JSON.stringify({ action: "submitAgenda", tanggal: tgl, kelas: kls, materi: mtr, status: sts, hadir: hdr, absen: abs, guru: gru })
       })
-      .then(r => r.json())
-      .then(res => { showLoading(false); alert(res.message); if(res.success) document.getElementById("age-materi").value=""; })
-      .catch(() => { showLoading(false); alert("Error."); });
+      .then(r => r.json()).then(res => { showLoading(false); alert(res.message); if(res.success) document.getElementById("age-materi").value=""; })
+      .catch(() => { showLoading(false); alert("Error saving agenda."); });
     }
 
     function loadSiswaUntukBK() {
-      const targetKelas = document.getElementById("bk-kelas").value;
-      const selectSiswa = document.getElementById("bk-siswa");
-      if(!targetKelas) { selectSiswa.innerHTML = `<option value="">-- Pilih --</option>`; return; }
+      const kelas = document.getElementById("bk-kelas").value;
+      const menu = document.getElementById("bk-siswa");
+      if(!kelas) { menu.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>'; return; }
       
-      const filterSiswa = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      let html = "";
-      filterSiswa.forEach(s => { html += `<option value="${s.nama}">${s.nama}</option>`; });
-      selectSiswa.innerHTML = html || `<option value="">Siswa Kosong</option>`;
+      const list = dbGlobal.siswa[kelas] || [];
+      menu.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
+      list.forEach(nama => { menu.innerHTML += `<option value="${nama}">${nama}</option>`; });
     }
 
     function submitBKCloud() {
@@ -758,199 +758,115 @@
       const sol = document.getElementById("bk-solusi").value.trim();
       const gru = document.getElementById("bk-guru").value;
 
-      if(!sis || !mas || !sol) return alert("Lengkapi data input pelanggaran kasus!");
+      if(!tgl || !kls || !sis || !mas || !sol || !gru) return alert("Harap isi semua inputan kasus BK!");
 
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitBimbingan", tanggal: tgl, kelas: kls, namaSiswa: sis, kategori: kat, masalah: mas, solusi: sol, guru: gru })
+        body: JSON.stringify({ action: "submitBK", tanggal: tgl, kelas: kls, siswa: sis, kategori: kat, masalah: mas, solusi: sol, guru: gru })
       })
-      .then(r => r.json())
-      .then(res => {
+      .then(r => r.json()).then(res => {
         showLoading(false); alert(res.message);
-        if(res.success) { document.getElementById("bk-masalah").value = ""; document.getElementById("bk-solusi").value = ""; }
-      }).catch(() => { showLoading(false); alert("Gagal."); });
+        if(res.success) { document.getElementById("bk-masalah").value=""; document.getElementById("bk-solusi").value=""; }
+      })
+      .catch(() => { showLoading(false); alert("Error saving BK data."); });
     }
 
     function fetchMonthlyLogDashboard() {
       const menu = document.getElementById("log-menu").value;
-      const kelas = document.getElementById("log-kelas").value;
-      const bulan = document.getElementById("log-bulan").value;
-      const tahun = document.getElementById("log-tahun").value;
-      const tbody = document.getElementById("container-log-rows");
+      const kls = document.getElementById("log-kelas").value;
+      const bln = document.getElementById("log-bulan").value;
+      const thn = document.getElementById("log-tahun").value;
 
-      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Membuka log arsip cloud...</td></tr>`;
-      
-      const labelTabel = {
-        "KBM Harian": ["Tanggal", "Kelas", "Mata Pelajaran", "Guru Pengajar", "Nama Siswa", "Status Absen"],
-        "Pramuka": ["Tanggal", "Kelas", "Kategori", "Instruktur", "Nama Siswa", "Status Absen"],
-        "Sholat": ["Tanggal", "Kelas", "Kegiatan", "Imam/Guru", "Nama Siswa", "Status Absen"],
-        "Daftar Nilai Tugas": ["Waktu Unggah", "Kelas", "Nama Tugas", "Guru Pengampu", "Nama Siswa", "Skor Nilai"],
-        "Agenda": ["Tanggal", "Kelas", "Status Kelas", "Guru Piket", "Bahasan Materi", "Keterangan Log"],
-        "BK": ["Tanggal", "Kelas", "Kategori Kasus", "Konselor", "Nama Siswa", "Uraian Pelanggaran"]
-      };
+      showLoading(true);
+      fetch(`${API_URL}?action=fetchLog&menu=${encodeURIComponent(menu)}&kelas=${encodeURIComponent(kls)}&bulan=${bln}&tahun=${thn}`)
+      .then(r => r.json()).then(res => {
+        showLoading(false);
+        if(!res.success) return alert(res.message);
+        
+        document.getElementById("th-col-1").innerText = res.headers[0] || "";
+        document.getElementById("th-col-2").innerText = res.headers[1] || "";
+        document.getElementById("th-col-3").innerText = res.headers[2] || "";
+        document.getElementById("th-col-4").innerText = res.headers[3] || "";
+        document.getElementById("th-col-5").innerText = res.headers[4] || "";
 
-      const headers = labelTabel[menu] || ["Col1", "Col2", "Col3", "Col4", "Col5", "Col6"];
-      for(let i=0; i<5; i++) { document.getElementById(`th-col-${i+1}`).innerText = headers[i+1]; }
+        const tbody = document.getElementById("container-log-rows");
+        tbody.innerHTML = "";
+        
+        if(res.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 italic font-semibold">Arsip kosong / Tidak ditemukan data log yang cocok.</td></tr>';
+          return;
+        }
 
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, tahun: tahun })
-      })
-      .then(r => r.json())
-      .then(res => {
-        if(!res.success || !res.rows || res.rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Arsip data log nihil.</td></tr>`; return; }
-        let html = "";
-        res.rows.forEach((row, i) => {
-          html += `
-            <tr class="hover:bg-slate-50">
-              <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
-              <td class="p-3 font-semibold text-slate-800 whitespace-nowrap">${row[1]}</td>
-              <td class="p-3 text-slate-600">${row[2]}</td>
-              <td class="p-3 text-slate-600">${row[3]}</td>
-              <td class="p-3 font-bold text-slate-700 uppercase">${row[4]}</td>
-              <td class="p-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-slate-100">${row[5]}</span></td>
+        res.data.forEach((row, idx) => {
+          tbody.innerHTML += `
+            <tr class="hover:bg-slate-50 transition text-slate-600 font-medium">
+              <td class="p-3 text-center font-bold text-slate-400 border-r border-slate-100">${idx+1}</td>
+              <td class="p-3 border-r border-slate-100">${row[0] || "-"}</td>
+              <td class="p-3 border-r border-slate-100 font-bold text-slate-800">${row[1] || "-"}</td>
+              <td class="p-3 border-r border-slate-100">${row[2] || "-"}</td>
+              <td class="p-3 border-r border-slate-100">${row[3] || "-"}</td>
+              <td class="p-3">${row[4] || "-"}</td>
             </tr>`;
         });
-        tbody.innerHTML = html;
-      }).catch(() => tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-500 text-center font-semibold">Gagal memuat log database server.</td></tr>`);
+      })
+      .catch(() => { showLoading(false); alert("Error fetching monthly log."); });
+    }
+
+    function adjustMatrixFilterView() {
+      const tipe = document.getElementById("arsip-tipe").value;
+      const wMapel = document.getElementById("wrapper-filter-mapel");
+      const wGuru = document.getElementById("wrapper-filter-guru");
+
+      if(tipe === "KBM Harian" || tipe === "Daftar Nilai") {
+        wMapel.style.display = "block"; wGuru.style.display = "block";
+      } else if(tipe === "Pramuka" || tipe === "Sholat") {
+        wMapel.style.display = "none"; wGuru.style.display = "block";
+      } else {
+        wMapel.style.display = "none"; wGuru.style.display = "none";
+      }
     }
 
     function fetchMonthlyHistoryMatrix() {
       const tipe = document.getElementById("arsip-tipe").value;
-      const kelas = document.getElementById("arsip-kelas").value;
-      const mapel = document.getElementById("arsip-mapel").value;
-      const guru = document.getElementById("arsip-guru").value;
-      const bulan = document.getElementById("arsip-bulan").value;
-      const tahun = document.getElementById("arsip-tahun").value;
-      const hari = document.getElementById("arsip-hari").value;
-      const container = document.getElementById("matrix-preview-container");
+      const kls = document.getElementById("arsip-kelas").value;
+      const mpl = document.getElementById("arsip-mapel").value;
+      const gru = document.getElementById("arsip-guru").value;
+      const bln = document.getElementById("arsip-bulan").value;
+      const thn = document.getElementById("arsip-tahun").value;
+      const hari = document.getElementById("arsip-hari").value.trim();
 
-      if(!kelas) return alert("Pilih kelas terlebih dahulu!");
-      container.innerHTML = `<p class="p-8 text-slate-400 italic text-center"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Menyusun matrix data laporan...</p>`;
-
-      const tglCtxt = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, mapel: mapel, guru: guru, bulan: bulan, tahun: tahun, hari: hari })
+      showLoading(true);
+      let query = `?action=fetchMatrix&tipe=${encodeURIComponent(tipe)}&kelas=${encodeURIComponent(kls)}&bulan=${bln}&tahun=${thn}&mapel=${encodeURIComponent(mpl)}&guru=${encodeURIComponent(gru)}&hariFilter=${hari}`;
+      
+      fetch(API_URL + query)
+      .then(r => r.json()).then(res => {
+        showLoading(false);
+        const container = document.getElementById("matrix-preview-container");
+        if(!res.success) { container.innerHTML = `<p class="p-6 text-rose-600 font-bold text-center">${res.message}</p>`; return; }
+        container.innerHTML = res.html;
       })
-      .then(r => r.json())
-      .then(res => {
-        if(!res.success) return container.innerHTML = `<p class="p-4 text-rose-600">Gagal: ${res.error}</p>`;
-        
-        if (tipe === "Layanan BK") {
-          if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip BK Nihil untuk kriteria guru/kelas tersebut.</p>`; return; }
-          let html = `
-            <div class="text-center mb-5 border-b-2 border-slate-800 pb-3">
-              <h2 class="text-sm font-black uppercase tracking-wide">LAPORAN LAYANAN BIMBINGAN KONSELING (BK)</h2>
-              <p class="text-[11px] font-bold text-slate-600">SMK N 1 SINGKIL UTARA</p>
-              <div class="flex flex-col sm:flex-row justify-between text-[10px] text-slate-500 font-semibold mt-2 px-1 gap-1">
-                <span>Kelas: ${kelas} • Periode: ${bulan}/${tahun}</span>
-                <span>Tanggal Cetak: ${tglCtxt}</span>
-              </div>
-            </div>
-            <div class="overflow-x-auto w-full">
-              <table class="w-full text-[10px] border-collapse border border-slate-400 text-left min-w-[500px]">
-                <thead>
-                  <tr class="bg-slate-100 text-slate-700 font-bold">
-                    <th class="border border-slate-400 p-1 text-center">No</th><th class="border border-slate-400 p-1">Tanggal</th><th class="border border-slate-400 p-1">Konselor</th><th class="border border-slate-400 p-1">Kategori</th><th class="border border-slate-400 p-1">Nama Siswa</th><th class="border border-slate-400 p-1">Detail Pelanggaran/Kasus & Solusi</th>
-                  </tr>
-                </thead><tbody>`;
-          res.listBK.forEach((row, i) => {
-            let d = new Date(row[0]).toLocaleDateString('id-ID');
-            html += `<tr><td class="border border-slate-400 p-1 text-center font-bold">${i+1}</td><td class="border border-slate-400 p-1 whitespace-nowrap">${d}</td><td class="border border-slate-400 p-1">${row[2]}</td><td class="border border-slate-400 p-1">${row[3]}</td><td class="border border-slate-400 p-1 font-bold">${row[4]}</td><td class="border border-slate-400 p-1"><strong>Masalah:</strong> ${row[5]}</td></tr>`;
-          });
-          html += `</tbody></table></div><button onclick="window.print()" class="no-print mt-4 w-full sm:w-auto bg-purple-600 text-white font-bold px-4 py-2 rounded text-xs cursor-pointer transition">Cetak Dokumen</button>`;
-          container.innerHTML = html;
-          return;
-        }
-
-        const headers = res.headers; const matrix = res.matrix;
-        const namaMapel = mapel || res.mapel || "Semua Mata Pelajaran";
-        const namaGuru = guru || res.guru || "Semua Guru Pengampu";
-        
-        if(!headers || headers.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Tidak ada rekaman data aktivitas harian terkunci untuk Mapel/Guru ini.</p>`; return; }
-        
-        let html = `
-          <div class="mb-4 border-b-2 border-slate-800 pb-2">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <div class="text-left">
-                <h2 class="text-xs font-black uppercase tracking-wide">REKAP MATRIX ADMINISTRASI CLOUD SPREAD</h2>
-                <p class="text-[11px] font-bold text-slate-700 uppercase">${tipe} - SMK N 1 SINGKIL UTARA</p>
-              </div>
-              <button onclick="window.print()" class="no-print w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1.5 rounded text-[11px] shadow-xs cursor-pointer transition"><i class="fa-solid fa-print mr-1"></i>Print / Cetak</button>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] font-bold text-slate-600 mt-2 bg-slate-50 p-2 rounded border border-slate-200">
-              <div>
-                <p><i class="fa-solid fa-door-open mr-1 text-slate-400"></i> Kelas: <span class="text-slate-900">${kelas}</span></p>
-                <p><i class="fa-solid fa-book mr-1 text-slate-400"></i> Mata Pelajaran: <span class="text-blue-800 font-extrabold">${namaMapel}</span></p>
-                <p><i class="fa-solid fa-user-tie mr-1 text-slate-400"></i> Guru Pengampu: <span class="text-slate-900">${namaGuru}</span></p>
-              </div>
-              <div class="text-left sm:text-right">
-                <p><i class="fa-solid fa-calendar-days mr-1 text-slate-400"></i> Periode: <span class="text-slate-900">${bulan}/${tahun}</span></p>
-                <p><i class="fa-solid fa-print mr-1 text-slate-400"></i> Tanggal Cetak: <span class="text-emerald-700 font-extrabold">${tglCtxt}</span></p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="overflow-x-auto w-full">
-            <table class="w-full text-[9px] border-collapse border border-slate-400 min-w-[600px]">
-              <thead>
-                <tr class="bg-slate-100 text-slate-800 font-bold">
-                  <th class="border border-slate-400 p-1 text-center w-6">No</th>
-                  <th class="border border-slate-400 p-1 text-left">Nama Siswa</th>`;
-        headers.forEach(h => {
-          let lbl = h; if(tipe !== 'Daftar Nilai') { lbl = h.split('-')[2]; }
-          html += `<th class="border border-slate-400 p-0.5 text-center whitespace-nowrap">${lbl}</th>`;
-        });
-        if(tipe === 'Daftar Nilai') { html += `<th class="border border-slate-400 p-1 text-center w-12 bg-blue-50">Rata2</th>`; }
-        else { html += `<th class="border border-slate-400 p-0.5 text-center w-6 bg-emerald-50">H</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-blue-50">S</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-amber-50">I</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-rose-50">A</th>`; }
-        html += `</tr></thead><tbody>`;
-        
-        let nom = 1;
-        Object.keys(matrix).sort().forEach(siswa => {
-          html += `
-            <tr class="hover:bg-slate-50 transition">
-              <td class="border border-slate-400 p-1 text-center font-bold">${nom++}</td>
-              <td class="border border-slate-400 p-1 text-left font-bold text-slate-800 whitespace-nowrap">${siswa}</td>`;
-          let sumNilai = 0, countH=0, countS=0, countI=0, countA=0;
-          headers.forEach(h => {
-            let val = matrix[siswa][h] || "";
-            if(tipe === 'Daftar Nilai') { sumNilai += parseFloat(val) || 0; }
-            else {
-              if(val === 'H') countH++; if(val === 'S') countS++;
-              if(val === 'I') countI++; if(val === 'A') countA++;
-            }
-            let bg = ""; if(val==='A') bg="bg-rose-100 text-rose-800 font-black"; if(val==='H') bg="text-emerald-700";
-            html += `<td class="border border-slate-400 p-0.5 text-center font-semibold ${bg}">${val}</td>`;
-          });
-          if(tipe === 'Daftar Nilai') { html += `<td class="border border-slate-400 p-1 text-center font-black bg-blue-50 text-blue-900">${(sumNilai / headers.length).toFixed(1)}</td>`; }
-          else { html += `<td class="border border-slate-400 p-0.5 text-center w-6 bg-emerald-50">${countH}</td><td class="border border-slate-400 p-0.5 text-center w-6 bg-blue-50">${countS}</td><td class="border border-slate-400 p-0.5 text-center w-6 bg-amber-50">${countI}</td><td class="border border-slate-400 p-0.5 text-center w-6 bg-rose-50">${countA}</td>`; }
-          html += `</tr>`;
-        });
-        html += `</tbody></table></div>`; container.innerHTML = html;
-      }).catch(() => container.innerHTML = `<p class="p-4 text-rose-600">Gagal memuat rekap data cloud.</p>`);
+      .catch(() => { showLoading(false); alert("Error generating matrix visualization."); });
     }
 
     function submitUploadMassalSiswa() {
       const kls = document.getElementById("upl-kelas").value;
-      const rawText = document.getElementById("upl-siswa-list").value;
-      if(!kls || !rawText.trim()) return alert("Pilih kelas dan isi daftar nama siswa!");
+      const txt = document.getElementById("upl-siswa-list").value.trim();
+      if(!kls || !txt) return alert("Lengkapi data kelas dan salin daftar nama siswa!");
 
-      const arrSiswa = rawText.split('\n').map(s => s.trim()).filter(Boolean);
+      let arr = txt.split('\n').map(n => n.trim()).filter(Boolean);
+      if(arr.length === 0) return alert("Format penulisan list siswa tidak valid!");
 
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswa: arrSiswa })
+        body: JSON.stringify({ action: "uploadSiswaMassal", kelas: kls, siswaArray: arr })
       })
-      .then(r => r.json())
-      .then(res => {
+      .then(r => r.json()).then(res => {
         showLoading(false); alert(res.message);
         if(res.success) { document.getElementById("upl-siswa-list").value = ""; initMasterDatabase(); }
-      }).catch(() => { showLoading(false); alert("Error upload."); });
+      })
+      .catch(() => { showLoading(false); alert("Error saving student upload."); });
     }
 
     function saveMasterElement(act, id) {
@@ -960,7 +876,7 @@
       
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: param }) })
-      .then(r => r.json()).then(res => { showLoading(false); alert(res.message); if(res.success) { el.value=""; initMasterDatabase(); } })
+      .then(r => r.json()).then(res => { showLoading(false); alert(res.message); if(res.success) { el.value=""; initMasterDatabase(); } } )
       .catch(() => { showLoading(false); alert("Error master saving."); });
     }
 
@@ -977,7 +893,8 @@
       .then(r => r.json()).then(res => {
         showLoading(false); alert(res.message);
         if(res.success) { document.getElementById("mst-mapel-nama").value=""; document.getElementById("mst-mapel-jurusan").value=""; initMasterDatabase(); }
-      }).catch(() => { showLoading(false); alert("Gagal."); });
+      })
+      .catch(() => { showLoading(false); alert("Error saving mapel data."); });
     }
   </script>
 </body>
