@@ -279,24 +279,34 @@
 
         <section id="panel-master" class="panel space-y-4">
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-            <h2 class="text-base font-bold mb-1"><i class="fa-solid fa-sliders text-slate-700 mr-2"></i>Kelola Referensi Master Data</h2>
-            <p class="text-xs text-slate-400 mb-4">Tambahkan data rujukan sekolah secara kolektif dengan dipisahkan tanda koma (,).</p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <h3 class="font-bold text-xs text-slate-700 mb-1">Master Profil Guru</h3>
-                <input type="text" id="input-master-guru" placeholder="Contoh: Budi S.Pd, Susi M.Pd" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs mb-2">
-                <button onclick="saveMasterElement('tambahMasterGuru', 'input-master-guru')" class="bg-blue-600 text-white font-bold w-full py-1.5 rounded text-[11px]">Simpan Guru</button>
+            <h2 class="text-base font-bold mb-1"><i class="fa-solid fa-sliders text-slate-700 mr-2"></i>Kelola Referensi Master Data (Upload Masal)</h2>
+            <p class="text-xs text-slate-400 mb-4">Tempelkan satu kolom data langsung dari Google Sheets atau Excel (Satu entri per baris).</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              
+              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-user-tie text-blue-600 mr-1"></i>Master Profil Guru</h3>
+                  <textarea id="input-master-guru" rows="6" placeholder="Pak Budi&#10;Ibu Susi&#10;Pak Jono" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs font-mono"></textarea>
+                </div>
+                <button onclick="saveMasterElement('tambahMasterGuru', 'input-master-guru')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-2 rounded text-[11px] mt-2 shadow-xs cursor-pointer">Unggah Kolektif Guru</button>
               </div>
-              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <h3 class="font-bold text-xs text-slate-700 mb-1">Master Ruang Kelas</h3>
-                <input type="text" id="input-master-kelas" placeholder="X TKR, X TKJ" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs mb-2">
-                <button onclick="saveMasterElement('tambahMasterKelas', 'input-master-kelas')" class="bg-emerald-600 text-white font-bold w-full py-1.5 rounded text-[11px]">Simpan Kelas</button>
+
+              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-door-open text-emerald-600 mr-1"></i>Master Ruang Kelas</h3>
+                  <textarea id="input-master-kelas" rows="6" placeholder="X TKR 1&#10;X TKR 2&#10;XI TKJ" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs font-mono"></textarea>
+                </div>
+                <button onclick="saveMasterElement('tambahMasterKelas', 'input-master-kelas')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold w-full py-2 rounded text-[11px] mt-2 shadow-xs cursor-pointer">Unggah Kolektif Kelas</button>
               </div>
-              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <h3 class="font-bold text-xs text-slate-700 mb-1">Master Mapel</h3>
-                <input type="text" id="input-master-mapel" placeholder="Matematika, IPA" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs mb-2">
-                <button onclick="saveMasterElement('tambahMasterMapel', 'input-master-mapel')" class="bg-purple-600 text-white font-bold w-full py-1.5 rounded text-[11px]">Simpan Mapel</button>
+
+              <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-book text-purple-600 mr-1"></i>Master Mapel</h3>
+                  <textarea id="input-master-mapel" rows="6" placeholder="Matematika&#10;Bahasa Indonesia&#10;Fisika" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs font-mono"></textarea>
+                </div>
+                <button onclick="saveMasterElement('tambahMasterMapel', 'input-master-mapel')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold w-full py-2 rounded text-[11px] mt-2 shadow-xs cursor-pointer">Unggah Kolektif Mapel</button>
               </div>
+
             </div>
           </div>
         </section>
@@ -322,8 +332,7 @@
   </div>
 
   <script>
-    // SALIN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const API_URL = "https://script.google.com/macros/s/AKfycbzoXbLGWxzgZI7MPj1AYBNapLM8keQzuVa2wBy46nHDqchzEy6k9rQH0cLgrZTAHAZU/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzx9qpDgy4YJZY0VbQQsR8GKTOm2zUeQRg7SXZqmV_2YAHdbTF1FCp20LXqq1RcSbJh/exec";
 
     window.addEventListener("DOMContentLoaded", function() {
       setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + " WIB"; }, 1000);
@@ -393,6 +402,7 @@
       container.classList.remove('hidden');
     }
 
+    // KIRIM SKOR NILAI + GURU PENGAMPU KE KOLOM 6
     function submitScores() {
       const judul = document.getElementById("nilai-judul").value.trim(); const kelas = document.getElementById("nilai-kelas").value;
       const container = document.getElementById("nilai-list-area"); const rows = container.children;
@@ -469,13 +479,22 @@
       }).catch(() => container.innerHTML = `<p class="p-4 text-rose-600">Gagal memuat rekap.</p>`);
     }
 
-    // Fungsi kelola master data (Guru, Kelas, Mapel) dipisah koma
+    // PROSES INPUT BERBASIS BARIS (LINE BREAK) DARI EXCEL
     function saveMasterElement(act, id) {
-      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Input kosong.");
-      let param = val.includes(",") ? val.split(",").map(i => i.trim()).filter(Boolean) : val;
+      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Input data kosong.");
+      
+      // Memisah baris secara otomatis, menghilangkan baris kosong
+      let param = val.split('\n').map(item => item.trim()).filter(Boolean);
+      if(param.length === 0) return alert("Format entri data tidak valid.");
+      
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: param }) })
-      .then(res => res.json()).then(resObj => { showLoading(false); alert(resObj.message); el.value = ""; fetchAndPopulateMasterDropdowns(); }).catch(() => showLoading(false));
+      .then(res => res.json()).then(resObj => { 
+        showLoading(false); 
+        alert(resObj.message); 
+        el.value = ""; 
+        fetchAndPopulateMasterDropdowns(); 
+      }).catch(() => showLoading(false));
     }
 
     function showLoading(s) { document.getElementById("loadingOverlay").classList.toggle('hidden', !s); }
