@@ -78,7 +78,7 @@
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1">Database & Pengaturan</p>
           <nav class="space-y-1">
             <button onclick="switchPanel('upload-siswa')" id="btn-desktop-upload-siswa" class="nav-btn-desktop w-full flex items-center space-x-3 px-4 py-2 rounded-lg font-semibold text-xs transition text-left text-slate-600 hover:bg-slate-50">
-              <i class="fa-solid fa-users-line w-5 text-teal-600"></i> <span class="font-bold">Upload Siswa Pukal</span>
+              <i class="fa-solid fa-users-line w-5 text-teal-600"></i> <span class="font-bold">Upload Siswa Massal</span>
             </button>
             <button onclick="switchPanel('arsip')" id="btn-desktop-arsip" class="nav-btn-desktop w-full flex items-center space-x-3 px-4 py-2 rounded-lg font-semibold text-xs transition text-left text-slate-600 hover:bg-slate-50">
               <i class="fa-solid fa-print w-5"></i> <span>Cetak Matrix Laporan</span>
@@ -97,7 +97,7 @@
             <i class="fa-solid fa-circle-user text-amber-600 text-xl shrink-0"></i>
             <div>
               <p class="text-[10px] text-amber-800 font-bold uppercase tracking-wider">Identitas Guru Aktif (Multi-User)</p>
-              <p class="text-[11px] text-slate-500">Pilih nama Anda sebelum menginput agar data administrasi terarah dengan benar.</p>
+              <p class="text-[11px] text-slate-500">Pilih nama pengajar sebelum memulai input transaksi data.</p>
             </div>
           </div>
           <select id="global-guru-aktif" class="w-full sm:w-60 bg-white border border-amber-300 rounded-lg p-2 text-xs font-bold text-slate-700 focus:outline-amber-600 select-guru shadow-xs">
@@ -255,20 +255,20 @@
               <i class="fa-solid fa-cloud-arrow-up text-teal-600 text-lg"></i>
               <h2 class="text-base font-bold">Upload Data Siswa Sekaligus</h2>
             </div>
-            <p class="text-xs text-slate-500 mb-4">Salin nama siswa dari Excel/Word dan tampal ke ruangan di bawah. Sistem akan memetakan siswa ke dalam kelas secara automatik.</p>
+            <p class="text-xs text-slate-500 mb-4">Salin daftar nama siswa dari Microsoft Excel atau Word, pilih kelas tujuan, lalu tempel di kolom teks bawah.</p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Kelas Tujuan</label>
                 <select id="upload-siswa-kelas" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs select-kelas"></select>
                 <div class="mt-4 p-3 bg-teal-50 border border-teal-200 text-teal-900 rounded-lg text-[11px] leading-relaxed">
-                  <strong>Tips Cepat Guru:</strong><br>
-                  Satu nama untuk satu baris. Jangan gunakan nombor atau simbol di hadapan nama murid.
+                  <strong>Aturan Input:</strong><br>
+                  Satu nama siswa per baris. Jangan menyertakan nomor urut/absen di depan nama siswa agar penarikan database presensi rapi.
                 </div>
               </div>
               <div class="md:col-span-2">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Daftar Nama Siswa (Satu nama tiap baris)</label>
-                <textarea id="upload-siswa-teks" rows="8" placeholder="Contoh:&#10;Ahmad Fauzi&#10;Siti Aminah&#10;Muhammad Iskandar" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-xs font-mono"></textarea>
-                <button onclick="prosesSimpanSiswaMassal()" class="mt-2 bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow-xs flex items-center">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Daftar Nama Siswa</label>
+                <textarea id="upload-siswa-teks" rows="8" placeholder="Contoh:&#10;Andi Wijaya&#10;Budi Santoso&#10;Citra Lestari" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-3 text-xs font-mono"></textarea>
+                <button onclick="prosesSimpanSiswaMassal()" class="mt-2 bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow-xs flex items-center cursor-pointer">
                   <i class="fa-solid fa-square-check mr-2"></i> Mulai Unggah Nama Siswa
                 </button>
               </div>
@@ -300,7 +300,7 @@
                 <select id="arsip-hari" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs">
                   <option value="">Rekap Bulanan (Penuh)</option>
                   <script>
-                    for(let d=1; d<=31; d++) { let pad = ("0"+d).slice(-2); document.write(`<option value="${pad}">Hari ke-${pad} (Harian)</option>`); }
+                    for(let d=1; d<=31; d++) { let pad = ("0"+d).slice(-2); document.write(`<option value="${pad}">Hari ke-${pad}</option>`); }
                   </script>
                 </select>
               </div>
@@ -315,12 +315,12 @@
         <section id="panel-master" class="panel space-y-4">
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
             <h2 class="text-base font-bold mb-1"><i class="fa-solid fa-sliders text-slate-700 mr-2"></i>Kelola Referensi Master Data</h2>
-            <p class="text-xs text-slate-400 mb-4">Pengurusan data asas sekolah. Bahagian Mata Pelajaran kini mempunyai tapisan pintar anti-duplikasi.</p>
+            <p class="text-xs text-slate-400 mb-4">Pengaturan awal data master sekolah. Entri Mata Pelajaran menyaring duplikasi nama pada jurusan yang sama secara otomatis.</p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               
               <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
                 <div>
-                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-user-tie text-blue-600 mr-1"></i>Master Profil Guru</h3>
+                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-user-tie text-blue-600 mr-1"></i>Master Daftar Guru</h3>
                   <textarea id="input-master-guru" rows="6" placeholder="Pak Budi&#10;Ibu Susi" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs font-mono"></textarea>
                 </div>
                 <button onclick="saveMasterElement('tambahMasterGuru', 'input-master-guru')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold w-full py-2 rounded text-[11px] mt-2 shadow-xs cursor-pointer">Unggah Kolektif Guru</button>
@@ -328,7 +328,7 @@
 
               <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
                 <div>
-                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-door-open text-emerald-600 mr-1"></i>Master Ruang Kelas</h3>
+                  <h3 class="font-bold text-xs text-slate-700 mb-1"><i class="fa-solid fa-door-open text-emerald-600 mr-1"></i>Master Daftar Kelas</h3>
                   <textarea id="input-master-kelas" rows="6" placeholder="X TKR 1&#10;XI TKJ" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs font-mono"></textarea>
                 </div>
                 <button onclick="saveMasterElement('tambahMasterKelas', 'input-master-kelas')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold w-full py-2 rounded text-[11px] mt-2 shadow-xs cursor-pointer">Unggah Kolektif Kelas</button>
@@ -338,7 +338,7 @@
                 <div class="space-y-2">
                   <h3 class="font-bold text-xs text-slate-700"><i class="fa-solid fa-book text-purple-600 mr-1"></i>Master Mapel + Jurusan</h3>
                   <div>
-                    <label class="block text-[9px] text-slate-400 font-bold uppercase">Nama Mapel</label>
+                    <label class="block text-[9px] text-slate-400 font-bold uppercase">Nama Mata Pelajaran</label>
                     <input type="text" id="input-mapel-nama" placeholder="Contoh: Matematika" class="w-full bg-white border border-slate-300 rounded p-1.5 text-xs">
                   </div>
                   <div>
@@ -368,12 +368,12 @@
   <div id="loading-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center hidden">
     <div class="bg-white p-5 rounded-2xl shadow-xl flex items-center space-x-3 max-w-xs">
       <i class="fa-solid fa-spinner fa-spin text-2xl text-blue-600"></i>
-      <span class="text-xs font-bold text-slate-700">Menghubungkan ke Cloud Server SIMAK...</span>
+      <span class="text-xs font-bold text-slate-700">Sinkronisasi data Cloud SIMAK...</span>
     </div>
   </div>
 
   <script>
-    // Tukar dengan URL Web App Google Apps Script anda yang sebenar
+    // MASUKKAN URL WEB APP SCRIPT ANDA DI SINI
     const API_URL = "https://script.google.com/macros/s/AKfycbyN4cUNE6PMwPlPZvsYLrh4homfsVhJFKHj0ceUkX0B9AEP71BDd0_uaBl-IxpCyr3Y/exec";
 
     let DB_GLOBAL_DATA = { kelas: [], mapel: [], guru: [], siswa: [] };
@@ -423,30 +423,27 @@
           if(res.success) {
             DB_GLOBAL_DATA = res.data;
             populateDropdowns();
-          } else { alert("Gagal mengambil master referensi cloud."); }
+          } else { alert("Gagal memuat basis referensi cloud."); }
         })
-        .catch(() => alert("Koneksi gagal saat inisialisasi aplikasi."))
+        .catch(() => alert("Koneksi bermasalah dengan Server Google."))
         .finally(() => showLoading(false));
     }
 
     function populateDropdowns() {
-      // Dropdown Guru
       let hGuru = '<option value="">-- Pilih Nama Guru --</option>';
       DB_GLOBAL_DATA.guru.forEach(g => hGuru += `<option value="${g}">${g}</option>`);
       document.querySelectorAll(".select-guru").forEach(s => s.innerHTML = hGuru);
 
-      // Dropdown Kelas
       let hKelas = '<option value="">-- Pilih Kelas --</option>';
       DB_GLOBAL_DATA.kelas.forEach(k => hKelas += `<option value="${k}">${k}</option>`);
       document.querySelectorAll(".select-kelas").forEach(s => s.innerHTML = hKelas);
 
-      // Dropdown Mapel
       let hMapel = '<option value="">-- Pilih Mata Pelajaran --</option>';
       DB_GLOBAL_DATA.mapel.forEach(m => hMapel += `<option value="${m}">${m}</option>`);
       document.querySelectorAll(".select-mapel").forEach(s => s.innerHTML = hMapel);
     }
 
-    // FUNGSI PINTAR: Memuatkan nama murid terus dari pangkalan data apabila kelas dipilih
+    // AUTOMATION: Memuat Otomatis nama siswa dari database cloud sesuai kelas pilihan
     function autoLoadSiswaDatabase(prefix) {
       const kelasPilihan = document.getElementById(`${prefix}-kelas`).value;
       const container = document.getElementById(`${prefix}-list-area`);
@@ -454,7 +451,7 @@
 
       let muridFilter = DB_GLOBAL_DATA.siswa.filter(s => s.kelas === kelasPilihan);
       if(muridFilter.length === 0) {
-        container.innerHTML = `<p class="text-xs p-3 text-rose-500 italic">Belum ada data siswa terdaftar di kelas ini. Sila upload melalui menu "Upload Siswa Pukal" terlebih dahulu.</p>`;
+        container.innerHTML = `<p class="text-xs p-3 text-rose-500 italic">Daftar siswa kosong. Unggah nama siswa lewat menu "Upload Siswa Massal" terlebih dahulu.</p>`;
         container.classList.remove("hidden");
         return;
       }
@@ -463,13 +460,13 @@
       muridFilter.forEach((siswa, idx) => {
         if(prefix === 'nilai') {
           html += `
-            <div class="flex items-center justify-between p-2 bg-white rounded-lg shadow-2xs border border-slate-200">
+            <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
               <span class="text-xs font-bold text-slate-700">${idx+1}. ${siswa.nama}</span>
               <input type="number" data-nama="${siswa.nama}" class="input-skor-siswa w-16 text-center border border-slate-300 rounded p-1 text-xs font-bold focus:outline-rose-500" placeholder="0-100">
             </div>`;
         } else {
           html += `
-            <div class="flex items-center justify-between p-2 bg-white rounded-lg shadow-2xs border border-slate-200">
+            <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
               <span class="text-xs font-bold text-slate-700">${idx+1}. ${siswa.nama}</span>
               <div class="flex space-x-1" data-nama="${siswa.nama}">
                 <button onclick="setRadioStatus(this,'H')" class="status-btn px-2.5 py-1 text-[10px] font-black border border-slate-300 rounded bg-emerald-50 text-emerald-700">H</button>
@@ -505,7 +502,7 @@
       select.innerHTML = h;
     }
 
-    // FUNGSI SIMPAN MAPEL PINATAR (ANTI-DUPLIKASI)
+    // LOGIKA FILTER ANTI DUPLIKAT SUBJEK MAPEL
     function simpanMapelOtomatisPintar() {
       const namaMapel = document.getElementById("input-mapel-nama").value.trim();
       const jurusan = document.getElementById("input-mapel-jurusan").value.trim();
@@ -528,20 +525,20 @@
         document.getElementById("input-mapel-jurusan").value = "";
         initApp();
       })
-      .catch(() => alert("Gagal menghubungi server untuk mendaftarkan mapel."))
+      .catch(() => alert("Koneksi gagal mengirim data master mapel."))
       .finally(() => showLoading(false));
     }
 
-    // FUNGSI UPLOAD SISWA PUKAL (MASSAL)
+    // PROSES UPLOAD SISWA MASSAL (PULK ENTRY)
     function prosesSimpanSiswaMassal() {
       const kelas = document.getElementById("upload-siswa-kelas").value;
       const teks = document.getElementById("upload-siswa-teks").value.trim();
       
-      if(!kelas) return alert("Sila tentukan Kelas Tujuan terlebih dahulu!");
-      if(!teks) return alert("Kotak senarai nama siswa masih kosong.");
+      if(!kelas) return alert("Tentukan Kelas Tujuan terlebih dahulu!");
+      if(!teks) return alert("Daftar nama siswa masih kosong.");
 
       let arrNama = teks.split('\n').map(n => n.trim()).filter(Boolean);
-      if(arrNama.length === 0) return alert("Format entri nama tidak sah.");
+      if(arrNama.length === 0) return alert("Format entri teks tidak valid.");
 
       showLoading(true);
       fetch(API_URL, {
@@ -558,20 +555,20 @@
           alert("Sukses! " + res.message);
           document.getElementById("upload-siswa-teks").value = "";
           initApp();
-        } else { alert("Ralat: " + res.error); }
+        } else { alert("Gagal: " + res.error); }
       })
-      .catch(() => alert("Gagal mengunggah data siswa ke pelayan cloud."))
+      .catch(() => alert("Gangguan koneksi cloud saat kirim data siswa."))
       .finally(() => showLoading(false));
     }
 
-    // KUNCI ABSENSI KBM / PRAMUKA / SHOLAT
+    // KUNCI ABSENSI DATA
     function submitAttendance(prefix) {
       const guru = document.getElementById("global-guru-aktif").value;
       const kelas = document.getElementById(`${prefix}-kelas`).value;
       const mapel = prefix === 'kbm' ? document.getElementById("kbm-mapel").value : "";
       const tanggal = prefix === 'kbm' ? new Date().toISOString().split('T')[0] : document.getElementById(`${prefix}-tanggal`).value;
 
-      if(!guru) return alert("Mohon pilih Identitas Guru Aktif di bagian atas terlebih dahulu!");
+      if(!guru) return alert("Pilih Identitas Guru Aktif terlebih dahulu!");
       if(!kelas) return alert("Pilih kelas!");
       
       let dataSiswa = [];
@@ -583,8 +580,8 @@
         dataSiswa.push({ nama: nama, status: status });
       });
 
-      if(!valid) return alert("Mohon lengkapi semua status kehadiran siswa (H/S/I/A)!");
-      if(dataSiswa.length === 0) return alert("Data siswa tidak tersedia.");
+      if(!valid) return alert("Lengkapi semua status kehadiran siswa!");
+      if(dataSiswa.length === 0) return alert("Siswa tidak ditemukan.");
 
       let act = "submitAbsensi";
       if(prefix === 'pramuka') act = "submitPramuka";
@@ -597,25 +594,23 @@
       })
       .then(r => r.json())
       .then(res => { if(res.success) { alert(res.message); autoLoadSiswaDatabase(prefix); } })
-      .catch(() => alert("Gagal mengunci absen."))
+      .catch(() => alert("Gagal mengunci presensi."))
       .finally(() => showLoading(false));
     }
 
-    // KIRIM SKOR NILAI KOLEKTIF
+    // SUBMIT SKOR NILAI
     function submitScores() {
       const guru = document.getElementById("global-guru-aktif").value;
       const kelas = document.getElementById("nilai-kelas").value;
       const judul = document.getElementById("nilai-judul").value.trim();
 
       if(!guru) return alert("Pilih Guru Aktif!");
-      if(!kelas || !judul) return alert("Lengkapi judul penilaian dan kelas!");
+      if(!kelas || !judul) return alert("Lengkapi judul tugas dan kelas!");
 
       let dataNilai = [];
       document.querySelectorAll(".input-skor-siswa").forEach(inp => {
         dataNilai.push({ nama: inp.getAttribute("data-nama"), nilai: inp.value || "0" });
       });
-
-      if(dataNilai.length === 0) return alert("Tidak ada data siswa.");
 
       showLoading(true);
       fetch(API_URL, {
@@ -624,11 +619,10 @@
       })
       .then(r => r.json())
       .then(res => { if(res.success) { alert(res.message); autoLoadSiswaDatabase('nilai'); document.getElementById("nilai-judul").value=""; } })
-      .catch(() => alert("Gagal mengirim data nilai."))
-      .finally(() => showLoading(false));
+      .catch(() => alert("Gagal mengunggah nilai."));
     }
 
-    // JURNAL AGENDA
+    // SUBMIT AGENDA JURNAL
     function submitAgenda() {
       const guru = document.getElementById("global-guru-aktif").value;
       const kelas = document.getElementById("agenda-kelas").value;
@@ -638,7 +632,7 @@
       const hadir = document.getElementById("agenda-hadir").value;
       const absen = document.getElementById("agenda-absen").value;
 
-      if(!guru || !kelas || !materi) return alert("Mohon lengkapi form agenda mengajar!");
+      if(!guru || !kelas || !materi) return alert("Mohon lengkapi seluruh isian jurnal agenda!");
 
       showLoading(true);
       fetch(API_URL, {
@@ -647,11 +641,11 @@
       })
       .then(r => r.json())
       .then(res => { if(res.success) { alert(res.message); document.getElementById("agenda-materi").value=""; } })
-      .catch(() => alert("Gagal mengirim berkas agenda."))
+      .catch(() => alert("Gagal simpan agenda."))
       .finally(() => showLoading(false));
     }
 
-    // CATATAN CASE BK
+    // SUBMIT DATA BK
     function submitBK() {
       const guru = document.getElementById("global-guru-aktif").value;
       const kelas = document.getElementById("bk-kelas").value;
@@ -661,7 +655,7 @@
       const masalah = document.getElementById("bk-masalah").value.trim();
       const solusi = document.getElementById("bk-solusi").value.trim();
 
-      if(!guru || !kelas || !namaSiswa || !masalah) return alert("Lengkapi data bimbingan kasus!");
+      if(!guru || !kelas || !namaSiswa || !masalah) return alert("Lengkapi deskripsi kasus BK!");
 
       showLoading(true);
       fetch(API_URL, {
@@ -670,25 +664,24 @@
       })
       .then(r => r.json())
       .then(res => { if(res.success) { alert(res.message); document.getElementById("bk-masalah").value=""; document.getElementById("bk-solusi").value=""; } })
-      .catch(() => alert("Gagal terekam."))
+      .catch(() => alert("Gagal rekam kasus BK."))
       .finally(() => showLoading(false));
     }
 
-    // KELOLA MASTER GENERIK (GURU/KELAS)
+    // SIMPAN DATA MASTER INDIVIDU / KOLEKTIF LINE-BY-LINE
     function saveMasterElement(act, id) {
-      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Input data kosong.");
+      const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Isian master data kosong.");
       let param = val.split('\n').map(item => item.trim()).filter(Boolean);
-      if(param.length === 0) return alert("Format entri data tidak valid.");
       
       showLoading(true);
       fetch(API_URL, { method: "POST", body: JSON.stringify({ action: act, nama: param }) })
         .then(r => r.json())
         .then(res => { if(res.success) { alert(res.message); el.value = ""; initApp(); } })
-        .catch(() => alert("Gagal memproses ke cloud."))
+        .catch(() => alert("Gagal memproses data ke cloud."))
         .finally(() => showLoading(false));
     }
 
-    // MUAT REKAP LOG DATA DASHBOARD
+    // AMBIL ARSIP DASHBOARD LOG
     function loadDashboardData() {
       const menu = document.getElementById("dash-menu").value;
       const kelas = document.getElementById("dash-kelas").value;
@@ -696,7 +689,7 @@
       const tahun = document.getElementById("dash-tahun").value;
       const tbody = document.getElementById("dashboard-table-body");
       
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mencari arsip data di cloud server...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menarik rekam log dari cloud...</td></tr>`;
       
       fetch(API_URL, {
         method: "POST",
@@ -705,7 +698,7 @@
       .then(r => r.json())
       .then(res => {
         if(!res.success || res.rows.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 italic">Tidak ditemukan rekap data yang cocok.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 italic">Arsip kosong atau tidak ditemukan data yang cocok.</td></tr>`;
           return;
         }
         let html = "";
@@ -723,10 +716,10 @@
         });
         tbody.innerHTML = html;
       })
-      .catch(() => tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-600 font-medium">Gagal memuat log dari server.</td></tr>`);
+      .catch(() => tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-600 font-medium">Gagal memuat log data cloud.</td></tr>`);
     }
 
-    // CETAK MATRIX LAPORAN BULANAN
+    // MATRIX PRINT OUT CONTROLLER
     function fetchMonthlyHistoryMatrix() {
       const tipe = document.getElementById("arsip-tipe").value;
       const kelas = document.getElementById("arsip-kelas").value;
@@ -735,7 +728,7 @@
       const hari = document.getElementById("arsip-hari").value;
       const container = document.getElementById("matrix-preview-container");
 
-      if(!kelas) return alert("Pilih kelas!");
+      if(!kelas) return alert("Pilih kelas terlebih dahulu!");
       container.innerHTML = `<p class="p-8 text-slate-400 italic text-center"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Menyusun matrix data laporan...</p>`;
 
       fetch(API_URL, {
@@ -746,9 +739,8 @@
       .then(res => {
         if(!res.success) return container.innerHTML = `<p class="p-4 text-rose-600">Gagal: ${res.error}</p>`;
         
-        // JIKA LAYANAN BK (REKAP FORMAT JURNAL)
         if (tipe === "Layanan BK") {
-          if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip nihil.</p>`; return; }
+          if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip BK Nihil.</p>`; return; }
           let html = `
             <div class="text-center mb-4">
               <h2 class="text-sm font-black uppercase tracking-wide">LAPORAN LAYANAN BIMBINGAN KONSELING (BK)</h2>
@@ -764,12 +756,11 @@
             let d = new Date(row[0]).toLocaleDateString('id-ID');
             html += `<tr><td class="border border-slate-400 p-1 text-center font-bold">${i+1}</td><td class="border border-slate-400 p-1 whitespace-nowrap">${d}</td><td class="border border-slate-400 p-1">${row[2]}</td><td class="border border-slate-400 p-1">${row[3]}</td><td class="border border-slate-400 p-1 font-bold">${row[4]}</td><td class="border border-slate-400 p-1"><strong>Masalah:</strong> ${row[5]}</td></tr>`;
           });
-          html += `</tbody></table><button onclick="window.print()" class="no-print mt-4 bg-purple-600 text-white font-bold px-4 py-2 rounded text-xs">Cetak Dokumen</button>`;
+          html += `</tbody></table><button onclick="window.print()" class="no-print mt-4 bg-purple-600 text-white font-bold px-4 py-2 rounded text-xs cursor-pointer">Cetak Dokumen</button>`;
           container.innerHTML = html;
           return;
         }
 
-        // JIKA FORMAT MATRIX DATA (PRESENSI / NILAI)
         const headers = res.headers; const matrix = res.matrix;
         if(headers.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Tidak ada rekaman aktivitas harian terkunci.</p>`; return; }
         
