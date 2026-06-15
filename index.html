@@ -164,7 +164,7 @@
 
       <section id="panel-nilai" class="panel">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs mb-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nama Tugas / Ulangan</label>
               <input type="text" id="nil-tugas" placeholder="Contoh: UH-1 Fungsi Invers" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
@@ -174,11 +174,15 @@
               <select id="nil-kelas" onchange="loadSiswaUntukNilai()" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold"></select>
             </div>
             <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Mata Pelajaran</label>
+              <select id="nil-mapel" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold"></select>
+            </div>
+            <div>
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Guru Pengampu</label>
               <select id="nil-guru" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold"></select>
             </div>
             <div class="flex items-end">
-              <button onclick="setGlobalNilai()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs p-2 rounded-lg cursor-pointer"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Set Nilai Default (80)</button>
+              <button onclick="setGlobalNilai()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs p-2 rounded-lg cursor-pointer"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Set Nilai (80)</button>
             </div>
           </div>
         </div>
@@ -507,6 +511,7 @@
         populateSelectOptions("abs-guru", CACHE_MASTER.guru);
         
         populateSelectOptions("nil-kelas", CACHE_MASTER.kelas, true);
+        populateSelectOptions("nil-mapel", CACHE_MASTER.mapel); // Ditambahkan ke form nilai
         populateSelectOptions("nil-guru", CACHE_MASTER.guru);
         
         populateSelectOptions("age-kelas", CACHE_MASTER.kelas);
@@ -518,7 +523,6 @@
         populateSelectOptions("log-kelas", CACHE_MASTER.kelas);
         populateSelectOptions("upl-kelas", CACHE_MASTER.kelas);
 
-        // Opsi Master untuk Panel Matrix Cetak
         populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
         populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false, "-- Semua Mapel --");
         populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false, "-- Semua Guru --");
@@ -542,7 +546,6 @@
       select.innerHTML = html;
     }
 
-    // SEMbunyikan FILTER JIKA PILIHAN ADALAH LAYANAN BK / PRAMUKA
     function adjustMatrixFilterView() {
       const tipe = document.getElementById("arsip-tipe").value;
       const wMapel = document.getElementById("wrapper-filter-mapel");
@@ -553,7 +556,6 @@
       }
     }
 
-    // LOAD SISWA BAGIAN PRESENSI KBM
     function loadSiswaUntukAbsen() {
       const targetKelas = document.getElementById("abs-kelas").value;
       const tbody = document.getElementById("container-siswa-absen");
@@ -618,7 +620,6 @@
       }).catch(() => { showLoading(false); alert("Error jaringan cloud."); });
     }
 
-    // LOAD SISWA BAGIAN INPUT NILAI
     function loadSiswaUntukNilai() {
       const targetKelas = document.getElementById("nil-kelas").value;
       const tbody = document.getElementById("container-siswa-nilai");
@@ -648,9 +649,10 @@
     function submitNilaiCloud() {
       const judul = document.getElementById("nil-tugas").value.trim();
       const kls = document.getElementById("nil-kelas").value;
+      const mpl = document.getElementById("nil-mapel").value;
       const gru = document.getElementById("nil-guru").value;
 
-      if(!judul || !kls) return alert("Judul tugas/ulangan dan kelas harus valid!");
+      if(!judul || !kls || !mpl || !gru) return alert("Judul tugas, kelas, mapel, dan guru harus diisi lengkap!");
 
       let dataNilai = [];
       document.querySelectorAll(".siswa-row-nilai").forEach(row => {
@@ -662,7 +664,7 @@
       showLoading(true);
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, guru: gru, dataNilai: dataNilai })
+        body: JSON.stringify({ action: "submitNilai", judulTugas: judul, kelas: kls, mapel: mpl, guru: gru, dataNilai: dataNilai })
       })
       .then(r => r.json())
       .then(res => {
@@ -672,7 +674,6 @@
       }).catch(() => { showLoading(false); alert("Error transmisi data."); });
     }
 
-    // FORM JURNAL AGENDA
     function submitAgendaCloud() {
       const tgl = document.getElementById("age-tanggal").value;
       const kls = document.getElementById("age-kelas").value;
@@ -694,7 +695,6 @@
       .catch(() => { showLoading(false); alert("Error."); });
     }
 
-    // FORM BIMBINGAN KONSELING (BK)
     function loadSiswaUntukBK() {
       const targetKelas = document.getElementById("bk-kelas").value;
       const selectSiswa = document.getElementById("bk-siswa");
@@ -729,7 +729,6 @@
       }).catch(() => { showLoading(false); alert("Gagal."); });
     }
 
-    // FETCH LOG BULANAN DASHBOARD
     function fetchMonthlyLogDashboard() {
       const menu = document.getElementById("log-menu").value;
       const kelas = document.getElementById("log-kelas").value;
@@ -774,9 +773,6 @@
       }).catch(() => tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-500 text-center font-semibold">Gagal memuat log database server.</td></tr>`);
     }
 
-    // ====================================================================
-    // CETAK LAPORAN MATRIX (MATA PELAJARAN & GURU TERFILTER SEPENUHNYA)
-    // ====================================================================
     function fetchMonthlyHistoryMatrix() {
       const tipe = document.getElementById("arsip-tipe").value;
       const kelas = document.getElementById("arsip-kelas").value;
@@ -800,7 +796,6 @@
       .then(res => {
         if(!res.success) return container.innerHTML = `<p class="p-4 text-rose-600">Gagal: ${res.error}</p>`;
         
-        // FORMAT CETAK TABEL KASUS BIMBINGAN KONSELING (BK)
         if (tipe === "Layanan BK") {
           if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip BK Nihil untuk kriteria guru/kelas tersebut.</p>`; return; }
           let html = `
@@ -827,7 +822,6 @@
           return;
         }
 
-        // FORMAT PRINT MATRIX UTAMA (PRESENSI KBM / PRAMUKA / SHOLAT / NILAI TUGAS)
         const headers = res.headers; const matrix = res.matrix;
         const namaMapel = mapel || res.mapel || "Semua Mata Pelajaran";
         const namaGuru = guru || res.guru || "Semua Guru Pengampu";
@@ -895,7 +889,6 @@
       }).catch(() => container.innerHTML = `<p class="p-4 text-rose-600">Gagal memuat rekap data cloud.</p>`);
     }
 
-    // UPLOAD SISWA MASSAL
     function submitUploadMassalSiswa() {
       const kls = document.getElementById("upl-kelas").value;
       const rawText = document.getElementById("upl-siswa-list").value;
@@ -915,7 +908,6 @@
       }).catch(() => { showLoading(false); alert("Error upload."); });
     }
 
-    // KELOLA DATA MASTER UTILITIES
     function saveMasterElement(act, id) {
       const el = document.getElementById(id); const val = el.value.trim(); if(!val) return alert("Input data kosong.");
       let param = val.split('\n').map(item => item.trim()).filter(Boolean);
