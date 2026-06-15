@@ -353,10 +353,10 @@
 
       <section id="panel-rekap-matrix" class="panel">
         <div class="no-print bg-white p-5 rounded-xl border border-slate-200 shadow-xs mb-5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Pilih Format Cetak</label>
-              <select id="arsip-tipe" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
+              <select id="arsip-tipe" onchange="adjustMatrixFilterView()" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
                 <option value="KBM Harian">Matrix KBM Harian</option>
                 <option value="Pramuka">Matrix Pramuka Wajib</option>
                 <option value="Sholat">Matrix Sholat Berjamaah</option>
@@ -368,6 +368,21 @@
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Pilih Kelas</label>
               <select id="arsip-kelas" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold"></select>
             </div>
+            <div id="wrapper-filter-mapel">
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Mata Pelajaran</label>
+              <select id="arsip-mapel" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
+                <option value="">-- Semua Mapel --</option>
+              </select>
+            </div>
+            <div id="wrapper-filter-guru">
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Nama Guru / Pengampu</label>
+              <select id="arsip-guru" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
+                <option value="">-- Semua Guru --</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Bulan</label>
               <select id="arsip-bulan" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
@@ -383,12 +398,12 @@
                 <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
               </select>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Filter Hari (Opsional)</label>
-              <input type="text" id="arsip-hari" placeholder="Contoh: 15 (Kosongkan=1 Bulan)" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
-            </div>
-            <div class="flex items-end">
-              <button onclick="fetchMonthlyHistoryMatrix()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs p-2 rounded-lg shadow-xs cursor-pointer"><i class="fa-solid fa-sync mr-1"></i>Generate Matrix</button>
+            <div class="flex gap-2 items-end">
+              <div class="grow">
+                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Filter Hari (Opsional)</label>
+                <input type="text" id="arsip-hari" placeholder="Contoh: 15" class="w-full text-xs p-2 rounded-lg border border-slate-300 bg-slate-50 font-semibold">
+              </div>
+              <button onclick="fetchMonthlyHistoryMatrix()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs p-2.5 rounded-lg shadow-xs cursor-pointer h-9 shrink-0"><i class="fa-solid fa-sync mr-1"></i>Generate Matrix</button>
             </div>
           </div>
         </div>
@@ -443,7 +458,6 @@
     let CACHE_MASTER = { kelas: [], mapel: [], guru: [], siswa: [] };
 
     window.addEventListener("DOMContentLoaded", () => {
-      // Inisialisasi otomatis tanggal hari ini ke formulir input
       const hariIni = new Date().toISOString().split('T')[0];
       if(document.getElementById("abs-tanggal")) document.getElementById("abs-tanggal").value = hariIni;
       if(document.getElementById("age-tanggal")) document.getElementById("age-tanggal").value = hariIni;
@@ -462,7 +476,6 @@
       
       document.getElementById("panel-" + panelId).classList.add("active");
       
-      // Mengubah judul header dinamis
       const titles = {
         'dashboard': 'Dashboard Utama', 'absensi': 'Input Presensi Cloud', 'nilai': 'Daftar Nilai Massal',
         'agenda': 'Jurnal Agenda Mengajar', 'bk': 'Kasus Bimbingan Konseling', 'rekap-log': 'Log Histori Bulanan',
@@ -470,7 +483,6 @@
       };
       document.getElementById("header-title").innerText = titles[panelId] || "SIMAK PANEL";
       
-      // Sorot tombol navigasi aktif
       const activeBtn = Array.from(document.querySelectorAll(".nav-btn")).find(btn => btn.getAttribute("onclick").includes(panelId));
       if(activeBtn) activeBtn.classList.add("bg-slate-800", "text-white");
     }
@@ -485,13 +497,11 @@
         
         CACHE_MASTER = res.data;
         
-        // Isikan statistik angka dashboard
         document.getElementById("dash-total-kelas").innerText = CACHE_MASTER.kelas.length;
         document.getElementById("dash-total-guru").innerText = CACHE_MASTER.guru.length;
         document.getElementById("dash-total-mapel").innerText = CACHE_MASTER.mapel.length;
         document.getElementById("dash-total-siswa").innerText = CACHE_MASTER.siswa.length;
         
-        // Suntik data ke semua pilihan Select Option HTML
         populateSelectOptions("abs-kelas", CACHE_MASTER.kelas, true);
         populateSelectOptions("abs-mapel", CACHE_MASTER.mapel);
         populateSelectOptions("abs-guru", CACHE_MASTER.guru);
@@ -506,24 +516,41 @@
         populateSelectOptions("bk-guru", CACHE_MASTER.guru);
         
         populateSelectOptions("log-kelas", CACHE_MASTER.kelas);
-        populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
         populateSelectOptions("upl-kelas", CACHE_MASTER.kelas);
+
+        // Opsi Master untuk Panel Matrix Cetak
+        populateSelectOptions("arsip-kelas", CACHE_MASTER.kelas);
+        populateSelectOptions("arsip-mapel", CACHE_MASTER.mapel, false, "-- Semua Mapel --");
+        populateSelectOptions("arsip-guru", CACHE_MASTER.guru, false, "-- Semua Guru --");
       }).catch(err => {
         showLoading(false);
-        alert("Server cloud mati atau offline. Detail: " + err);
+        alert("Server cloud offline: " + err);
       });
     }
 
-    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false) {
+    function populateSelectOptions(elementId, arrayData, triggerPlaceholder = false, customText = "-- Pilih --") {
       const select = document.getElementById(elementId);
       if(!select) return;
-      let html = triggerPlaceholder ? `<option value="">-- Pilih --</option>` : "";
+      let html = triggerPlaceholder ? `<option value="">${customText}</option>` : "";
       if(elementId === "log-kelas") html = `<option value="">Semua Kelas</option>`;
+      if(elementId === "arsip-mapel") html = `<option value="">-- Semua Mapel --</option>`;
+      if(elementId === "arsip-guru") html = `<option value="">-- Semua Guru --</option>`;
       
       arrayData.forEach(item => {
         html += `<option value="${item}">${item}</option>`;
       });
       select.innerHTML = html;
+    }
+
+    // SEMbunyikan FILTER JIKA PILIHAN ADALAH LAYANAN BK / PRAMUKA
+    function adjustMatrixFilterView() {
+      const tipe = document.getElementById("arsip-tipe").value;
+      const wMapel = document.getElementById("wrapper-filter-mapel");
+      if(tipe === "Layanan BK" || tipe === "Pramuka" || tipe === "Sholat") {
+        wMapel.style.display = "none";
+      } else {
+        wMapel.style.display = "block";
+      }
     }
 
     // LOAD SISWA BAGIAN PRESENSI KBM
@@ -533,7 +560,7 @@
       if(!targetKelas) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Pilih kelas dahulu...</td></tr>`; return; }
       
       const siswaTerfilter = CACHE_MASTER.siswa.filter(s => s.kelas === targetKelas);
-      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">Database siswa kelas ini masih kosong! Silakan upload siswa massal.</td></tr>`; return; }
+      if(siswaTerfilter.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 italic">Database siswa kosong!</td></tr>`; return; }
       
       let html = "";
       siswaTerfilter.forEach((siswa, index) => {
@@ -587,7 +614,7 @@
       .then(res => {
         showLoading(false);
         alert(res.message || "Presensi sukses dikunci!");
-        if(res.success) { document.getElementById("container-siswa-absen").innerHTML = `<tr><td colspan="3" class="p-4 text-center text-emerald-600 font-bold"><i class="fa-solid fa-cloud-circle-check mr-1"></i> Data aman terkunci di cloud.</td></tr>`; }
+        if(res.success) { document.getElementById("container-siswa-absen").innerHTML = `<tr><td colspan="3" class="p-4 text-center text-emerald-600 font-bold">Data aman terkunci di cloud.</td></tr>`; }
       }).catch(() => { showLoading(false); alert("Error jaringan cloud."); });
     }
 
@@ -733,7 +760,6 @@
         if(!res.success || !res.rows || res.rows.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Arsip data log nihil.</td></tr>`; return; }
         let html = "";
         res.rows.forEach((row, i) => {
-          let tglStr = new Date(row[0]).toLocaleDateString('id-ID');
           html += `
             <tr class="hover:bg-slate-50">
               <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
@@ -749,11 +775,13 @@
     }
 
     // ====================================================================
-    // CETAK LAPORAN MATRIX (MATA PELAJARAN & TANGGAL CETAK REAL-TIME)
+    // CETAK LAPORAN MATRIX (MATA PELAJARAN & GURU TERFILTER SEPENUHNYA)
     // ====================================================================
     function fetchMonthlyHistoryMatrix() {
       const tipe = document.getElementById("arsip-tipe").value;
       const kelas = document.getElementById("arsip-kelas").value;
+      const mapel = document.getElementById("arsip-mapel").value;
+      const guru = document.getElementById("arsip-guru").value;
       const bulan = document.getElementById("arsip-bulan").value;
       const tahun = document.getElementById("arsip-tahun").value;
       const hari = document.getElementById("arsip-hari").value;
@@ -762,12 +790,11 @@
       if(!kelas) return alert("Pilih kelas terlebih dahulu!");
       container.innerHTML = `<p class="p-8 text-slate-400 italic text-center"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Menyusun matrix data laporan...</p>`;
 
-      // Membuat Tanggal Cetak otomatis real-time Indonesia
       const tglCtxt = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, bulan: bulan, tahun: tahun, hari: hari })
+        body: JSON.stringify({ action: "getHistoriBulanan", tipe: tipe, kelas: kelas, mapel: mapel, guru: guru, bulan: bulan, tahun: tahun, hari: hari })
       })
       .then(r => r.json())
       .then(res => {
@@ -775,7 +802,7 @@
         
         // FORMAT CETAK TABEL KASUS BIMBINGAN KONSELING (BK)
         if (tipe === "Layanan BK") {
-          if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip BK Nihil.</p>`; return; }
+          if(!res.listBK || res.listBK.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Arsip BK Nihil untuk kriteria guru/kelas tersebut.</p>`; return; }
           let html = `
             <div class="text-center mb-5 border-b-2 border-slate-800 pb-3">
               <h2 class="text-sm font-black uppercase tracking-wide">LAPORAN LAYANAN BIMBINGAN KONSELING (BK)</h2>
@@ -802,8 +829,10 @@
 
         // FORMAT PRINT MATRIX UTAMA (PRESENSI KBM / PRAMUKA / SHOLAT / NILAI TUGAS)
         const headers = res.headers; const matrix = res.matrix;
-        const namaMapel = res.mapel || "Semua Mata Pelajaran";
-        if(!headers || headers.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Tidak ada rekaman data aktivitas harian terkunci.</p>`; return; }
+        const namaMapel = mapel || res.mapel || "Semua Mata Pelajaran";
+        const namaGuru = guru || res.guru || "Semua Guru Pengampu";
+        
+        if(!headers || headers.length === 0) { container.innerHTML = `<p class="p-4 text-center text-slate-400 italic">Tidak ada rekaman data aktivitas harian terkunci untuk Mapel/Guru ini.</p>`; return; }
         
         let html = `
           <div class="mb-4 border-b-2 border-slate-800 pb-2">
@@ -819,6 +848,7 @@
               <div>
                 <p><i class="fa-solid fa-door-open mr-1 text-slate-400"></i> Kelas: <span class="text-slate-900">${kelas}</span></p>
                 <p><i class="fa-solid fa-book mr-1 text-slate-400"></i> Mata Pelajaran: <span class="text-blue-800 font-extrabold">${namaMapel}</span></p>
+                <p><i class="fa-solid fa-user-tie mr-1 text-slate-400"></i> Guru Pengampu: <span class="text-slate-900">${namaGuru}</span></p>
               </div>
               <div class="text-right">
                 <p><i class="fa-solid fa-calendar-days mr-1 text-slate-400"></i> Periode: <span class="text-slate-900">${bulan}/${tahun}</span></p>
