@@ -16,6 +16,14 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
+    /* Proteksi Responsif Tombol Refresh di HP (Aman dari Tailwind v4 Breakpoint bug) */
+    @media (min-width: 769px) {
+      .refresh-mobile-only { display: none !important; }
+    }
+    @media (max-width: 768px) {
+      .refresh-mobile-only { display: flex !important; }
+    }
+
     /* Aturan Cetak CSS Khusus */
     @media print {
       .no-print { display: none !important; }
@@ -53,7 +61,7 @@
     </div>
     
     <div class="flex items-center gap-2">
-      <button onclick="jalankanRefreshMobile(this)" class="md:hidden flex items-center justify-center w-9 h-9 rounded-full bg-slate-800 active:bg-slate-700 text-slate-300 focus:outline-none cursor-pointer border border-slate-700 transition-all duration-200 shadow-sm" title="Refresh Halaman">
+      <button onclick="jalankanRefreshMobile(this)" class="refresh-mobile-only items-center justify-center w-9 h-9 rounded-full bg-slate-800 active:bg-slate-700 text-slate-300 focus:outline-none cursor-pointer border border-slate-700 transition-all duration-200 shadow-sm" title="Refresh Halaman">
         <i id="icon-refresh-mobile" class="fa-solid fa-rotate text-sm transition-transform"></i>
       </button>
 
@@ -93,7 +101,7 @@
       <button onclick="switchPanel('upload-massal')" class="nav-btn flex items-center gap-3 px-3 py-2.5 md:py-2 rounded-lg text-xs font-semibold text-left w-full hover:bg-slate-800 transition"><i class="fa-solid fa-users-line w-4 text-center"></i>Upload Siswa Massal</button>
       <button onclick="switchPanel('master')" class="nav-btn flex items-center gap-3 px-3 py-2.5 md:py-2 rounded-lg text-xs font-semibold text-left w-full hover:bg-slate-800 transition"><i class="fa-solid fa-sliders w-4 text-center"></i>Kelola Master Data</button>
     </nav>
-  </</aside>
+  </aside>
 
   <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
