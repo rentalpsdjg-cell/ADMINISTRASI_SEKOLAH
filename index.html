@@ -3,28 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SMKN 1 SINGKUT - Sistem Informasi Manajemen Akademik</title>
+  <title>SMKN 1 SINGKUT - Sistem Manajemen Akademik Mandiri</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* UTILITY UTAMA & RESET - ACCELERATED FOR MOBILE HP KENTANG */
+    /* UTILITY UTAMA & RESET - PREMIUM CSS ACCELERATION */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
     body { background-color: #f1f5f9; color: #1e293b; font-size: 14px; -webkit-tap-highlight-color: transparent; }
     
-    .app-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 80px; }
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 85px; }
     .header-app { background: #1e3a8a; color: white; padding: 15px; text-align: center; border-bottom: 3px solid #0284c7; }
     .header-app h1 { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
-    .header-app p { font-size: 11px; color: #bae6fd; font-weight: bold; margin-top: 2px; }
+    .header-app p { font-size: 11px; color: #bae6fd; font-weight: bold; margin-top: 2px; text-transform: uppercase; }
 
     /* Bar Status Koneksi Cloud */
-    .status-bar { padding: 6px; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; color: white; }
+    .status-bar { padding: 6px; text-align: center; font-size: 11px; font-weight: bold; text-transform: uppercase; color: white; transition: background 0.3s ease; }
     .status-online { background-color: #10b981; }
     .status-offline { background-color: #ef4444; }
 
-    /* Layout Konten */
+    /* Layout Konten Utama */
     .main-content { padding: 12px; max-width: 600px; margin: 0 auto; width: 100%; }
     .panel { display: none; }
-    .panel.active { display: block; }
+    .panel.active { display: block; animation: slideUp 0.25s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Card & Form UI Element */
     .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
@@ -33,24 +34,26 @@
     .form-group { margin-bottom: 10px; }
     .form-group label { display: block; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
     .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 600; background-color: #f8fafc; color: #0f172a; outline: none; }
-    .form-control:focus { border-color: #3b82f6; background-color: #fff; }
+    .form-control:focus { border-color: #3b82f6; background-color: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
     textarea.form-control { resize: none; font-weight: 500; }
 
-    /* Tombol Utama */
-    .btn-block { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
-    .btn-block:active { opacity: 0.9; }
+    /* Tombol Aksi */
+    .btn-block { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: opacity 0.15s ease; }
+    .btn-block:active { opacity: 0.85; }
     .btn-success { background: #16a34a; }
     .btn-amber { background: #d97706; }
     .btn-purple { background: #7c3aed; }
     .btn-dark { background: #1e293b; }
+    .btn-outline-print { width: auto; height: auto; padding: 6px 12px; background: #fff; color: #2563eb; border: 1.5px solid #2563eb; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-outline-print:active { background: #eff6ff; }
 
-    /* Desain Tabel Ringan Khusus Layar HP */
+    /* Tabel Desain Mobile */
     .list-siswa-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     .list-siswa-table th { background: #f8fafc; padding: 10px 8px; font-size: 11px; font-weight: 700; text-align: left; color: #64748b; border-bottom: 2px solid #e2e8f0; }
     .list-siswa-table td { padding: 10px 8px; font-size: 13px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
     .siswa-name { font-weight: 700; color: #0f172a; }
 
-    /* Tombol Status Kehadiran Jempol-Friendly (44px) */
+    /* Tombol Status Jempol-Friendly (44px x 44px) */
     .row-btn-group { display: flex; gap: 4px; justify-content: center; }
     .btn-status { width: 44px; height: 44px; border-radius: 6px; font-weight: 800; font-size: 13px; background: #e2e8f0; color: #475569; border: none; cursor: pointer; }
     .btn-status.active-h { background: #10b981 !important; color: white !important; }
@@ -58,27 +61,29 @@
     .btn-status.active-i { background: #3b82f6 !important; color: white !important; }
     .btn-status.active-a { background: #ef4444 !important; color: white !important; }
 
-    /* Navigasi Menu Bawah Sistem Geser/Scroll Horizontal jika Layar Sempit */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; z-index: 999; overflow-x: auto; }
-    .nav-item { flex: 1; min-width: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; text-decoration: none; font-size: 9px; font-weight: 700; border: none; background: none; cursor: pointer; }
+    /* Navigasi Menu Bawah (Mendukung Geser Layar Kecil) */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; z-index: 999; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .nav-item { flex: 1; min-width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; text-decoration: none; font-size: 9px; font-weight: 700; border: none; background: none; cursor: pointer; }
     .nav-item i { font-size: 16px; margin-bottom: 3px; }
-    .nav-item.active { color: #1e3a8a; background: #f8fafc; }
+    .nav-item.active { color: #1e3a8a; background: #f8fafc; border-top: 3px solid #1e3a8a; }
 
-    /* Monitoring Wali Area */
+    /* Tracking Wali Area */
     .wali-banner { background: #312e81; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
     .wali-card-log { background: #f8fafc; border-left: 4px solid #4f46e5; padding: 10px; border-radius: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Modal Lembar Pratinjau KOP Resmi */
+    /* MODAL POPUP REVIEW LAYOUT / PRATONTON CETAK */
     #print-preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; padding: 10px; overflow-y: auto; }
     #print-preview-modal.show { display: block; }
-    .modal-box { background: white; width: 100%; max-width: 550px; margin: 10px auto; border-radius: 8px; padding: 15px; }
+    .modal-box { background: white; width: 100%; max-width: 600px; margin: 15px auto; border-radius: 8px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     
     .hidden { display: none !important; }
+    
+    /* PENGATURAN KHUSUS PRINT PDF KERTAS */
     @media print {
       body { background: white; color: black; }
       .no-print { display: none !important; }
-      #print-preview-modal { position: absolute; background: white; display: block !important; padding: 0; }
-      .modal-box { max-width: 100%; width: 100%; border: none; padding: 0; margin: 0; }
+      #print-preview-modal { position: absolute; background: white; display: block !important; padding: 0; top: 0; left: 0; }
+      .modal-box { max-width: 100%; width: 100%; border: none; padding: 0; margin: 0; box-shadow: none; }
     }
   </style>
 </head>
@@ -92,7 +97,7 @@
     </header>
 
     <div id="connection-banner" class="status-bar status-offline no-print">
-      <i id="connection-icon" class="fa-solid fa-circle-notch fa-spin"></i> <span id="connection-text">Menghubungkan ke Server Cloud...</span>
+      <i id="connection-icon" class="fa-solid fa-circle-notch fa-spin"></i> <span id="connection-text">Mencoba Terhubung ke Server...</span>
     </div>
 
     <main class="main-content">
@@ -116,12 +121,12 @@
 
         <div id="abs-box-container" class="card hidden">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 11px; font-weight: bold; color: #475569;">DAFTAR HADIR SISWA:</span>
-            <button onclick="bukaModalCetak('KBM')" class="btn-status" style="width: auto; height: auto; padding: 6px 12px; background: #3b82f6; color: white; font-size: 11px;"><i class="fa-solid fa-print"></i> KOP CETAK</button>
+            <span style="font-size: 11px; font-weight: bold; color: #475569;">DAFTAR PRESENSI KBM:</span>
+            <button onclick="bukaModalCetak('KBM')" class="btn-outline-print"><i class="fa-solid fa-file-pdf"></i> REVIEW & PRINT PDF</button>
           </div>
           <table class="list-siswa-table">
             <thead>
-              <tr><th style="width: 10%">NO</th><th>NAMA SISWA</th><th style="text-align:center">OPSI</th></tr>
+              <tr><th style="width: 10%">NO</th><th>NAMA SISWA</th><th style="text-align:center">OPSI STATUS</th></tr>
             </thead>
             <tbody id="table-absen-body"></tbody>
           </table>
@@ -143,6 +148,10 @@
         </div>
 
         <div id="pra-box-container" class="card hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: bold; color: #475569;">DAFTAR ANGGOTA PRAMUKA:</span>
+            <button onclick="bukaModalCetak('Pramuka')" class="btn-outline-print"><i class="fa-solid fa-file-pdf"></i> REVIEW & PRINT</button>
+          </div>
           <table class="list-siswa-table">
             <thead><tr><th style="width:10%">NO</th><th>NAMA ANGGOTA</th><th style="text-align:center">STATUS</th></tr></thead>
             <tbody id="table-pramuka-body"></tbody>
@@ -165,6 +174,10 @@
         </div>
 
         <div id="sho-box-container" class="card hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: bold; color: #475569;">DAFTAR HADIR SHOLAT:</span>
+            <button onclick="bukaModalCetak('Sholat')" class="btn-outline-print"><i class="fa-solid fa-file-pdf"></i> REVIEW & PRINT</button>
+          </div>
           <table class="list-siswa-table">
             <thead><tr><th style="width:10%">NO</th><th>NAMA SISWA</th><th style="text-align:center">IKUT SHOLAT?</th></tr></thead>
             <tbody id="table-sholat-body"></tbody>
@@ -186,7 +199,7 @@
           </div>
           <div class="form-group">
             <label>Materi Pembelajaran / Ringkasan</label>
-            <textarea id="age-materi" rows="3" class="form-control" placeholder="Tuliskan bab atau pokok bahasan materi hari ini..."></textarea>
+            <textarea id="age-materi" rows="3" class="form-control" placeholder="Tuliskan materi atau bab pembahasan..."></textarea>
           </div>
           <div class="form-group">
             <label>Status Keadaan Kelas</label>
@@ -206,7 +219,7 @@
               <input type="number" id="age-absen" value="0" class="form-control">
             </div>
           </div>
-          <button onclick="kirimAgendaKelas()" class="btn-block btn-purple" style="margin-top:10px;">SIMPAN DOKUMEN AGENDA</button>
+          <button onclick="kirimAgendaKelas()" class="btn-block btn-purple" style="margin-top:10px;">SIMPAN DATA AGENDA</button>
         </div>
       </section>
 
@@ -214,7 +227,7 @@
         <div class="card">
           <div class="card-title" style="color: #dc2626;"><i class="fa-solid fa-comments"></i> Catatan Kasus / Bimbingan BK</div>
           <div class="form-group">
-            <label>Tanggal Kejadian / Bimbingan</label>
+            <label>Tanggal Kejadian</label>
             <input type="date" id="bk-tanggal" class="form-control">
           </div>
           <div class="form-group">
@@ -235,12 +248,12 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Uraian Permasalahan / Kasus</label>
-            <textarea id="bk-masalah" rows="2" class="form-control" placeholder="Contoh: Terlambat masuk sekolah atau sering bolos..."></textarea>
+            <label>Uraian Kasus</label>
+            <textarea id="bk-masalah" rows="2" class="form-control" placeholder="Tuliskan deskripsi pelanggaran/masalah..."></textarea>
           </div>
           <div class="form-group">
             <label>Solusi / Tindak Lanjut</label>
-            <textarea id="bk-solusi" rows="2" class="form-control" placeholder="Contoh: Diberikan bimbingan personal dan peringatan tertulis..."></textarea>
+            <textarea id="bk-solusi" rows="2" class="form-control" placeholder="Tuliskan rekomendasi tindakan atau solusi..."></textarea>
           </div>
           <button onclick="kirimKasusBK()" class="btn-block btn-dark" style="margin-top:10px;">REKAM LOG KASUS BK</button>
         </div>
@@ -250,8 +263,8 @@
         <div class="card">
           <div class="card-title"><i class="fa-solid fa-star"></i> Pengisian Nilai Mandiri</div>
           <div class="form-group">
-            <label>Nama Penilaian / Judul Tugas</label>
-            <input type="text" id="nil-judul" placeholder="Contoh: Ulangan Harian 1" class="form-control">
+            <label>Nama Tugas / Judul Nilai</label>
+            <input type="text" id="nil-judul" placeholder="Contoh: Penilaian Harian 1" class="form-control">
           </div>
           <div class="form-group">
             <label>Pilih Kelas</label>
@@ -260,8 +273,12 @@
         </div>
 
         <div id="nil-box-container" class="card hidden">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: bold; color: #475569;">INPUT NILAI SISWA:</span>
+            <button onclick="bukaModalCetak('Nilai')" class="btn-outline-print"><i class="fa-solid fa-file-pdf"></i> REVIEW & PRINT</button>
+          </div>
           <table class="list-siswa-table">
-            <thead><tr><th style="width:10%">NO</th><th>NAMA SISWA</th><th style="width:30%; text-align:center">NILAI</th></tr></thead>
+            <thead><tr><th style="width:10%">NO</th><th>NAMA SISWA</th><th style="width:30%; text-align:center">NILAI (0-100)</th></tr></thead>
             <tbody id="table-nilai-body"></tbody>
           </table>
           <button onclick="kirimNilaiSiswa()" class="btn-block btn-dark" style="margin-top:15px;">KUNCI & KIRIM NILAI</button>
@@ -273,18 +290,18 @@
           <div class="card-title" style="color: #4f46e5;"><i class="fa-solid fa-id-card-user"></i> Portal Monitoring Wali Murid</div>
           <div class="form-group">
             <label>Masukkan Nama Lengkap Siswa</label>
-            <input type="text" id="search-wali-nama" placeholder="Tulis nama lengkap siswa..." class="form-control" style="text-transform: uppercase;">
+            <input type="text" id="search-wali-nama" placeholder="Tulis nama lengkap siswa untuk dacak..." class="form-control" style="text-transform: uppercase;">
           </div>
           <button onclick="prosesTrackingWali()" class="btn-block" style="background: #4f46e5;">Cari Rekam Akademik</button>
         </div>
 
         <div id="wali-result-container" class="hidden">
           <div class="wali-banner">
-            <div style="font-size: 9px; font-weight: bold; opacity: 0.8;">NAMA SISWA:</div>
+            <div style="font-size: 9px; font-weight: bold; opacity: 0.8;">PROFIL SISWA FOUND:</div>
             <div id="lbl-wali-nama" style="font-size: 16px; font-weight: 800;">-</div>
           </div>
           <div class="card">
-            <div class="card-title" style="font-size:12px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;"><i class="fa-solid fa-calendar-check"></i> Rekap Absensi & Pembiasaan</div>
+            <div class="card-title" style="font-size:12px; border-bottom:1px solid #e2e8f0; padding-bottom:4px;"><i class="fa-solid fa-calendar-check"></i> Rekap Kehadiran Siswa</div>
             <div id="holder-wali-absen" style="margin-top:8px;"></div>
           </div>
           <div class="card">
@@ -296,30 +313,30 @@
 
       <section id="pane-config" class="panel">
         <div class="card" style="background:#fef2f2; border-color:#fca5a5; display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:11px; font-weight:bold; color:#991b1b;">Penyimpanan Sistem Lokal HP</span>
-          <button onclick="resetSistemLokal()" class="btn-status" style="background:#dc2626; color:white; width:auto; height:auto; padding:5px 10px; font-size:10px;">RESET SEMUA</button>
+          <span style="font-size:11px; font-weight:bold; color:#991b1b;">Sistem Penyimpanan Lokal HP</span>
+          <button onclick="resetSistemLokal()" class="btn-status" style="background:#dc2626; color:white; width:auto; height:auto; padding:5px 10px; font-size:10px;">RESET TOTAL</button>
         </div>
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-file-import"></i> Input Massal Nama Siswa</div>
+          <div class="card-title"><i class="fa-solid fa-file-import"></i> Impor Massal Nama Siswa</div>
           <div class="form-group">
-            <label>Pilih Kelas Rombel</label>
+            <label>Pilih Kelas Rombel Tujuan</label>
             <select id="imp-kelas-tujuan" class="form-control"></select>
           </div>
           <div class="form-group">
-            <label>Tempel Nama Siswa (Satu Nama Per Baris)</label>
-            <textarea id="imp-area-nama" rows="4" class="form-control" placeholder="Contoh:&#10;ANDI PRATAMA&#10;BUDI SANTOSO"></textarea>
+            <label>Tempel Daftar Nama (Satu Nama Per Baris)</label>
+            <textarea id="imp-area-nama" rows="4" class="form-control" placeholder="CONTOH:&#10;AHMAD FADILLAH&#10;BAYU INDRASTOMO"></textarea>
           </div>
           <button onclick="eksekusiImporSiswa()" class="btn-block btn-dark">Proses Impor Siswa</button>
         </div>
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-folder-plus"></i> Tambah Item Kamus Data Master</div>
+          <div class="card-title"><i class="fa-solid fa-folder-plus"></i> Tambah Kamus Data Master Manual</div>
           <div class="form-group">
-            <input type="text" id="add-item-value" placeholder="Nama item baru..." class="form-control">
+            <input type="text" id="add-item-value" placeholder="Tulis item baru..." class="form-control">
           </div>
           <div style="display:flex; gap:4px;">
-            <button onclick="simpanMasterManual('Guru')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ GURU</button>
-            <button onclick="simpanMasterManual('Kelas')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ KELAS</button>
-            <button onclick="simpanMasterManual('Mapel')" style="flex:1; padding:8px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ MAPEL</button>
+            <button onclick="simpanMasterManual('Guru')" style="flex:1; padding:10px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ GURU</button>
+            <button onclick="simpanMasterManual('Kelas')" style="flex:1; padding:10px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ KELAS</button>
+            <button onclick="simpanMasterManual('Mapel')" style="flex:1; padding:10px; font-size:11px; font-weight:bold; background:#e2e8f0; border:none; border-radius:4px;">+ MAPEL</button>
           </div>
         </div>
       </section>
@@ -339,18 +356,21 @@
 
   </div>
 
-  <div id="print-preview-modal">
+  <div id="print-preview-modal" class="no-print-container">
     <div class="modal-box">
-      <div style="display:flex; gap:6px; margin-bottom:15px;" class="no-print">
-        <button onclick="window.print()" style="flex:1; padding:10px; background:#16a34a; color:white; font-weight:bold; border:none; border-radius:4px;">CETAK / PDF</button>
-        <button onclick="document.getElementById('print-preview-modal').classList.remove('show')" style="padding:10px; background:#cbd5e1; border:none; border-radius:4px;">TUTUP</button>
+      <div style="display:flex; gap:8px; margin-bottom:15px; background: #f8fafc; padding: 10px; border-radius: 6px;" class="no-print">
+        <button onclick="window.print()" style="flex:1; padding:12px; background:#16a34a; color:white; font-weight:bold; border:none; border-radius:4px; font-size:13px; cursor:pointer;"><i class="fa-solid fa-print"></i> EKSEKUSI CETAK / SIMPAN PDF</button>
+        <button onclick="document.getElementById('print-preview-modal').classList.remove('show')" style="padding:12px; background:#ef4444; color:white; font-weight:bold; border:none; border-radius:4px; font-size:13px; cursor:pointer;">BATAL</button>
       </div>
-      <div id="print-area-content" style="font-family:'Times New Roman', serif; background:white; color:black; padding:10px;"></div>
+      
+      <div style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 4px; background:#fff;">
+        <span class="no-print" style="display:block; font-size:10px; color:#ef4444; font-weight:bold; margin-bottom:10px; border-bottom:1px dashed #ef4444; padding-bottom:4px;"><i class="fa-solid fa-magnifying-glass"></i> PRATONTON REVIEW LAYOUT SEBELUM DI-PRINT:</span>
+        <div id="print-area-content" style="font-family:'Times New Roman', serif; background:white; color:black;"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    // ⚠️ MASUKKAN URL GOOGLE SCRIPT WEB APP ANDA DI BAWAH INI
     const SCRIPT_URL_CLOUD = "https://script.google.com/macros/s/AKfycbwKu5AZ3VxxMFBIicOQg6NKBp7fgY-ykueONzrEWMokXO73aFtDVamv2ipMJgnMXivc/exec";
 
     let localMaster = JSON.parse(localStorage.getItem('SMKN1_MASTER')) || { kelas: [], mapel: [], guru: [] };
@@ -368,7 +388,7 @@
       renderDropdowns();
       try {
         const ctrl = new AbortController();
-        const tm = setTimeout(() => ctrl.abort(), 5000);
+        const tm = setTimeout(() => ctrl.abort(), 4000);
         const r = await fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({action:'getMasterData'}), signal: ctrl.signal });
         clearTimeout(tm);
         const res = await r.json();
@@ -376,11 +396,11 @@
           localMaster = res.data;
           localStorage.setItem('SMKN1_MASTER', JSON.stringify(localMaster));
           document.getElementById('connection-banner').className = "status-bar status-online no-print";
-          document.getElementById('connection-text').innerText = "Cloud Server Terhubung Aktif";
+          document.getElementById('connection-text').innerText = "Koneksi Cloud Sinkron (Online)";
         }
       } catch(e) {
         document.getElementById('connection-banner').className = "status-bar status-offline no-print";
-        document.getElementById('connection-text').innerText = "Mode Penyimpanan Lokal (Offline)";
+        document.getElementById('connection-text').innerText = "Mode Server Lokal Aktif (Offline)";
       }
       renderDropdowns();
     }
@@ -411,7 +431,7 @@
       if(!kelas) { box?.classList.add('hidden'); return; }
       box?.classList.remove('hidden');
 
-      const list = localSiswa[kelas] || ["CONTOH NAMA SISWA A", "CONTOH NAMA SISWA B"];
+      const list = localSiswa[kelas] || ["SISWA CONTOH PRATAMA", "SISWA CONTOH ARIF"];
       
       if(prefix === 'bk') {
         const sel = document.getElementById('bk-siswa');
@@ -442,39 +462,47 @@
     function eksekusiImporSiswa() {
       const k = document.getElementById('imp-kelas-tujuan').value;
       const txt = document.getElementById('imp-area-nama').value;
-      if(!k || !txt) return alert("Pilih kelas rombel dan isi data nama siswa!");
+      if(!k || !txt) return alert("Pilih kelas dan isi baris nama!");
       const arr = txt.split('\n').map(n => n.trim().toUpperCase()).filter(Boolean);
       localSiswa[k] = arr;
       localStorage.setItem('SMKN1_SISWA', JSON.stringify(localSiswa));
-      alert(`Sukses mengimpor ${arr.length} siswa baru ke dalam kelas ${k}`);
+      alert(`Berhasil impor ${arr.length} nama siswa ke kelas ${k}`);
       document.getElementById('imp-area-nama').value = "";
     }
 
     function simpanMasterManual(kat) {
       const val = document.getElementById('add-item-value').value.trim();
-      if(!val) return alert("Isian master tidak boleh kosong!");
+      if(!val) return alert("Isi nilai master!");
       const key = kat.toLowerCase();
       if(!localMaster[key].includes(val)) localMaster[key].push(val);
       localStorage.setItem('SMKN1_MASTER', JSON.stringify(localMaster));
       document.getElementById('add-item-value').value = "";
       renderDropdowns();
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({action:'tambahMaster'+kat, nama: val}) });
-      alert("Master " + kat + " berhasil diperbarui!");
+      alert("Master Berhasil Ditambahkan!");
     }
 
     function getPackData(tbodyId) {
       let pack = [];
-      document.querySelectorAll(`#${tbodyId} tr`).forEach(r => {
+      const rows = document.querySelectorAll(`#${tbodyId} tr`);
+      if(rows.length === 0) return pack;
+      rows.forEach(r => {
         const nama = r.querySelector('.siswa-name').innerText;
         const act = r.querySelector('.btn-status[class*="active-"]');
-        pack.push({ nama: nama, status: act ? act.innerText : 'H' });
+        const inputNilai = r.querySelector('.input-nilai-item');
+        
+        let statusVal = 'H';
+        if(act) statusVal = act.innerText;
+        if(inputNilai) statusVal = inputNilai.value;
+        
+        pack.push({ nama: nama, status: statusVal });
       });
       return pack;
     }
 
     function kirimPresensiKBM() {
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({ action:"submitAbsensi", kelas: document.getElementById('abs-kelas').value, mapel: document.getElementById('abs-mapel').value, guru: document.getElementById('abs-guru').value, dataSiswa: getPackData('table-absen-body') }) })
-      .then(r=>r.json()).then(res => alert(res.message)).catch(()=>alert("Koneksi bermasalah. Data Anda tetap aman di memori HP."));
+      .then(r=>r.json()).then(res => alert(res.message)).catch(()=>alert("Gagal koneksi server, data Anda tetap tersimpan di lokal HP."));
     }
 
     function kirimPramuka() {
@@ -506,7 +534,7 @@
 
     function prosesTrackingWali() {
       const nama = document.getElementById('search-wali-nama').value.trim();
-      if(!nama) return alert("Ketik nama lengkap siswa terlebih dahulu!");
+      if(!nama) return alert("Ketik nama siswa!");
       fetch(SCRIPT_URL_CLOUD, { method:'POST', body: JSON.stringify({ action:"getWaliTracking", namaSiswa: nama }) })
       .then(r=>r.json()).then(res => {
         if(!res.success) return alert(res.message);
@@ -517,31 +545,81 @@
       });
     }
 
-    function resetSistemLokal() { if(confirm("Hapus seluruh data yang terekam di HP ini?")) { localStorage.clear(); window.location.reload(); } }
+    function resetSistemLokal() { if(confirm("Hapus total data di perangkat ini?")) { localStorage.clear(); window.location.reload(); } }
 
+    // 🔥 FUNGSI UTAMA CANGGIH: LAYOUT REVIEW PRATONTON & PRINT PDF
     function bukaModalCetak(tipe) {
-      const kelas = document.getElementById('abs-kelas').value;
-      if(!kelas) return alert("Tampilkan daftar kelas terlebih dahulu!");
-      let rows = "";
-      document.querySelectorAll('#table-absen-body tr').forEach((r, i) => {
-        rows += `<tr style="border-bottom:1px solid #000;"><td style="padding:5px; text-align:center;">${i+1}</td><td style="padding:5px;">${r.querySelector('.siswa-name').innerText}</td><td style="padding:5px; text-align:center;">${r.querySelector('.btn-status[class*="active-"]').innerText}</td></tr>`;
+      let kelas = "";
+      let detailInfo = "";
+      let rowsData = [];
+
+      if(tipe === 'KBM') {
+        kelas = document.getElementById('abs-kelas').value;
+        detailInfo = `Mata Pelajaran: ${document.getElementById('abs-mapel').value || '-'}<br>Guru Pengajar: ${document.getElementById('abs-guru').value || '-'}`;
+        rowsData = getPackData('table-absen-body');
+      } else if(tipe === 'Pramuka') {
+        kelas = document.getElementById('pra-kelas').value;
+        detailInfo = `Kegiatan: Ekstrakurikuler Pramuka Rutin<br>Tanggal: ${document.getElementById('pra-tanggal').value}`;
+        rowsData = getPackData('table-pramuka-body');
+      } else if(tipe === 'Sholat') {
+        kelas = document.getElementById('sho-kelas').value;
+        detailInfo = `Pembiasaan: Jurnal Sholat Dzuhur Berjamaah<br>Tanggal: ${document.getElementById('sho-tanggal').value}`;
+        rowsData = getPackData('table-sholat-body');
+      } else if(tipe === 'Nilai') {
+        kelas = document.getElementById('nil-kelas').value;
+        detailInfo = `Penilaian: ${document.getElementById('nil-judul').value || '-'}`;
+        rowsData = getPackData('table-nilai-body');
+      }
+
+      if(!kelas) return alert("Pilih kelas dan tampilkan data siswa terlebih dahulu!");
+
+      let tableRowsHtml = "";
+      rowsData.forEach((item, i) => {
+        tableRowsHtml += `
+          <tr style="border-bottom: 1px solid #000;">
+            <td style="padding:6px; text-align:center; border: 1px solid #000;">${i+1}</td>
+            <td style="padding:6px; border: 1px solid #000; text-transform: uppercase;"><b>${item.nama}</b></td>
+            <td style="padding:6px; text-align:center; border: 1px solid #000; font-weight:bold;">${item.status}</td>
+          </tr>`;
       });
 
+      // INJEKSI LAYOUT KOP RESMI NEGARA KE DALAM MODAL REVIEW
       document.getElementById('print-area-content').innerHTML = `
-        <div style="text-align:center; border-bottom:3px double #000; padding-bottom:5px; margin-bottom:10px;">
-          <h2 style="font-size:14px; margin:0; font-weight:bold;">PEMERINTAH PROVINSI / DINAS PENDIDIKAN</h2>
-          <h1 style="font-size:16px; margin:2px 0; font-weight:bold;">SMK NEGERI 1 SINGKUT</h1>
-          <p style="font-size:10px; margin:0; font-style:italic;">Kec. Singkut, Kabupaten Sarolangun, Jambi</p>
+        <div style="text-align:center; border-bottom:3px double #000; padding-bottom:6px; margin-bottom:15px;">
+          <h2 style="font-size:14px; margin:0; text-transform:uppercase; font-weight:bold;">Pemerintah Provinsi / Dinas Pendidikan</h2>
+          <h1 style="font-size:18px; margin:2px 0; text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">SMK NEGERI 1 SINGKUT</h1>
+          <p style="font-size:10px; margin:0; font-style:italic;">Kecamatan Singkut, Kabupaten Sarolangun, Jambi, Kode Pos: 37482</p>
         </div>
-        <h3 style="text-align:center; font-size:12px; text-transform:uppercase; font-weight:bold; margin-bottom:5px;">LAPORAN PRESENSI KBM HARIAN</h3>
-        <p style="font-size:11px;">Kelas: ${kelas}<br>Mata Pelajaran: ${document.getElementById('abs-mapel').value || '-'}</p>
-        <table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:10px;" border="1">
-          <thead><tr style="background:#cbd5e1;"><th>NO</th><th>NAMA LENGKAP SISWA</th><th>STATUS</th></tr></thead>
-          <tbody>${rows}</tbody>
+        <h3 style="text-align:center; font-size:12px; text-transform:uppercase; font-weight:bold; margin-bottom:10px; letter-spacing:0.5px;">LAPORAN DOKUMEN ADMINISTRASI (${tipe})</h3>
+        <div style="font-size:11px; margin-bottom:12px; line-height: 1.4;">
+          <b>Kelas / Rombel :</b> ${kelas}<br>
+          ${detailInfo}<br>
+          <b>Waktu Cetak Dokumen :</b> ${new Date().toLocaleString('id-ID')}
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:11px;" border="1">
+          <thead>
+            <tr style="background-color: #e2e8f0;">
+              <th style="padding:6px; width:40px; border: 1px solid #000;">NO</th>
+              <th style="padding:6px; text-align:left; border: 1px solid #000;">NAMA LENGKAP SISWA</th>
+              <th style="padding:6px; width:100px; border: 1px solid #000;">KETERANGAN</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRowsHtml}
+          </tbody>
         </table>
+        <div style="display:flex; justify-content:flex-end; margin-top:40px; font-size:11px;">
+          <div style="text-align:center; width:200px;">
+            <p>Mengetahui,</p>
+            <p style="margin-bottom:50px;">Guru Pengajar / Pembina</p>
+            <p style="border-bottom:1px solid #000; font-weight:bold;">...........................................</p>
+          </div>
+        </div>
       `;
+      
+      // Tampilkan Modal
       document.getElementById('print-preview-modal').classList.add('show');
-    }
+    </div>
   </script>
 </body>
 </html>
