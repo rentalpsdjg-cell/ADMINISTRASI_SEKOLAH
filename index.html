@@ -273,7 +273,7 @@
 
         <section id="panel-arsip" class="panel space-y-4">
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs no-print">
-            <h2 class="text-base font-bold mb-1"><i class="fa-solid fa-print text-purple-600 mr-2"></i>Cetak Laporan Laporan</h2>
+            <h2 class="text-base font-bold mb-1"><i class="fa-solid fa-print text-purple-600 mr-2"></i>Cetak Laporan Matrix</h2>
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
               <div>
                 <select id="arsip-tipe" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs">
@@ -363,7 +363,7 @@
   </div>
 
   <script>
-    // GANTI LINK DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA YANG BARU!
+    // URL WEB APP GOOGLE APPS SCRIPT ANDA YANG AKTIF
     const API_URL = "https://script.google.com/macros/s/AKfycbyN4cUNE6PMwPlPZvsYLrh4homfsVhJFKHj0ceUkX0B9AEP71BDd0_uaBl-IxpCyr3Y/exec";
 
     let DB_GLOBAL_DATA = { kelas: [], mapel: [], guru: [], siswa: [] };
@@ -422,7 +422,7 @@
         })
         .catch((err) => {
           console.error(err);
-          alert("Koneksi bermasalah dengan Server Google. Pastikan URL API_URL sudah benar dan sudah dideploy dengan akses 'Anyone'.");
+          alert("Koneksi bermasalah dengan Server Google. Pastikan URL API_URL sudah benar dan dideploy dengan akses 'Anyone'.");
         })
         .finally(() => showLoading(false));
     }
@@ -666,9 +666,10 @@
       
       tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Menarik rekam log dari cloud...</td></tr>`;
       
+      // DI SINI ADALAH PERBAIKAN CRITICAL PARAMETER SINKRONISASI (tahun dikirim sebagai tahun)
       fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, year: tahun })
+        body: JSON.stringify({ action: "getRekapBulanan", menu: menu, kelas: kelas, bulan: bulan, tahun: tahun })
       })
       .then(r => r.json())
       .then(res => {
@@ -691,7 +692,10 @@
         });
         tbody.innerHTML = html;
       })
-      .catch(() => tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-600 font-medium">Gagal memuat log data cloud.</td></tr>`);
+      .catch((err) => {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-600 font-medium">Gagal memuat log data cloud. Periksa koneksi backend.</td></tr>`;
+      });
     }
 
     function fetchMonthlyHistoryMatrix() {
@@ -753,7 +757,7 @@
                 <th class="border border-slate-400 p-1 text-left">Nama Siswa</th>`;
         headers.forEach(h => {
           let lbl = h; if(tipe !== 'Daftar Nilai') { lbl = h.split('-')[2]; }
-          html += `<th class="border border-slate-400 p-0.5 text-center whitespace-nowrap rotate-0">${lbl}</th>`;
+          html += `<th class="border border-slate-400 p-0.5 text-center whitespace-nowrap">${lbl}</th>`;
         });
         if(tipe === 'Daftar Nilai') { html += `<th class="border border-slate-400 p-1 text-center w-12 bg-blue-50">Rata2</th>`; }
         else { html += `<th class="border border-slate-400 p-0.5 text-center w-6 bg-emerald-50">H</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-blue-50">S</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-amber-50">I</th><th class="border border-slate-400 p-0.5 text-center w-6 bg-rose-50">A</th>`; }
